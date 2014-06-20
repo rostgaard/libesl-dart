@@ -1,2 +1,4 @@
 name: esl
+version: 0.0.1-experimental
+author: Kim Rostgaard Christensen
 description: A FreeSWITCH event socket library for Dart.

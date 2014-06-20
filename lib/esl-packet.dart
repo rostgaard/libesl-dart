@@ -16,9 +16,10 @@ class Packet {
 
   static final String _variable_prefix = 'variable_';
   
-  Map<String, String> headers = new Map<String, String>();
-  String content = "";
-  Map <String, String> contentMap = null;
+  Map<String, String>     headers = new Map<String, String>();
+  String                  content = "";
+  Map<String, String>  contentMap = null;
+  Channel              _channel   = null;
 
   String get contentType   => this.headers['Content-Type'];
   int    get contentLength => this.hasHeader('Content-Length') 
@@ -29,6 +30,11 @@ class Packet {
   bool get isRequest => ContentType.Requests.contains(this.contentType);
   bool get eventType => ContentType.Event_Types.contains(this.contentType);
 
+  Channel get channel { 
+    assert (this.isEvent);
+    return this._channel == null ? this._channel = new Channel.fromPacket(this) : this._channel;
+  }
+  
   bool hasHeader(String key) {
     return this.headers.containsKey(key);
   }
@@ -37,14 +43,8 @@ class Packet {
     this.headers[key] = value;
   }
 
-  String get uniqueID {
-    return this.contentAsMap['Unique-ID'];
-  }
-  
-  
-  String get eventName {
-    return this.contentAsMap['Event-Name'];
-  }
+  String get uniqueID  => this.contentAsMap['Unique-ID'];
+  String get eventName => this.contentAsMap['Event-Name'];
 
   String get eventSubclass {
     if (this.contentAsMap.containsKey('Event-Subclass')) {

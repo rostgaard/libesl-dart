@@ -59,8 +59,8 @@ class Connection {
     return this._sendCommand('event ${format} ${events.join(' ')}');
   }
   
-  Future<Packet> api (String command) {
-    return this._sendCommand('api $command');
+  Future<Response> api (String command) {
+    return this._sendCommand('api $command').then((Packet packet) => new Response.fromPacketBody(packet.content.trim()));
   }
 
   void packetReader (List<int> bytes) {
@@ -116,9 +116,9 @@ class Connection {
       this._requestStream.add(this.currentPacket);
     }
     else {
+      print (this.currentPacket.content);
       this._nonEventStream.add(this.currentPacket);
     }
-    
   }
 
 }

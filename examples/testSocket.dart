@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'lib/esl.dart' as ESL;
+import '../lib/esl.dart' as ESL;
 
 ESL.PeerList peerList = null;
 
@@ -25,11 +25,11 @@ main() {
           conn.event(['all'], format : ESL.EventFormat.Json);
         });*/
       
-      
       conn.authenticate('1234')
         .then((_) => conn.event(['all'], format : ESL.EventFormat.Json))
-        .then((_) => conn.api('list_users')
-          .then(loadPeerListFromPacket))
+//        .then((_) => conn.api('list_users'))
+        .then((_) => conn.api('originate  sofia/gateway/fonet-77344600-outbound/40966024 &bridge(user/1002)')
+        .then(print))
         .then((_) => print(JSON.encode (peerList)));
       
       break;
