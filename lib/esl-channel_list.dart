@@ -19,12 +19,10 @@ class ChannelList extends IterableBase<Channel>{
   }
   
   void _add(Channel channel) {
-    print ("Inserting ${channel.UUID}");
     this._channelStorage[channel.UUID] = channel;
   }
   
   void _remove(Channel channel) {
-    print ("Removing ${channel.UUID}");
     this._channelStorage.remove(channel.UUID);
   }
 }

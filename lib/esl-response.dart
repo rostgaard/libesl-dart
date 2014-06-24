@@ -8,9 +8,7 @@ class Response {
   
   final        String rawBody;
   
-  Response.fromPacketBody (String this.rawBody) {
-    print ('"' + this.rawBody + '"');
-  }
+  Response.fromPacketBody (String this.rawBody);
   
   String get status {
     String lastLine = this.rawBody.split('\n').last;

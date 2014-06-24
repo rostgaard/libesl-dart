@@ -37,10 +37,7 @@ class Connection {
     
     Completer<Packet> completer= new Completer<Packet>();
     
-    print (command);
-    
     this._nonEventStream.stream.first.then ((Packet packet) {
-      print (packet.headers);
       completer.complete (packet);
     }).catchError((error) {
       completer.completeError (error);
@@ -116,7 +113,6 @@ class Connection {
       this._requestStream.add(this.currentPacket);
     }
     else {
-      print (this.currentPacket.content);
       this._nonEventStream.add(this.currentPacket);
     }
   }
