@@ -65,7 +65,7 @@ class Connection {
   }
   
   Future<Response> api (String command) {
-    Completer<Packet> completer= new Completer<Packet>();
+    Completer<Response> completer= new Completer<Response>();
     final int seq = ++requestCount;
     
     this._responseStream.stream.firstWhere((_) => Response.count ==  seq).then ((Response response) {
