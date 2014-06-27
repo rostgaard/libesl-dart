@@ -2,13 +2,17 @@ part of esl;
 
 class Response {
   
+  static int   count = 0; 
+  
   static const String OK      = '+OK';
   static const String ERROR   = '-ERR';
   static const String UNKNOWN = '';
-  
+
   final        String rawBody;
   
-  Response.fromPacketBody (String this.rawBody);
+  Response.fromPacketBody (String this.rawBody) {
+    count++;
+  }
   
   String get status {
     String lastLine = this.rawBody.split('\n').last;

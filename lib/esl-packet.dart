@@ -7,14 +7,17 @@ abstract class ContentType {
 
   static const String Auth_Request = "auth/request";
   
+  static const String API_Reponse = "api/response";
+  
   static final List<String> Event_Types = [Text_Event_JSON, Text_Event_Plain, Text_Event_Xml];
-
-  static final List<String> Requests = [Auth_Request];
+  static final List<String> Requests    = [Auth_Request];
+  static final List<String> Responses   = [API_Reponse];
 }
 
 class Packet {
 
   static final String _variable_prefix = 'variable_';
+  static int   count = 0; 
   
   Map<String, String>     headers = new Map<String, String>();
   String                  content = "";
@@ -26,9 +29,10 @@ class Packet {
                                 ? int.parse(this.headers['Content-Length']) 
                                 : 0;
 
-  bool get isEvent   => ContentType.Event_Types.contains(this.contentType);
-  bool get isRequest => ContentType.Requests.contains(this.contentType);
-  bool get eventType => ContentType.Event_Types.contains(this.contentType);
+  bool get isEvent    => ContentType.Event_Types.contains(this.contentType);
+  bool get isRequest  => ContentType.Requests.contains(this.contentType);
+  bool get isResponse => ContentType.Responses.contains(this.contentType);
+  bool get eventType  => ContentType.Event_Types.contains(this.contentType);
 
   Channel get channel { 
     assert (this.isEvent);

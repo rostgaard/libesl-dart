@@ -12,10 +12,14 @@ class Connection {
   Socket _socket = null;
   StreamController<Packet> _eventStream = new StreamController.broadcast();
   StreamController<Packet> _requestStream = new StreamController.broadcast();
+  StreamController<Response> _responseStream = new StreamController.broadcast();
+  
   Stream<Packet> get eventStream => this._eventStream.stream;
   Stream<Packet> get requestStream => this._requestStream.stream;
+  Stream<Response> get responseStream => this._responseStream.stream;
   
   StreamController<Packet> _nonEventStream = new StreamController.broadcast();
+  static int requestCount = Response.count;
   
   /// Private fields used by the packet reader.
   Packet currentPacket = new Packet();
@@ -43,9 +47,13 @@ class Connection {
       completer.completeError (error);
     });
 
-    this._socket.writeln('${command}\n');
+    this._writeCommandToSocket(command);
     
     return completer.future;
+  }
+  
+  void _writeCommandToSocket (String command) {
+    this._socket.writeln('${command}\n');
   }
   
   Future<Packet> authenticate (String password) {
@@ -57,7 +65,18 @@ class Connection {
   }
   
   Future<Response> api (String command) {
-    return this._sendCommand('api $command').then((Packet packet) => new Response.fromPacketBody(packet.content.trim()));
+    Completer<Packet> completer= new Completer<Packet>();
+    final int seq = ++requestCount;
+    
+    this._responseStream.stream.firstWhere((_) => Response.count ==  seq).then ((Response response) {
+      completer.complete (response);
+    }).catchError((error) {
+      completer.completeError (error);
+    });
+
+    this._writeCommandToSocket('api $command');
+    
+    return completer.future.timeout(new Duration(seconds: 5), onTimeout : () => throw new TimeoutException('Failed to get response'));
   }
 
   void packetReader (List<int> bytes) {
@@ -107,11 +126,14 @@ class Connection {
   }
   
   void _dispatch(Packet packet) {
+  
     if (this.currentPacket.isEvent) {
       this._eventStream.add(this.currentPacket);  
     } else if (this.currentPacket.isRequest) {
       this._requestStream.add(this.currentPacket);
-    }
+    } else if (this.currentPacket.isResponse) {
+      this._responseStream.add(new Response.fromPacketBody(this.currentPacket.content.trim()));
+   }
     else {
       this._nonEventStream.add(this.currentPacket);
     }
