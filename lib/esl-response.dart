@@ -2,7 +2,8 @@ part of esl;
 
 class Response {
   
-  static int   count = 0; 
+  static int     _count   = 0;
+  static int get sequence => ++_count;
   
   static const String OK      = '+OK';
   static const String ERROR   = '-ERR';
@@ -10,9 +11,7 @@ class Response {
 
   final        String rawBody;
   
-  Response.fromPacketBody (String this.rawBody) {
-    count++;
-  }
+  Response.fromPacketBody (String this.rawBody);
   
   String get status {
     String lastLine = this.rawBody.split('\n').last;
