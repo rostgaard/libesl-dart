@@ -19,7 +19,7 @@ class Connection {
   Stream<Response> get responseStream => this._responseStream.stream;
   
   StreamController<Packet> _nonEventStream = new StreamController.broadcast();
-  static int requestCount = Response.count;
+  static int requestCount = Response.sequence;
   
   /// Private fields used by the packet reader.
   Packet currentPacket = new Packet();
@@ -68,7 +68,7 @@ class Connection {
     Completer<Response> completer= new Completer<Response>();
     final int seq = ++requestCount;
     
-    this._responseStream.stream.firstWhere((_) => Response.count ==  seq).then ((Response response) {
+    this._responseStream.stream.firstWhere((_) => Response.sequence ==  seq).then ((Response response) {
       completer.complete (response);
     }).catchError((error) {
       completer.completeError (error);
@@ -76,7 +76,7 @@ class Connection {
 
     this._writeCommandToSocket('api $command');
     
-    return completer.future.timeout(new Duration(seconds: 5), onTimeout : () => throw new TimeoutException('Failed to get response'));
+    return completer.future.timeout(new Duration(seconds: 5), onTimeout : () => throw new TimeoutException('Failed to get response to command $command'));
   }
 
   void packetReader (List<int> bytes) {
