@@ -34,5 +34,10 @@ class Response {
       throw new StateError ('Response does not carry channel information. Raw body: ${this.rawBody}');
     }
   }
+  
+  @override
+  String toString() {
+    return this.rawBody;
+  }
 }
 
