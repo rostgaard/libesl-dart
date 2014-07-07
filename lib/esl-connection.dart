@@ -12,14 +12,15 @@ class Connection {
   Socket _socket = null;
   StreamController<Packet> _eventStream = new StreamController.broadcast();
   StreamController<Packet> _requestStream = new StreamController.broadcast();
-  StreamController<Response> _responseStream = new StreamController.broadcast();
   
   Stream<Packet> get eventStream => this._eventStream.stream;
   Stream<Packet> get requestStream => this._requestStream.stream;
-  Stream<Response> get responseStream => this._responseStream.stream;
   
   StreamController<Packet> _nonEventStream = new StreamController.broadcast();
   static int requestCount = Response.sequence;
+
+  /// The Job queue is a simple FIFO of Futures that complete in-order.
+  List<Completer<Response>> jobQueue   = new List<Completer<Response>>(); 
   
   /// Private fields used by the packet reader.
   Packet currentPacket = new Packet();
@@ -66,18 +67,14 @@ class Connection {
   
   Future<Response> api (String command) {
     Completer<Response> completer= new Completer<Response>();
-    final int seq = ++requestCount;
+    this.jobQueue.add(completer);
     
-    this._responseStream.stream.firstWhere((_) => Response.sequence ==  seq).then ((Response response) {
-      completer.complete (response);
-    }).catchError((error) {
-      completer.completeError (error);
-    });
-
     this._writeCommandToSocket('api $command');
-    
-    return completer.future.timeout(new Duration(seconds: 5), onTimeout : () => throw new TimeoutException('Failed to get response to command $command'));
-  }
+
+    return completer.future
+      ..timeout(new Duration(seconds: 5), onTimeout : () => throw new TimeoutException('Failed to get response to command $command'));
+   }
+  
 
   void packetReader (List<int> bytes) {
     
@@ -132,7 +129,7 @@ class Connection {
     } else if (this.currentPacket.isRequest) {
       this._requestStream.add(this.currentPacket);
     } else if (this.currentPacket.isResponse) {
-      this._responseStream.add(new Response.fromPacketBody(this.currentPacket.content.trim()));
+      this.jobQueue.removeLast().complete(new Response.fromPacketBody(this.currentPacket.content.trim()));
    }
     else {
       this._nonEventStream.add(this.currentPacket);
