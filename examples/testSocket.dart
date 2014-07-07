@@ -25,12 +25,16 @@ main() {
           conn.event(['all'], format : ESL.EventFormat.Json);
         });*/
       
-      conn.authenticate('1234')
+      conn.authenticate('1234').then((packet) => print(packet.headers))
         .then((_) => conn.event(['all'], format : ESL.EventFormat.Json))
-//        .then((_) => conn.api('list_users'))
-        .then((_) => conn.api('originate  sofia/gateway/fonet-77344600-outbound/40966024 &bridge(user/1002)')
-        .then(print))
-        .then((_) => print(JSON.encode (peerList)));
+        .then((_) => conn.api('status').then(print))
+        .then((_) => conn.api('list_users')
+        .then((packet) => print(new ESL.PeerList.fromMultilineBuffer(packet.rawBody)))
+        .then((_) {
+          for (int i = 0; i < 100; i++) {
+            conn.api('echo $i').then((ESL.Response response) => print(response.rawBody));
+          }
+        }));
       
       break;
       default:
