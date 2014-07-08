@@ -20,7 +20,7 @@ class Connection {
   static int requestCount = Response.sequence;
 
   /// The Job queue is a simple FIFO of Futures that complete in-order.
-  List<Completer<Response>> jobQueue   = new List<Completer<Response>>(); 
+  Queue<Completer<Response>> jobQueue   = new Queue<Completer<Response>>(); 
   
   /// Private fields used by the packet reader.
   Packet currentPacket = new Packet();
@@ -67,7 +67,7 @@ class Connection {
   
   Future<Response> api (String command) {
     Completer<Response> completer= new Completer<Response>();
-    this.jobQueue.add(completer);
+    this.jobQueue.addLast(completer);
     
     this._writeCommandToSocket('api $command');
 
@@ -129,7 +129,7 @@ class Connection {
     } else if (this.currentPacket.isRequest) {
       this._requestStream.add(this.currentPacket);
     } else if (this.currentPacket.isResponse) {
-      this.jobQueue.removeLast().complete(new Response.fromPacketBody(this.currentPacket.content.trim()));
+      this.jobQueue.removeFirst().complete(new Response.fromPacketBody(this.currentPacket.content.trim()));
    }
     else {
       this._nonEventStream.add(this.currentPacket);

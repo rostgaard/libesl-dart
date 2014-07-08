@@ -1,4 +1,3 @@
-import 'dart:convert';
 import '../lib/esl.dart' as ESL;
 
 ESL.PeerList peerList = null;
@@ -21,9 +20,6 @@ main() {
   conn.requestStream.listen((ESL.Packet packet) {
     switch (packet.contentType) {
       case (ESL.ContentType.Auth_Request):
-        /*conn.authenticate('1234').then((ESL.Packet packet) {
-          conn.event(['all'], format : ESL.EventFormat.Json);
-        });*/
       
       conn.authenticate('1234').then((packet) => print(packet.headers))
         .then((_) => conn.event(['all'], format : ESL.EventFormat.Json))
@@ -32,7 +28,7 @@ main() {
         .then((packet) => print(new ESL.PeerList.fromMultilineBuffer(packet.rawBody)))
         .then((_) {
           for (int i = 0; i < 100; i++) {
-            conn.api('echo $i').then((ESL.Response response) => print(response.rawBody));
+            sendRequest(i, conn);
           }
         }));
       
@@ -44,6 +40,13 @@ main() {
   });
 
   conn.connect('localhost', 8021);
+}
+
+void sendRequest (int seq, ESL.Connection conn) {
+  conn.api('echo $seq').then((ESL.Response response) {
+    print('$seq, ${response.rawBody}');
+    assert (int.parse(response.rawBody) == seq);
+    });
 }
   
 
