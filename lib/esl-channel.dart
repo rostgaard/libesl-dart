@@ -1,5 +1,8 @@
 part of esl;
 
+/**
+ * 'Enum' type representing channel states. 
+ */
 abstract class ChannelState {
   static const String NEW = "CS_NEW";
   static const String INIT = "CS_INIT";
@@ -16,6 +19,10 @@ abstract class ChannelState {
   static const String DESTROY = "CS_DESTROY";
 }
 
+/**
+ * Wrapper class for a channel. Provides easy access to various
+ * channel information stored in a packet. 
+ */
 class Channel {
   
   static const String nullChannelID = null; 
@@ -32,6 +39,10 @@ class Channel {
   String              get UUID  => this._fields['Unique-ID'];
   String              get state => this._fields['Channel-State'];
   
+  /**
+   * Extracts the relevant information from the packet and stores 
+   * it in an internal map.
+   */
   Channel.fromPacket (Packet packet) {
     packet.contentAsMap.forEach((key, value) {
       if (key.contains("^variable_")) {
@@ -43,19 +54,25 @@ class Channel {
     });
   }
   
-  Map toMap () {
-    Map tmp = {};
-    tmp.addAll(this._fields);
-    tmp['variables'] = {};
-    tmp['variables'].addAll(this._variables);
-    return tmp;
-  }
+  /**
+   * Returns a map _representation_ of the channel.
+   */
+  Map get asMap => 
+      {}..addAll(this._fields)
+        ..addAll(this._variables);
   
+  /**
+   * Two channel is equivalent, if their UUID's are the same
+   * - regardless of state. 
+   */
   @override
   bool operator == (Channel other) {
     return this.UUID.toLowerCase() == other.UUID.toLowerCase();
   }
    
+  /**
+   * Hashcode follows the convention from the [==] operator.
+   */
   @override
   int get hashCode {
     return this.UUID.toLowerCase().hashCode;
