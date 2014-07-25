@@ -26,6 +26,7 @@ main() {
         .then((_) => conn.api('status').then(print))
         .then((_) => conn.api('list_users')
         .then((packet) => print(new ESL.PeerList.fromMultilineBuffer(packet.rawBody)))
+        //.then((_) => conn.api ('originate user/1100 5900').then(print).catchError(print))
         .then((_) {
           for (int i = 0; i < 100; i++) {
             sendRequest(i, conn);
@@ -38,9 +39,14 @@ main() {
         break;
     }
   });
+  
+  void signalDisconnect() => print('Disconnected!');
 
-  conn.connect('localhost', 8021);
+  conn..onDone = signalDisconnect
+      ..connect('localhost', 8021);
+
 }
+
 
 void sendRequest (int seq, ESL.Connection conn) {
   conn.api('echo $seq').then((ESL.Response response) {

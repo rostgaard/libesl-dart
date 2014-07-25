@@ -28,12 +28,15 @@ class Connection {
   int contentLength = 0;
   String currentChar;
   String body = "";
+  Function onDone = () => null; 
   
   Future<Socket> connect(String hostname, int port) {
     return Socket.connect(hostname, port).then((socket) {
       this._socket = socket;
-      this._socket.listen(this.packetReader);
-
+      
+      this._socket.listen(this.packetReader,
+        onDone: onDone);
+      
       return this._socket;
     });
   }
@@ -72,7 +75,7 @@ class Connection {
     this._writeCommandToSocket('api $command');
 
     return completer.future
-      ..timeout(new Duration(seconds: 5), onTimeout : () => throw new TimeoutException('Failed to get response to command $command'));
+      ..timeout(new Duration(seconds: 5), onTimeout : () => completer.completeError(new TimeoutException('Failed to get response to command $command')));
    }
   
 
@@ -129,7 +132,12 @@ class Connection {
     } else if (this.currentPacket.isRequest) {
       this._requestStream.add(this.currentPacket);
     } else if (this.currentPacket.isResponse) {
-      this.jobQueue.removeFirst().complete(new Response.fromPacketBody(this.currentPacket.content.trim()));
+      Completer<Response> completer = this.jobQueue.removeFirst(); 
+      if (!completer.isCompleted) {
+        completer.complete(new Response.fromPacketBody(this.currentPacket.content.trim()));
+      } else {
+        print ('Discarding packet for timed out api command.');
+      }
    }
     else {
       this._nonEventStream.add(this.currentPacket);
