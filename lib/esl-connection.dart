@@ -24,10 +24,6 @@ class Connection {
 
   /// Private fields used by the packet reader.
   Packet currentPacket = new Packet();
-  bool readingHeader = true;
-  int contentLength = 0;
-  String currentChar;
-  String body = "";
   Function onDone = () => null;
 
   Future<Socket> connect(String hostname, int port) {
@@ -80,21 +76,20 @@ class Connection {
   }
 
   void _dispatch(Packet packet) {
-
-    if (this.currentPacket.isEvent) {
-      this._eventStream.add(this.currentPacket);
-    } else if (this.currentPacket.isRequest) {
-      this._requestStream.add(this.currentPacket);
-    } else if (this.currentPacket.isResponse) {
+    if (packet.isEvent) {
+      this._eventStream.add(packet);
+    } else if (packet.isRequest) {
+      this._requestStream.add(packet);
+    } else if (packet.isResponse) {
       Completer<Response> completer = this.jobQueue.removeFirst();
       if (!completer.isCompleted) {
-        completer.complete(new Response.fromPacketBody(this.currentPacket.content.trim()));
+        completer.complete(new Response.fromPacketBody(packet.content.trim()));
       } else {
         print ('Discarding packet for timed out api command.');
       }
    }
     else {
-      this._nonEventStream.add(this.currentPacket);
+      this._nonEventStream.add(packet);
     }
   }
 
