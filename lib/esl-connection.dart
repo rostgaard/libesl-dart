@@ -1,35 +1,35 @@
 part of esl;
 
 abstract class EventFormat {
-  static String Plain = "plain"; 
-  static String Json  = "json"; 
-  static String Xml   = "xml"; 
+  static String Plain = "plain";
+  static String Json  = "json";
+  static String Xml   = "xml";
 }
 
 
 class Connection {
-  
+
   Socket _socket = null;
   StreamController<Packet> _eventStream = new StreamController.broadcast();
   StreamController<Packet> _requestStream = new StreamController.broadcast();
-  
+
   Stream<Packet> get eventStream => this._eventStream.stream;
   Stream<Packet> get requestStream => this._requestStream.stream;
-  
+
   StreamController<Packet> _nonEventStream = new StreamController.broadcast();
   static int requestCount = Response.sequence;
 
   /// The Job queue is a simple FIFO of Futures that complete in-order.
-  Queue<Completer<Response>> jobQueue   = new Queue<Completer<Response>>(); 
-  
+  Queue<Completer<Response>> jobQueue   = new Queue<Completer<Response>>();
+
   /// Private fields used by the packet reader.
   Packet currentPacket = new Packet();
   bool readingHeader = true;
   int contentLength = 0;
   String currentChar;
   String body = "";
-  Function onDone = () => null; 
-  
+  Function onDone = () => null;
+
   Future<Socket> connect(String hostname, int port) {
     return Socket.connect(hostname, port).then((socket) {
       this._socket = socket;
@@ -41,11 +41,11 @@ class Connection {
       return this._socket;
     });
   }
-  
+
   Future<Packet> _sendCommand (String command) {
-    
+
     Completer<Packet> completer= new Completer<Packet>();
-    
+
     this._nonEventStream.stream.first.then ((Packet packet) {
       completer.complete (packet);
     }).catchError((error) {

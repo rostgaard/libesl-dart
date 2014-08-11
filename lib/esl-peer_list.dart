@@ -1,11 +1,11 @@
 part of esl;
 
 class PeerList extends  IterableBase<Peer>{
-  
+
   Map <String, Peer> _map = {};
-  
+
   Iterator get iterator => this._map.values.iterator;
-  
+
   PeerList.fromMultilineBuffer (String buffer, {String splitOn : '|'}) {
     List<String> keys = new List<String>();
     buffer.split('\n').forEach ((var line) {
@@ -18,7 +18,7 @@ class PeerList extends  IterableBase<Peer>{
      } else {
        if (!line.isEmpty && line != "+OK") {
          Peer newPeer = new Peer.fromLine(keys, line, splitOn);
-         if (!this._map.containsKey(newPeer.key)) { 
+         if (!this._map.containsKey(newPeer.key)) {
            this.add(newPeer);
          } else {
            this._map[newPeer.key].mergeGroups(newPeer);
@@ -27,9 +27,9 @@ class PeerList extends  IterableBase<Peer>{
      }
     });
   }
-  
-  List toJson() => this.toList(growable: false); 
-  
+
+  List toJson() => this.toList(growable: false);
+
   void add (Peer peer) {
     this._map[peer.key] = peer;
   }
