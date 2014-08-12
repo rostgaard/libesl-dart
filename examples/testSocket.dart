@@ -1,12 +1,16 @@
 import 'dart:async';
 
-import '../lib/esl.dart' as ESL;
-
+import 'package:esl/esl.dart' as ESL;
+import 'package:logging/logging.dart';
 ESL.PeerList peerList = null;
 
 main() {
 
-  ESL.Connection conn = new ESL.Connection();
+  Logger.root.level = Level.INFO;
+
+  ESL.Connection conn = new ESL.Connection()
+         ..log.onRecord.listen(print);
+
   ESL.ChannelList channelList = new ESL.ChannelList();
 
   conn.eventStream.listen((ESL.Packet packet) {
@@ -22,8 +26,7 @@ main() {
   conn.requestStream.listen((ESL.Packet packet) {
     switch (packet.contentType) {
       case (ESL.ContentType.Auth_Request):
-
-      conn.authenticate('1234').then((packet) => print(packet.headers))
+      conn.authenticate('1234').then(checkAuthentication)
         .then((_) => conn.event(['all'], format : ESL.EventFormat.Json))
         .then((_) => conn.api('status').then(print))
         .then((_) => conn.api('list_users'))
@@ -44,8 +47,15 @@ main() {
 
   void signalDisconnect() => print('Disconnected!');
 
+  hierarchicalLoggingEnabled = true;
   conn..onDone = signalDisconnect
       ..connect('localhost', 8021);
+}
+
+void checkAuthentication (ESL.Reply reply) {
+  if (reply.status != ESL.Reply.OK) {
+    throw new StateError('Invalid credentials!');
+  }
 }
 
 

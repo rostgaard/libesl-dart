@@ -8,6 +8,7 @@ abstract class ContentType {
   static const String Auth_Request = "auth/request";
 
   static const String API_Reponse = "api/response";
+  static const String Command_Reply = "command/reply";
 
   static final List<String> Event_Types = [Text_Event_JSON, Text_Event_Plain, Text_Event_Xml];
   static final List<String> Requests    = [Auth_Request];
@@ -30,10 +31,10 @@ class Packet {
                                 : 0;
 
   bool get isEvent    => ContentType.Event_Types.contains(this.contentType);
+  bool get isReply    => ContentType.Command_Reply == this.contentType;
   bool get isRequest  => ContentType.Requests.contains(this.contentType);
   bool get isResponse => ContentType.Responses.contains(this.contentType);
   bool get eventType  => ContentType.Event_Types.contains(this.contentType);
-
   Channel get channel {
     assert (this.isEvent);
     return this._channel == null ? this._channel = new Channel.fromPacket(this) : this._channel;
