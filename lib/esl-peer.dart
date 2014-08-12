@@ -41,7 +41,6 @@ class Peer {
     }
   }
 
-
   void register (String contact) {
     this._map['contact'] = contact;
     this._lastSeen = new DateTime.now();
@@ -71,7 +70,6 @@ class Peer {
     this._map['registered'] = this.registered;
     return this._map;
   }
-
 
   /**
    * Determine if two Peer objects are identical.

@@ -26,7 +26,6 @@ class Channel {
        'Event-Date-Timestamp', 'Event-Calling-File', 'Event-Calling-Function',
        'Event-Calling-Line-Number'];
 
-
   Map<String, String> _fields    = new Map<String, String>();
   Map<String, String> _variables = new Map<String, String>();
   String              get UUID  => this._fields['Unique-ID'];
@@ -44,8 +43,7 @@ class Channel {
   }
 
   Map toMap () {
-    Map tmp = {};
-    tmp.addAll(this._fields);
+    Map tmp = new Map.from(this._fields);
     tmp['variables'] = {};
     tmp['variables'].addAll(this._variables);
     return tmp;

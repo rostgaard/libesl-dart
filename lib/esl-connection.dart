@@ -35,33 +35,6 @@ class Connection {
     });
   }
 
-  Future<Packet> _sendCommand(String command) {
-
-    Completer<Packet> completer= new Completer<Packet>();
-
-    this._nonEventStream.stream.first.then((Packet packet) {
-      completer.complete(packet);
-    }).catchError((error) {
-      completer.completeError(error);
-    });
-
-    this._writeCommandToSocket(command);
-
-    return completer.future;
-  }
-
-  void _writeCommandToSocket (String command) {
-    this._socket.writeln('${command}\n');
-  }
-
-  Future<Packet> authenticate (String password) {
-    return this._sendCommand('auth ${password}');
-  }
-
-  Future<Packet> event (List<String> events, {String format : ''}) {
-    return this._sendCommand('event ${format} ${events.join(' ')}');
-  }
-
   Future<Response> api (String command) {
     Completer<Response> completer= new Completer<Response>();
     this.jobQueue.addLast(completer);
@@ -70,6 +43,16 @@ class Connection {
 
     return completer.future
       ..timeout(new Duration(seconds: 5), onTimeout : () => completer.completeError(new TimeoutException('Failed to get response to command $command')));
+  }
+
+  Future<Packet> authenticate (String password) {
+    return this._sendCommand('auth ${password}');
+  }
+
+  Future disconnect() => this._socket.close();
+
+  Future<Packet> event (List<String> events, {String format : ''}) {
+    return this._sendCommand('event ${format} ${events.join(' ')}');
   }
 
   void _dispatch(Packet packet) {
@@ -90,5 +73,22 @@ class Connection {
     }
   }
 
-  Future disconnect() => this._socket.close();
+  Future<Packet> _sendCommand(String command) {
+
+    Completer<Packet> completer= new Completer<Packet>();
+
+    this._nonEventStream.stream.first.then((Packet packet) {
+      completer.complete(packet);
+    }).catchError((error) {
+      completer.completeError(error);
+    });
+
+    this._writeCommandToSocket(command);
+
+    return completer.future;
+  }
+
+  void _writeCommandToSocket (String command) {
+    this._socket.writeln('${command}\n');
+  }
 }
