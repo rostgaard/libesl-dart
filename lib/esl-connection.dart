@@ -90,4 +90,5 @@ class Connection {
     }
   }
 
+  Future disconnect() => this._socket.close();
 }

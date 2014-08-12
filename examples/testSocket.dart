@@ -32,11 +32,12 @@ main() {
         .then((_) {
           List<int> sequence = new List.generate(100, (int index) => index);
           return Future.wait(sequence.map((int i) => sendRequest(i, conn)));
-        });//.then((_) => conn.disconnect());
+        })
+        .then((_) => conn.disconnect());
 
         break;
-      default:
 
+      default:
         break;
     }
   });
@@ -54,7 +55,6 @@ Future sendRequest (int seq, ESL.Connection conn) {
     assert (int.parse(response.rawBody) == seq);
   });
 }
-
 
 void loadPeerListFromPacket (ESL.Packet packet) {
   peerList = new ESL.PeerList.fromMultilineBuffer(packet.content);
