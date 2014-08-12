@@ -1,6 +1,6 @@
 part of esl;
 
-class ChannelList extends IterableBase<Channel>{
+class ChannelList extends IterableBase<Channel> {
 
   Map<String,Channel> _channelStorage = new Map<String,Channel>();
 

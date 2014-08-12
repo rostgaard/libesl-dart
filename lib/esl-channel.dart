@@ -20,7 +20,7 @@ class Channel {
 
   static const String nullChannelID = null;
 
-  static final List<String >excludedFields =
+  static final List<String> excludedFields =
       ['Event-Name', 'Core-UUID', 'FreeSWITCH-Hostname', 'FreeSWITCH-IPv4',
        'FreeSWITCH-IPv6', 'Event-Date-Local', 'Event-Date-GMT',
        'Event-Date-Timestamp', 'Event-Calling-File', 'Event-Calling-Function',
@@ -60,6 +60,4 @@ class Channel {
   int get hashCode {
     return this.UUID.toLowerCase().hashCode;
   }
-
 }
-

@@ -6,7 +6,6 @@ abstract class EventFormat {
   static String Xml   = "xml";
 }
 
-
 class Connection {
 
   Socket _socket = null;
@@ -20,14 +19,12 @@ class Connection {
   static int requestCount = Response.sequence;
 
   /// The Job queue is a simple FIFO of Futures that complete in-order.
-  Queue<Completer<Response>> jobQueue   = new Queue<Completer<Response>>();
+  Queue<Completer<Response>> jobQueue = new Queue<Completer<Response>>();
 
-  /// Private fields used by the packet reader.
-  Packet currentPacket = new Packet();
   Function onDone = () => null;
 
   Future<Socket> connect(String hostname, int port) {
-    return Socket.connect(hostname, port).then((socket) {
+    return Socket.connect(hostname, port).then((Socket socket) {
       this._socket = socket;
 
       this._socket
@@ -38,14 +35,14 @@ class Connection {
     });
   }
 
-  Future<Packet> _sendCommand (String command) {
+  Future<Packet> _sendCommand(String command) {
 
     Completer<Packet> completer= new Completer<Packet>();
 
-    this._nonEventStream.stream.first.then ((Packet packet) {
-      completer.complete (packet);
+    this._nonEventStream.stream.first.then((Packet packet) {
+      completer.complete(packet);
     }).catchError((error) {
-      completer.completeError (error);
+      completer.completeError(error);
     });
 
     this._writeCommandToSocket(command);
@@ -58,7 +55,7 @@ class Connection {
   }
 
   Future<Packet> authenticate (String password) {
-    return this._sendCommand ('auth ${password}');
+    return this._sendCommand('auth ${password}');
   }
 
   Future<Packet> event (List<String> events, {String format : ''}) {
@@ -87,7 +84,7 @@ class Connection {
       } else {
         print ('Discarding packet for timed out api command.');
       }
-   }
+    }
     else {
       this._nonEventStream.add(packet);
     }

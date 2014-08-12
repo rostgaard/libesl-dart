@@ -90,4 +90,3 @@ class Peer {
    */
   int get hashCode => this.key.hashCode;
 }
-

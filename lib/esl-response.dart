@@ -40,4 +40,3 @@ class Response {
     return this.rawBody;
   }
 }
-

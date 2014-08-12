@@ -1,6 +1,6 @@
 part of esl;
 
-class PeerList extends  IterableBase<Peer>{
+class PeerList extends IterableBase<Peer> {
 
   Map <String, Peer> _map = {};
 
@@ -39,5 +39,4 @@ class PeerList extends  IterableBase<Peer>{
   void update (Peer peer) {
     this._map[peer.key] = peer;
   }
-
 }
