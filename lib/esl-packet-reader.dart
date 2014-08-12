@@ -21,7 +21,7 @@ class PacketReader implements StreamTransformer<List<int>, Packet> {
       _currentChar = new String.fromCharCode(bytes[offset]);
 
       if (_readingHeader) {
-        if (_currentChar == '\n') {
+        if (_currentChar == '\n'.codeUnits.first) {
           if (lastChar == '\n') {
             if (_currentPacket.hasHeader('Content-Length')) {
               _readingHeader = false;
