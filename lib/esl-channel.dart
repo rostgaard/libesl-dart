@@ -1,7 +1,7 @@
 part of esl;
 
 /**
- * 'Enum' type representing channel states. 
+ * 'Enum' type representing channel states.
  */
 abstract class ChannelState {
   static const String NEW = "CS_NEW";
@@ -21,26 +21,25 @@ abstract class ChannelState {
 
 /**
  * Wrapper class for a channel. Provides easy access to various
- * channel information stored in a packet. 
+ * channel information stored in a packet.
  */
 class Channel {
-  
-  static const String nullChannelID = null; 
 
-  static final List<String >excludedFields = 
+  static const String nullChannelID = null;
+
+  static final List<String> excludedFields =
       ['Event-Name', 'Core-UUID', 'FreeSWITCH-Hostname', 'FreeSWITCH-IPv4',
-       'FreeSWITCH-IPv6', 'Event-Date-Local', 'Event-Date-GMT', 
+       'FreeSWITCH-IPv6', 'Event-Date-Local', 'Event-Date-GMT',
        'Event-Date-Timestamp', 'Event-Calling-File', 'Event-Calling-Function',
        'Event-Calling-Line-Number'];
-  
-  
+
   Map<String, String> _fields    = new Map<String, String>();
   Map<String, String> _variables = new Map<String, String>();
   String              get UUID  => this._fields['Unique-ID'];
   String              get state => this._fields['Channel-State'];
-  
+
   /**
-   * Extracts the relevant information from the packet and stores 
+   * Extracts the relevant information from the packet and stores
    * it in an internal map.
    */
   Channel.fromPacket (Packet packet) {
@@ -53,23 +52,31 @@ class Channel {
       }
     });
   }
-  
+
   /**
    * Returns a map _representation_ of the channel.
    */
-  Map get asMap => 
+  Map get asMap =>
       {}..addAll(this._fields)
         ..addAll(this._variables);
-  
+
   /**
    * Two channel is equivalent, if their UUID's are the same
-   * - regardless of state. 
+   * - regardless of state.
    */
+
+  Map toMap () {
+    Map tmp = new Map.from(this._fields);
+    tmp['variables'] = {};
+    tmp['variables'].addAll(this._variables);
+    return tmp;
+  }
+
   @override
   bool operator == (Channel other) {
     return this.UUID.toLowerCase() == other.UUID.toLowerCase();
   }
-   
+
   /**
    * Hashcode follows the convention from the [==] operator.
    */
@@ -77,6 +84,4 @@ class Channel {
   int get hashCode {
     return this.UUID.toLowerCase().hashCode;
   }
-  
 }
-
