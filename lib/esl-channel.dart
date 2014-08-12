@@ -17,21 +17,20 @@ abstract class ChannelState {
 }
 
 class Channel {
-  
-  static const String nullChannelID = null; 
 
-  static final List<String >excludedFields = 
+  static const String nullChannelID = null;
+
+  static final List<String> excludedFields =
       ['Event-Name', 'Core-UUID', 'FreeSWITCH-Hostname', 'FreeSWITCH-IPv4',
-       'FreeSWITCH-IPv6', 'Event-Date-Local', 'Event-Date-GMT', 
+       'FreeSWITCH-IPv6', 'Event-Date-Local', 'Event-Date-GMT',
        'Event-Date-Timestamp', 'Event-Calling-File', 'Event-Calling-Function',
        'Event-Calling-Line-Number'];
-  
-  
+
   Map<String, String> _fields    = new Map<String, String>();
   Map<String, String> _variables = new Map<String, String>();
   String              get UUID  => this._fields['Unique-ID'];
   String              get state => this._fields['Channel-State'];
-  
+
   Channel.fromPacket (Packet packet) {
     packet.contentAsMap.forEach((key, value) {
       if (key.contains("^variable_")) {
@@ -42,24 +41,21 @@ class Channel {
       }
     });
   }
-  
+
   Map toMap () {
-    Map tmp = {};
-    tmp.addAll(this._fields);
+    Map tmp = new Map.from(this._fields);
     tmp['variables'] = {};
     tmp['variables'].addAll(this._variables);
     return tmp;
   }
-  
+
   @override
   bool operator == (Channel other) {
     return this.UUID.toLowerCase() == other.UUID.toLowerCase();
   }
-   
+
   @override
   int get hashCode {
     return this.UUID.toLowerCase().hashCode;
   }
-  
 }
-
