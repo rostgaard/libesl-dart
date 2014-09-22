@@ -14,6 +14,7 @@ class PacketReader implements StreamTransformer<List<int>, Packet> {
   }
 
   void _onData(List<int> bytes) {
+
     String lineBuffer = "";
 
     for (int offset = 0; offset < bytes.length; offset++) {
@@ -21,7 +22,7 @@ class PacketReader implements StreamTransformer<List<int>, Packet> {
       _currentChar = new String.fromCharCode(bytes[offset]);
 
       if (_readingHeader) {
-        if (_currentChar == '\n'.codeUnits.first) {
+        if (_currentChar == '\n') {
           if (lastChar == '\n') {
             if (_currentPacket.hasHeader('Content-Length')) {
               _readingHeader = false;
