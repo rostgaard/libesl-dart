@@ -1,4 +1,6 @@
 name: esl
-version: 0.0.6-alpha
+version: 0.0.7-alpha
 author: Kim Rostgaard Christensen
 description: A FreeSWITCH event socket library for Dart.
+dependencies:
+  logging: any

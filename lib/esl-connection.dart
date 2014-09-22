@@ -80,9 +80,10 @@ class Connection {
   }
 
   Future _sendSerializedCommand (String command, Completer completer, Duration timeout) {
-
-    /// Write the command to socket.
-    this._socket.writeln('${command}\n');
+      /// Write the command to socket.
+      /// XXX: Figure out if writeln will ever throw an exception.
+      this.log.finest('Sending "${command}"');
+      this._socket.writeln('${command}\n');
 
     return completer.future
       ..timeout(timeout,
