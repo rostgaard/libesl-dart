@@ -7,12 +7,11 @@ ESL.PeerList peerList = null;
 main() {
 
   /* Changing the root log level propagates to libesl-dart.*/
-  Logger.root.level = Level.INFO;
+  Logger.root.level = Level.ALL;
 
   /* You can use chaining to attach log handlers, or merely set
      it up later using the connection handle. */
-  ESL.Connection conn = new ESL.Connection()
-         ..log.onRecord.listen(print);
+  ESL.Connection conn = new ESL.Connection()..log.onRecord.listen(print);
 
   /* FreeSWITCH will send requests to your connection - for instance
     authentication requests.
@@ -29,14 +28,15 @@ main() {
            blocks to schedule subsequent command or API calls when
            the authentication returns properly. */
         conn.authenticate('1234').then(checkAuthentication)
-          .then((_) => conn.event(['all'], format : ESL.EventFormat.Json))
-          .then((_) => conn.api('status').then(print))
+          .then((_) => conn.event(['all'], format: ESL.EventFormat.Json))
           .then((_) => conn.api('list_users'))
           .then((packet) => print(new ESL.PeerList.fromMultilineBuffer(packet.rawBody)))
           .then((_) {
-            List<int> sequence = new List.generate(100, (int index) => index);
-            return Future.wait(sequence.map((int i) => sendRequest(i, conn)));
-           });
+          List<int> sequence = new List.generate(100, (int index) => index);
+          return Future.wait(sequence.map((int i) => sendRequest(i, conn)));
+        })
+        .then((_) => conn.api('status').then(print))
+        .catchError((e) => print (e));
         break;
 
       default:
@@ -62,24 +62,26 @@ main() {
 
   void signalDisconnect() => print('Disconnected!');
 
+  print('Connecting...');
   conn..onDone = signalDisconnect
-      ..connect('localhost', 8021);
+      ..connect('localhost', 8021)
+      .whenComplete(() => print ('Connected!'));
 }
 
-void checkAuthentication (ESL.Reply reply) {
+void checkAuthentication(ESL.Reply reply) {
   if (reply.status != ESL.Reply.OK) {
     throw new StateError('Invalid credentials!');
   }
 }
 
 
-Future sendRequest (int seq, ESL.Connection conn) {
+Future sendRequest(int seq, ESL.Connection conn) {
   return conn.api('echo $seq').then((ESL.Response response) {
     print('$seq, ${response.rawBody}');
-    assert (int.parse(response.rawBody) == seq);
+    assert(int.parse(response.rawBody) == seq);
   });
 }
 
-void loadPeerListFromPacket (ESL.Packet packet) {
+void loadPeerListFromPacket(ESL.Packet packet) {
   peerList = new ESL.PeerList.fromMultilineBuffer(packet.content);
 }
