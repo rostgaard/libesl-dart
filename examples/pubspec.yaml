@@ -1,0 +1,7 @@
+name: Example
+version: 0.1.1
+author: Kim Rostgaard Christensen
+description: Call-Flow-Control server.
+dependencies:
+  esl:
+    path: /home/krc/Projects/esl/

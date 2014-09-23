@@ -20,10 +20,15 @@ class Packet {
   static final String _variable_prefix = 'variable_';
   static int   count = 0;
 
-  Map<String, String>     headers = new Map<String, String>();
-  String                  content = "";
+  Map<String, String>     headers = null;
+  String                  content = null;
   Map<String, String>  contentMap = null;
   Channel              _channel   = null;
+
+  Packet() {
+    this.headers = {};
+    this.content = "";
+  }
 
   String get contentType   => this.headers['Content-Type'];
   int    get contentLength => this.hasHeader('Content-Length')
@@ -35,6 +40,7 @@ class Packet {
   bool get isRequest  => ContentType.Requests.contains(this.contentType);
   bool get isResponse => ContentType.Responses.contains(this.contentType);
   bool get eventType  => ContentType.Event_Types.contains(this.contentType);
+
   Channel get channel {
     assert (this.isEvent);
     return this._channel == null ? this._channel = new Channel.fromPacket(this) : this._channel;
