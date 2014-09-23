@@ -101,7 +101,7 @@ class Connection {
     } else if (packet.isReply) {
       Completer<Reply> completer = this.replyQueue.removeFirst();
       if (!completer.isCompleted) {
-        completer.complete(new Reply.fromPacker(packet));
+        completer.complete(new Reply.fromPacket(packet));
       } else {
         this.log.info ('Discarding packet for timed out command.');
       }

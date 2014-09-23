@@ -1,17 +1,17 @@
 part of esl;
 
 class Reply extends Packet {
-  
-  Reply.fromPacker (Packet packet) {
+
+  Reply.fromPacket (Packet packet) {
     this.headers = packet.headers;
   }
-  
+
   static const String OK      = Response.OK;
   static const String ERROR   = Response.ERROR;
   static const String UNKNOWN = Response.UNKNOWN;
 
   String get replyRaw => this.headers['Reply-Text'];
-  
+
   String get status {
     if (this.replyRaw.startsWith(OK)) {
       return OK;
@@ -21,5 +21,5 @@ class Reply extends Packet {
       return UNKNOWN;
     }
   }
-  
+
 }
