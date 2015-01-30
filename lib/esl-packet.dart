@@ -67,7 +67,10 @@ class Packet {
 
   String field (String key) => this.contentAsMap[key];
 
-  String variable (String key) {
+  /**
+   * May return List or String.
+   */
+  dynamic variable (String key) {
     return this.contentAsMap['${_variable_prefix}key'];
   }
 
