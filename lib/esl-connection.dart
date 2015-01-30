@@ -64,8 +64,9 @@ class Connection {
    */
   Future<Reply> event (List<String> events, {String format : '', int timeoutSeconds : 10}) {
     if (!EventFormat.supportedFormats.contains(format)) {
-      throw new UnsupportedError('Format "$format" unsupported. Supported formats are: ${EventFormat.supportedFormats}');
+      return new Future.error(new UnsupportedError('Format "$format" unsupported. Supported formats are: ${EventFormat.supportedFormats}'));
     }
+
     return this._subscribeAndSendCommand('event ${format} ${events.join(' ')}', new Duration(seconds : timeoutSeconds));
   }
 
@@ -83,13 +84,24 @@ class Connection {
       /// Write the command to socket.
       /// XXX: Figure out if writeln will ever throw an exception.
       this.log.finest('Sending "${command}"');
-      this._socket.writeln('${command}\n');
+
+      try {
+        this._socket.writeln('${command}\n');
+      }
+      catch (error) {
+        this._shutdown();
+        return new Future.error(new StateError('Failed to write to socket.'));
+      }
+
+
 
     return completer.future
       ..timeout(timeout,
           onTimeout : () =>
               completer.completeError(new TimeoutException('Failed to get response to command $command')));
    }
+
+  void _shutdown() => throw new StateError('Not implemented');
 
   Future disconnect() => this._socket.close();
 
