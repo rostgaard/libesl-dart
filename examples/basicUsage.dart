@@ -51,8 +51,11 @@ main() {
 
   conn.eventStream.listen((ESL.Packet packet) {
     switch (packet.eventName) {
-      case ("CHANNEL_STATE"):
-        channelList.update(new ESL.Channel.fromPacket(packet));
+      case ("CUSTOM"):
+
+        ESL.Channel channel = new ESL.Channel.fromPacket(packet);
+        channelList.update(channel);
+        print (channel.variables);
         break;
       case ("CHANNEL_CREATE"):
         break;

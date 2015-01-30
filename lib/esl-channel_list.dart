@@ -10,7 +10,14 @@ class ChannelList extends IterableBase<Channel> {
     if (!this._channelStorage.containsKey(channel.UUID)) {
       this._add (channel);
     } else {
-      this._channelStorage[channel.UUID] = channel;
+      Channel oldChannel = this._channelStorage[channel.UUID];
+
+      if (channel.variables.isEmpty) {
+        this._channelStorage[channel.UUID] = new Channel.assemble(channel.fields, oldChannel.variables);
+      } else {
+        this._channelStorage[channel.UUID] = channel;
+      }
+
     }
 
     if (channel.state == ChannelState.DESTROY) {

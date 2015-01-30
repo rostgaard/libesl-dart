@@ -1,5 +1,5 @@
 name: Example
-version: 0.1.1
+version: 0.1.1+1
 author: Kim Rostgaard Christensen
 description: Call-Flow-Control server.
 dependencies:
