@@ -6,6 +6,8 @@ class PeerList extends IterableBase<Peer> {
 
   Iterator get iterator => this._map.values.iterator;
 
+  PeerList.empty();
+
   PeerList.fromMultilineBuffer (String buffer, {String splitOn : '|'}) {
     List<String> keys = new List<String>();
     buffer.split('\n').forEach ((var line) {
