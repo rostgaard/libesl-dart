@@ -29,6 +29,10 @@ class ChannelList extends IterableBase<Channel> {
     this._channelStorage[channel.UUID] = channel;
   }
 
+  Channel get(String channelID) =>
+    this._channelStorage[channelID];
+
+
   void _remove(Channel channel) {
     this._channelStorage.remove(channel.UUID);
   }
