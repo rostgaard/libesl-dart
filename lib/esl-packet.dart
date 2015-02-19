@@ -18,6 +18,8 @@ abstract class ContentType {
 class Packet {
 
   static final String _variable_prefix = 'variable_';
+  static final Logger log = new Logger ('${libraryName}.Packet');
+
   static int   count = 0;
 
   Map<String, String>     headers = null;
@@ -77,7 +79,12 @@ class Packet {
   Map<String, String> get contentAsMap {
     if (this.contentType == ContentType.Text_Event_JSON) {
       if (this.contentMap == null) {
-        this.contentMap = JSON.decode(this.content);
+        try {
+          this.contentMap = JSON.decode(this.content);
+        } catch (error, stacktrace){
+          log.severe('Failed to parse following packet content as JSON string:\n${this.content}',stacktrace);
+        }
+
       }
       return this.contentMap;
     } else {
