@@ -1,11 +1,12 @@
 part of esl;
 
-class PacketReader implements StreamTransformer<List<int>, Packet> {
+class PacketTransformer implements StreamTransformer<List<int>, Packet> {
   final StreamController<Packet> _controller = new StreamController<Packet>();
   Packet _currentPacket = new Packet();
   bool _readingHeader = true;
   int _contentLength = 0;
-  String _currentChar;
+  int _currentChar;
+  static final int NEWLINE = '\n'.codeUnits.first;
 
   @override
   Stream<Packet> bind(Stream<List<int>> stream) {
@@ -15,42 +16,48 @@ class PacketReader implements StreamTransformer<List<int>, Packet> {
 
   void _onData(List<int> bytes) {
 
-    String lineBuffer = "";
+    List<int> headerBuffer = [];
+    List<int> bodyBuffer   = [];
 
     for (int offset = 0; offset < bytes.length; offset++) {
-      String lastChar = _currentChar;
-      _currentChar = new String.fromCharCode(bytes[offset]);
+      int lastChar = _currentChar;
+      _currentChar = bytes[offset];
 
       if (_readingHeader) {
-        if (_currentChar == '\n') {
-          if (lastChar == '\n') {
+        if (_currentChar == NEWLINE) {
+          if (lastChar == NEWLINE) {
             if (_currentPacket.hasHeader('Content-Length')) {
               _readingHeader = false;
               _contentLength = 0;
+              bodyBuffer = [];
             } else {
               this._controller.sink.add(_currentPacket);
               _currentPacket = new Packet();
             }
 
           } else {
-            List<String> keyValuePair = lineBuffer.split(':');
+            String line = new String.fromCharCodes(headerBuffer);
+            print (line);
+
+            List<String> keyValuePair = line.split(':');
 
             if (keyValuePair.length > 1) {
               _currentPacket.addHeader(keyValuePair[0].trim(), keyValuePair[1].trim());
             } else {
-              print("Skipping invalid buffer: ${lineBuffer}");
+              print("Skipping invalid buffer: ${line}");
             }
           }
-          lineBuffer = "";
+          headerBuffer = [];
 
         } else {
-          lineBuffer = '${lineBuffer}${_currentChar}';
+          headerBuffer.add(_currentChar);
         }
       } else {
         assert (_currentPacket.contentLength > 0);
-        _currentPacket.content = '${_currentPacket.content}${_currentChar}';
+        bodyBuffer.add(_currentChar);
         _contentLength++;
         if (_contentLength == _currentPacket.contentLength) {
+          _currentPacket.content = new String.fromCharCodes(bodyBuffer);
           _readingHeader = true;
           this._controller.sink.add(_currentPacket);
 

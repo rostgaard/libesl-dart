@@ -11,7 +11,7 @@ part 'esl-channel_list.dart';
 part 'esl-connection.dart';
 part 'esl-event.dart';
 part 'esl-packet.dart';
-part 'esl-packet-reader.dart';
+part 'esl-packet_transformer.dart';
 part 'esl-peer.dart';
 part 'esl-peer_list.dart';
 part 'esl-reply.dart';

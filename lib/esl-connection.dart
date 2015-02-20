@@ -39,7 +39,7 @@ class Connection {
       this._socket = socket;
 
       this._socket
-        .transform(new PacketReader())
+        .transform(new PacketTransformer())
         .listen(_dispatch, onDone: onDone);
 
       return this._socket;
