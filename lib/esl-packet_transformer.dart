@@ -39,14 +39,16 @@ class PacketTransformer implements StreamTransformer<List<int>, Packet> {
             }
 
           } else {
-            String line = new String.fromCharCodes(headerBuffer);
+            String headerLine = new String.fromCharCodes(headerBuffer);
 
-            List<String> keyValuePair = line.split(':');
+            if (headerLine.isNotEmpty) {
+              List<String> keyValuePair = headerLine.split(':');
 
-            if (keyValuePair.length > 1) {
-              _currentPacket.addHeader(keyValuePair[0].trim(), keyValuePair[1].trim());
-            } else {
-              this._controller.addError (new StateError ("Skipping invalid buffer: ${line}"));
+              if (keyValuePair.length > 1) {
+                _currentPacket.addHeader(keyValuePair[0].trim(), keyValuePair[1].trim());
+              } else {
+                this._controller.addError (new StateError ("Skipping invalid buffer: ${headerLine}"));
+              }
             }
           }
           headerBuffer = [];
