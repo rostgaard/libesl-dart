@@ -6,6 +6,8 @@ part of esl;
 class PacketTransformer implements StreamTransformer<List<int>, Packet> {
   final StreamController<Packet> _controller = new StreamController<Packet>();
   Packet _currentPacket = new Packet();
+  List<int> headerBuffer = [];
+  List<int> bodyBuffer   = [];
   bool _readingHeader = true;
   int _contentLength = 0;
   int _currentChar;
@@ -18,9 +20,6 @@ class PacketTransformer implements StreamTransformer<List<int>, Packet> {
   }
 
   void _onData(List<int> bytes) {
-
-    List<int> headerBuffer = [];
-    List<int> bodyBuffer   = [];
 
     for (int offset = 0; offset < bytes.length; offset++) {
       int lastChar = _currentChar;
@@ -70,8 +69,12 @@ class PacketTransformer implements StreamTransformer<List<int>, Packet> {
         if (_contentLength == _currentPacket.contentLength) {
           _currentPacket.content = new String.fromCharCodes(bodyBuffer);
           _readingHeader = true;
+
+          /// Sink on the packet.
           this._controller.sink.add(_currentPacket);
 
+          /// Clear the state.
+          bodyBuffer = [];
           _currentPacket = new Packet();}
       }
     }
