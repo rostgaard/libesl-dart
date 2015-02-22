@@ -34,7 +34,10 @@ class PacketTransformer implements StreamTransformer<List<int>, Packet> {
               _contentLength = 0;
               bodyBuffer = [];
             } else {
-              this._controller.sink.add(_currentPacket);
+              /// Skip empty lines.
+              if (_currentPacket.headers.isNotEmpty) {
+                this._controller.sink.add(_currentPacket);
+              }
               _currentPacket = new Packet();
             }
 
