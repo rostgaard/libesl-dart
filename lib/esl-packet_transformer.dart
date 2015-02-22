@@ -34,8 +34,11 @@ class PacketTransformer implements StreamTransformer<List<int>, Packet> {
               _contentLength = 0;
               bodyBuffer = [];
             } else {
+              if (!_currentPacket.hasHeader('Content-Type') && _currentPacket.headers.isNotEmpty) {
+                this._controller.sink.addError(new StateError('Bad header received: ${_currentPacket.headers}'));
+              }
               /// Skip empty lines.
-              if (_currentPacket.headers.isNotEmpty) {
+              else if (_currentPacket.headers.isNotEmpty) {
                 this._controller.sink.add(_currentPacket);
               }
               _currentPacket = new Packet();
@@ -44,13 +47,14 @@ class PacketTransformer implements StreamTransformer<List<int>, Packet> {
           } else {
             String headerLine = new String.fromCharCodes(headerBuffer);
 
-            if (headerLine.isNotEmpty) {
+            /// Ignore short lines.
+            if (headerLine.length > 1) {
               List<String> keyValuePair = headerLine.split(':');
 
-              if (keyValuePair.length > 1) {
+              if (keyValuePair.length == 2) {
                 _currentPacket.addHeader(keyValuePair[0].trim(), keyValuePair[1].trim());
               } else {
-                this._controller.addError (new StateError ("Skipping invalid buffer: ${headerLine}"));
+                this._controller.addError (new StateError ('Skipping invalid buffer: "${headerLine}"'));
               }
             }
           }
