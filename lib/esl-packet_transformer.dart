@@ -1,5 +1,8 @@
 part of esl;
 
+/**
+ *
+ */
 class PacketTransformer implements StreamTransformer<List<int>, Packet> {
   final StreamController<Packet> _controller = new StreamController<Packet>();
   Packet _currentPacket = new Packet();
@@ -10,7 +13,7 @@ class PacketTransformer implements StreamTransformer<List<int>, Packet> {
 
   @override
   Stream<Packet> bind(Stream<List<int>> stream) {
-    stream.listen(_onData);
+    stream.listen(_onData, onDone: this._controller.close);
     return _controller.stream;
   }
 
@@ -37,14 +40,13 @@ class PacketTransformer implements StreamTransformer<List<int>, Packet> {
 
           } else {
             String line = new String.fromCharCodes(headerBuffer);
-            print (line);
 
             List<String> keyValuePair = line.split(':');
 
             if (keyValuePair.length > 1) {
               _currentPacket.addHeader(keyValuePair[0].trim(), keyValuePair[1].trim());
             } else {
-              print("Skipping invalid buffer: ${line}");
+              this._controller.addError (new StateError ("Skipping invalid buffer: ${line}"));
             }
           }
           headerBuffer = [];
