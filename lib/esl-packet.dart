@@ -17,7 +17,6 @@ abstract class ContentType {
 
 class Packet {
 
-  static final String _variable_prefix = 'variable_';
   static final Logger log = new Logger ('${libraryName}.Packet');
 
   static int   count = 0;
@@ -25,7 +24,6 @@ class Packet {
   Map<String, String>     headers = null;
   String                  content = null;
   Map<String, String>  contentMap = null;
-  Channel              _channel   = null;
 
   Packet() {
     this.headers = {};
@@ -43,38 +41,13 @@ class Packet {
   bool get isResponse => ContentType.Responses.contains(this.contentType);
   bool get eventType  => ContentType.Event_Types.contains(this.contentType);
 
-  Channel get channel {
-    assert (this.isEvent);
-    return this._channel == null ? this._channel = new Channel.fromPacket(this) : this._channel;
-  }
-
-  bool hasHeader(String key) {
-    return this.headers.containsKey(key);
-  }
+  bool hasHeader(String key) => this.headers.containsKey(key);
 
   void addHeader(String key, String value) {
     this.headers[key] = value;
   }
 
-  String get uniqueID  => this.contentAsMap['Unique-ID'];
-  String get eventName => this.contentAsMap['Event-Name'];
-
-  String get eventSubclass {
-    if (this.contentAsMap.containsKey('Event-Subclass')) {
-      return this.contentAsMap['Event-Subclass'];
-    } else {
-      return "";
-    }
-  }
-
   String field (String key) => this.contentAsMap[key];
-
-  /**
-   * May return List or String.
-   */
-  dynamic variable (String key) {
-    return this.contentAsMap['${_variable_prefix}key'];
-  }
 
   Map<String, String> get contentAsMap {
     if (this.contentType == ContentType.Text_Event_JSON) {
@@ -82,13 +55,15 @@ class Packet {
         try {
           this.contentMap = JSON.decode(this.content);
         } catch (error, stacktrace){
-          log.severe('Failed to parse following packet content as JSON string:\n${this.content}',stacktrace);
+          log.severe('Failed to parse following packet content as JSON '
+                     'string:\n${this.content}', stacktrace);
         }
 
       }
       return this.contentMap;
     } else {
-      return {};
+      throw new UnsupportedError('Supported event formats are currently '
+                                 'limited to${EventFormat.supportedFormats}');
     }
   }
 }
