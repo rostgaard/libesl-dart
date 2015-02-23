@@ -1,0 +1,34 @@
+Content-Length: 876
+Content-Type: text/event-plain
+
+Event-Name: HEARTBEAT
+Core-UUID: 5946d0d4-bad3-11e4-b2a0-9b45fc96e95d
+FreeSWITCH-Hostname: xps13
+FreeSWITCH-Switchname: xps13
+FreeSWITCH-IPv4: 192.168.1.116
+FreeSWITCH-IPv6: %3A%3A1
+Event-Date-Local: 2015-02-22%2021%3A46%3A42
+Event-Date-GMT: Sun,%2022%20Feb%202015%2020%3A46%3A42%20GMT
+Event-Date-Timestamp: 1424638002363448
+Event-Calling-File: switch_core.c
+Event-Calling-Function: send_heartbeat
+Event-Calling-Line-Number: 69
+Event-Sequence: 693
+Event-Info: System%20Ready
+Up-Time: 0%20years,%200%20days,%200%20hours,%203%20minutes,%2059%20seconds,%20718%20milliseconds,%20125%20microseconds
+FreeSWITCH-Version: 1.4.8%2Bgit~20140918T224608Z~04789ae35f~64bit
+Uptime-msec: 239718
+Session-Count: 0
+Max-Sessions: 1000
+Session-Per-Sec: 30
+Session-Per-Sec-Max: 0
+Session-Per-Sec-FiveMin: 0
+Session-Since-Startup: 0
+Session-Peak-Max: 0
+Session-Peak-FiveMin: 0
+Idle-CPU: 97.633333
+
+
+
+
+

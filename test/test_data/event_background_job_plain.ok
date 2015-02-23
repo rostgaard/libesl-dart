@@ -1,0 +1,27 @@
+Content-Length: 860
+Content-Type: text/event-plain
+
+Event-Name: BACKGROUND_JOB
+Core-UUID: a16144f1-9960-4206-84f6-64bd1668e28a
+FreeSWITCH-Hostname: raspberrypi
+FreeSWITCH-Switchname: raspberrypi
+FreeSWITCH-IPv4: 192.168.1.77
+FreeSWITCH-IPv6: %3A%3A1
+Event-Date-Local: 2013-07-25%2007%3A20%3A07
+Event-Date-GMT: Thu,%2025%20Jul%202013%2007%3A20%3A07%20GMT
+Event-Date-Timestamp: 1374736807052026
+Event-Calling-File: mod_event_socket.c
+Event-Calling-Function: api_exec
+Event-Calling-Line-Number: 1456
+Event-Sequence: 784350
+Job-UUID: 17186fe1-2177-4ab8-ac20-b0cbdfd45353
+Job-Command: status
+Content-Length: 304
+
+UP 0 years, 49 days, 0 hours, 21 minutes, 46 seconds, 662 milliseconds, 928 microseconds
+FreeSWITCH (Version 1.5.1b git b4826c1 2013-05-04 17:43:19Z) is ready
+44 session(s) since startup
+0 session(s) - 0 out of max 30 per sec 
+1000 session(s) max
+min idle cpu 0.00/0.00
+Current Stack Size/Max 240K/8192K

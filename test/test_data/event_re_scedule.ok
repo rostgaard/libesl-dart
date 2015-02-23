@@ -1,0 +1,22 @@
+Content-Length: 534
+Content-Type: text/event-plain
+
+Event-Name: RE_SCHEDULE
+Core-UUID: 7056f5cc-a40c-11e2-8330-01f8a887ec26
+FreeSWITCH-Hostname: X301
+FreeSWITCH-Switchname: X301
+FreeSWITCH-IPv4: 127.0.0.1
+FreeSWITCH-IPv6: %3A%3A1
+Event-Date-Local: 2013-04-13%2010%3A00%3A11
+Event-Date-GMT: Sat,%2013%20Apr%202013%2008%3A00%3A11%20GMT
+Event-Date-Timestamp: 1365840011003130
+Event-Calling-File: switch_scheduler.c
+Event-Calling-Function: switch_scheduler_execute
+Event-Calling-Line-Number: 66
+Event-Sequence: 662
+Task-ID: 1
+Task-Desc: heartbeat
+Task-Group: core
+Task-Runtime: 1365840031
+
+

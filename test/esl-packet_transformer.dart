@@ -14,18 +14,30 @@ class Result {
 }
 
 void main () {
-  String testDataPath         = "./test_data";
+  String testDataPath         = './test_data/';
   StreamController<Result> resultStream = new StreamController<Result>();
   int fileCount = 0;
 
+//  testFile(new IO.File( './test_data/json_session.ok'), resultStream);
   Result sum = new Result()..runtime = new Duration();
+
+  void endRun () {
+    if (sum.errors.isNotEmpty) {
+      IO.exit (1);
+    } else {
+      IO.exit (0);
+    }
+  }
 
   new List.generate(1, (_) => null).forEach((_) =>
   new IO.Directory(testDataPath).list(recursive : false, followLinks: true)
     .listen((IO.FileSystemEntity fse) {
       if (fse is IO.File) {
+        String filename  = fse.path.replaceAll(testDataPath, '');
+        String suffix    = filename.split('.').last;
+
         fileCount++;
-        testFile(fse, resultStream);
+        testFile(fse, resultStream, shouldFail : (suffix == 'should_fail'));
       }
   }));
 
@@ -41,20 +53,21 @@ void main () {
       resultStream.close();
     }
 
-  }).onDone(() => print (summary(sum)));
+  }).onDone(endRun);
 }
+
 
 String summary (Result res) =>
    'processing speed: ${(res.byteCount~/res.runtime.inMilliseconds)/1000}MiB/s\n'
    'total packets:${res.packetCount}\n'
    'total running time (msec):${res.runtime.inMilliseconds}\n'
-   'bytesp rocessed:${res.byteCount}\n'
+   'bytes processed:${res.byteCount}\n'
    'number of errors:${res.errors.length}\n'
    'errors:\n'
    '${res.errors.fold('', (buf, error) => buf + error.toString() + '\n')}';
 
 
-void testFile (IO.File testFile,StreamController<Result> resultStream) {
+void testFile (IO.File testFile, StreamController<Result> resultStream, {bool shouldFail : false}) {
   int packetCount = 0;
   DateTime start  = new DateTime.now();
 
@@ -69,9 +82,20 @@ void testFile (IO.File testFile,StreamController<Result> resultStream) {
              res.file = testFile;
              resultStream.add(res);
            });
+
+           if (shouldFail) {
+             if(res.errors.isEmpty) {
+                res.errors.add(new StateError('Expected failure! ${testFile}'));
+             } else {
+               res.errors = [];
+             }
+           } else if (res.errors.isNotEmpty){
+             print (testFile);
+             print (res.errors);
+
+           }
          })
-          ..onError((error) => res.errors.add(error))
-      ;
+          ..onError((error) => res.errors.add(error));
 
   //TODO return the file length
 }

@@ -1,0 +1,21 @@
+Content-Length: 56
+Content-Type: text/event-plain
+
+Event-Name: CHANNEL_CREATE
+Core-UUID: 17c1c070-8a13-11de-9ab6-91a5c9f91e77
+FreeSWITCH-Hostname: jmesquita-dell
+FreeSWITCH-IPv4: 186.18.21.203
+FreeSWITCH-IPv6: %3A%3A1
+Event-Date-Local: 2009-08-16%2000%3A26%3A08
+Event-Date-GMT: Sun,%2016%20Aug%202009%2003%3A26%3A08%20GMT
+Event-Date-Timestamp: 1250393168131798
+Event-Calling-File: switch_channel.c
+Event-Calling-Function: switch_channel_set_caller_profile
+Event-Calling-Line-Number: 1428
+Channel-State: CS_NEW
+Channel-State-Number: 0
+Channel-Name: sofia/internal/1000%40192.168.1.100
+Unique-ID: 89aaa4da-8a14-11de-9ab6-91a5c9f91e77
+Call-Direction: inbound
+Presence-Call-Direction: inbound
+Answer-State: ringing
