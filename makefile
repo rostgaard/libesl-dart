@@ -10,6 +10,6 @@ analyze:
 	@dartanalyzer --no-hints --fatal-warnings --package-warnings lib/esl.dart
 
 analyze-hints:
-	@echo "! (dartanalyzer --package-warnings lib/esl.dart | grep '^\[')" | bash; echo $?
+	@echo "! (dartanalyzer --package-warnings lib/esl.dart | grep '^\[')" | bash
 
 analyze-all: analyze analyze-hints
