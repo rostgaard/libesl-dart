@@ -1,13 +1,22 @@
 part of esl;
 
+/// "Enum" of event formats.
 abstract class EventFormat {
   static String Plain = "plain";
   static String Json  = "json";
   static String Xml   = "xml";
 
+  /**
+   * As of now, only JSON format is supported. Most of the raw packet handling
+   * is done internally, so the transport serialization should be insignificant
+   * for the usage og the library.
+   */
   static List<String> supportedFormats = [Json];
 }
 
+/**
+ * FreeSWTICH event socket connection.
+ */
 class Connection {
 
   final Logger log = new Logger (libraryName);
@@ -60,7 +69,8 @@ class Connection {
     => this._subscribeAndSendCommand('auth ${password}', new Duration(seconds : timeoutSeconds));
 
   /**
-   *
+   * Subscribe the socket to [events], which will be pumped into the
+   * [eventStream].
    */
   Future<Reply> event (List<String> events, {String format : '', int timeoutSeconds : 10}) {
     if (!EventFormat.supportedFormats.contains(format)) {
@@ -80,6 +90,9 @@ class Connection {
    return this._sendSerializedCommand (command, completer, timeout);
   }
 
+  /**
+   * Send pre-serialized command.
+   */
   Future _sendSerializedCommand (String command, Completer completer, Duration timeout) {
       /// Write the command to socket.
       /// XXX: Figure out if writeln will ever throw an exception.
@@ -101,10 +114,20 @@ class Connection {
               completer.completeError(new TimeoutException('Failed to get response to command $command')));
    }
 
+  /**
+   * Perform a graceful shutdown.
+   * Not yet implemented.
+   */
   void _shutdown() => throw new StateError('Not implemented');
 
+  /**
+   * Perform a hard socket disconnect.
+   */
   Future disconnect() => this._socket.close();
 
+  /**
+   * Dispatches a packet by injecting it into the appropriate stream.
+   */
   void _dispatch(Packet packet) {
     if (packet.isEvent) {
       this._eventStream.add(new Event.fromPacket(packet));
@@ -126,26 +149,7 @@ class Connection {
       }
     }
     else {
-      this.log.info ('Discarding unknown packet type ${packet.contentType}');
+      this.log.severe ('Discarding unknown packet type ${packet.contentType}');
     }
-  }
-
-  Future<Packet> _sendCommand(String command) {
-
-    Completer<Packet> completer= new Completer<Packet>();
-
-    this._nonEventStream.stream.first.then((Packet packet) {
-      completer.complete(packet);
-    }).catchError((error) {
-      completer.completeError(error);
-    });
-
-    this._writeCommandToSocket(command);
-
-    return completer.future;
-  }
-
-  void _writeCommandToSocket (String command) {
-    this._socket.writeln('${command}\n');
   }
 }
