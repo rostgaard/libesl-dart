@@ -1,7 +1,8 @@
-import 'dart:io'    as IO;
-import 'dart:async';
+// Copyright (c) 2015, Kim Rostgaard Christensen. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be found
+// in the LICENSE file.
 
-import '../lib/esl.dart' as ESL;
+part of esl.test;
 
 class Result {
   IO.File     file        = null;
@@ -10,26 +11,30 @@ class Result {
   int         byteCount   =-1;
   List<Error> errors      = [];
 
-  String toString () => '${file}\tpackets:${packetCount}\tmsec:${runtime.inMilliseconds}\tbytes:${byteCount}\terrors:${errors.length}';
+  String toString () => '${file}\tpackets:${packetCount}'
+                        '\tmsec:${runtime.inMilliseconds}'
+                        '\tbytes:${byteCount}'
+                        '\terrors:${errors.length}';
 }
 
-void main () {
+Future<bool> packet_transformer () {
   String testDataPath         = './test_data/';
   StreamController<Result> resultStream = new StreamController<Result>();
   int fileCount = 0;
+  Completer<bool> testCompleter = new Completer<bool>();
 
 //  testFile(new IO.File( './test_data/json_session.ok'), resultStream);
   Result sum = new Result()..runtime = new Duration();
 
   void endRun () {
     if (sum.errors.isNotEmpty) {
-      IO.exit (1);
+      testCompleter.completeError(new StateError(sum.errors.toString()));
     } else {
-      IO.exit (0);
+      testCompleter.complete(true);
     }
   }
 
-  new List.generate(1, (_) => null).forEach((_) =>
+  new List.generate(3, (_) => null).forEach((_) =>
   new IO.Directory(testDataPath).list(recursive : false, followLinks: true)
     .listen((IO.FileSystemEntity fse) {
       if (fse is IO.File) {
@@ -54,6 +59,8 @@ void main () {
     }
 
   }).onDone(endRun);
+
+  return testCompleter.future;
 }
 
 
