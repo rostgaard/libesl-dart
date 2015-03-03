@@ -27,46 +27,54 @@ class Channel {
 
   static const String nullChannelID = null;
 
-  static final List<String> excludedFields =
-      ['Event-Name', 'Core-UUID', 'FreeSWITCH-Hostname', 'FreeSWITCH-IPv4',
-       'FreeSWITCH-IPv6', 'Event-Date-Local', 'Event-Date-GMT',
-       'Event-Date-Timestamp', 'Event-Calling-File', 'Event-Calling-Function',
-       'Event-Calling-Line-Number'];
+  static final List<String> excludedFields = [
+      'Event-Name',
+      'Core-UUID',
+      'FreeSWITCH-Hostname',
+      'FreeSWITCH-IPv4',
+      'FreeSWITCH-IPv6',
+      'Event-Date-Local',
+      'Event-Date-GMT',
+      'Event-Date-Timestamp',
+      'Event-Calling-File',
+      'Event-Calling-Function',
+      'Event-Calling-Line-Number'];
 
-  Map<String, String>  _fields    = new Map<String, String>();
+  Map<String, String> _fields = new Map<String, String>();
   Map<String, dynamic> _variables = new Map<String, dynamic>();
-  String               get UUID      => this._fields['Unique-ID'];
-  String               get state     => this._fields['Channel-State'];
-  Map<String, String>  get fields    => this._fields;
+  String get UUID => this._fields['Unique-ID'];
+  String get state => this._fields['Channel-State'];
+  Map<String, String> get fields => this._fields;
   Map<String, dynamic> get variables => this._variables;
 
   /**
    * Extracts the relevant information from the packet and stores
    * it in an internal map.
    */
-  Channel.fromPacket (Packet packet) {
+  Channel.fromPacket(Packet packet) {
     packet.contentAsMap.forEach((key, value) {
       if (key.startsWith("variable_")) {
 
         String keyNoPrefix = (key.split("variable_")[1]);
         this._variables[keyNoPrefix] = value;
-      }
-      else if (!excludedFields.contains(key)) {
+      } else if (!excludedFields.contains(key)) {
         this._fields[key] = value;
       }
     });
   }
 
-  Channel.assemble (this._fields, this._variables);
+  Channel.assemble(this._fields, this._variables);
 
   /**
    * Returns a map representation of the channel.
    */
-  Map get asMap =>
-      {}..addAll(this._fields)
-        ..addAll({'variables' : this._variables});
+  Map get asMap => {}
+      ..addAll(this._fields)
+      ..addAll({
+        'variables': this._variables
+      });
 
-  Map toMap () {
+  Map toMap() {
     Map tmp = new Map.from(this._fields);
     tmp['variables'] = {};
     tmp['variables'].addAll(this._variables);
@@ -78,7 +86,7 @@ class Channel {
    * - regardless of state.
    */
   @override
-  bool operator == (Channel other) {
+  bool operator ==(Channel other) {
     return this.UUID.toLowerCase() == other.UUID.toLowerCase();
   }
 

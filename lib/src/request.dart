@@ -4,7 +4,7 @@ class Request extends Packet {
 
   String get type => this.contentType;
 
-  Request.fromPacket (Packet packet) {
+  Request.fromPacket(Packet packet) {
     this.headers = packet.headers;
     this.content = packet.content;
   }

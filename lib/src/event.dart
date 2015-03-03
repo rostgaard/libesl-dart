@@ -4,13 +4,13 @@ class Event extends Packet {
 
   static final String _variable_prefix = 'variable_';
 
-  String  _name    = null;
+  String _name = null;
   Channel _channel = null;
 
-  String get uniqueID  => this.contentAsMap['Unique-ID'];
+  String get uniqueID => this.contentAsMap['Unique-ID'];
   String get eventName => this.contentAsMap['Event-Name'];
 
-  Event.fromPacket (Packet packet) {
+  Event.fromPacket(Packet packet) {
     this.headers = packet.headers;
     this.content = packet.content;
   }
@@ -26,13 +26,11 @@ class Event extends Packet {
   /**
    * May return List or String.
    */
-  dynamic variable (String key) {
+  dynamic variable(String key) {
     return this.contentAsMap['${_variable_prefix}key'];
   }
 
-  Channel get channel =>
-      this._channel == null
-        ? this._channel = new Channel.fromPacket(this)
-        : this._channel;
+  Channel get channel => this._channel == null ? this._channel =
+      new Channel.fromPacket(this) : this._channel;
 
 }

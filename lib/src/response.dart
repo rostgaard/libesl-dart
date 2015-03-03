@@ -5,11 +5,11 @@ part of esl;
  */
 class Response {
 
-  static const String OK      = '+OK';
-  static const String ERROR   = '-ERR';
+  static const String OK = '+OK';
+  static const String ERROR = '-ERR';
   static const String UNKNOWN = '';
 
-  final        String rawBody;
+  final String rawBody;
 
   Response.fromPacketBody(String this.rawBody);
 
@@ -37,8 +37,9 @@ class Response {
     if (lastLine.startsWith(OK)) {
       return lastLine.substring(OK.length, lastLine.length).trim();
     } else {
-      throw new StateError('Response does not carry channel information. '
-                           'Raw body: ${this.rawBody}');
+      throw new StateError(
+          'Response does not carry channel information. '
+          'Raw body: ${this.rawBody}');
     }
   }
 

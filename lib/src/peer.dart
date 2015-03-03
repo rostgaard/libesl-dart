@@ -5,28 +5,32 @@ part of esl;
  */
 class Peer {
 
-  Map          _map    = {};
+  Map _map = {};
   List<String> _groups = [];
-  DateTime     _lastSeen = null;
+  DateTime _lastSeen = null;
 
   /// Getters
-  String       get ID                      => this._map['userid'];
-               set ID (String newID) {this._map['userid'] = newID;}
-  String       get context                 => this._map['context'];
-  String       get domain                  => this._map['domain'];
-  String       get contact                 => this._map['contact'];
-               set contact (String con) {this._map['contact'] = con;}
-  String       get callgroup               => this._map['callgroup'];
-  String       get effectiveCallerIdName   => this._map['effective_caller_id_name'];
-  String       get effectiveCallerIdNumber => this._map['effective_caller_id_number'];
-  List<String> get groups                  => this._groups;
-  String       get key                     => this.ID;
-  DateTime     get lastSeen                => this._lastSeen;
-  bool         get registered              => this.contact != null;
+  String get ID => this._map['userid'];
+  set ID(String newID) {
+    this._map['userid'] = newID;
+  }
+  String get context => this._map['context'];
+  String get domain => this._map['domain'];
+  String get contact => this._map['contact'];
+  set contact(String con) {
+    this._map['contact'] = con;
+  }
+  String get callgroup => this._map['callgroup'];
+  String get effectiveCallerIdName => this._map['effective_caller_id_name'];
+  String get effectiveCallerIdNumber => this._map['effective_caller_id_number'];
+  List<String> get groups => this._groups;
+  String get key => this.ID;
+  DateTime get lastSeen => this._lastSeen;
+  bool get registered => this.contact != null;
 
   Peer();
 
-  Peer.fromLine (List<String> keys, String line, [String seperator = '|']) {
+  Peer.fromLine(List<String> keys, String line, [String seperator = '|']) {
     int index = 0;
     line.split(seperator).forEach((field) {
       this._map[keys[index]] = field;
@@ -41,35 +45,36 @@ class Peer {
     }
 
     if (index != keys.length) {
-      throw new StateError('Line length does not match number of keys. Line buffer: "$line"');
+      throw new StateError(
+          'Line length does not match number of keys. Line buffer: "$line"');
     }
   }
 
-  void register (String contact) {
+  void register(String contact) {
     this._map['contact'] = contact;
     this._lastSeen = new DateTime.now();
   }
 
-  void unregister () {
+  void unregister() {
     this._map['contact'] = null;
     this._lastSeen = new DateTime.now();
   }
 
-  static makeKey (String ID) => ID;
+  static makeKey(String ID) => ID;
 
-  void mergeGroups (Peer other) {
+  void mergeGroups(Peer other) {
     other.groups.forEach((String group) {
       if (!this.groups.contains(group)) {
-        this.groups.add (group);
+        this.groups.add(group);
       }
     });
   }
 
-  String toString () {
+  String toString() {
     return this.key;
   }
 
-  Map toJson () {
+  Map toJson() {
     this._map['groups'] = this.groups;
     this._map['registered'] = this.registered;
     return this._map;
@@ -82,9 +87,8 @@ class Peer {
    * fields must thus match for two Peer object to be identical.
    */
   @override
-  bool operator == (Peer other) {
-    return this.ID      == other.ID     &&
-           this.domain  == other.domain;
+  bool operator ==(Peer other) {
+    return this.ID == other.ID && this.domain == other.domain;
   }
 
   /**

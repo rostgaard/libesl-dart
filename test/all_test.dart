@@ -4,7 +4,7 @@
 
 library esl.test;
 
-import 'dart:io'    as IO;
+import 'dart:io' as IO;
 import 'dart:async';
 import 'package:unittest/unittest.dart';
 import 'package:esl/esl.dart' as ESL;

@@ -34,16 +34,17 @@ main() {
         /* As the authentication call is a future, you can use .then
            blocks to schedule subsequent command or API calls when
            the authentication returns properly. */
-        conn.authenticate('1234').then(checkAuthentication)
-          .then((_) => conn.event(['all'], format: ESL.EventFormat.Json))
+        conn.authenticate('1234')
+          .then(checkAuthentication)
+          .then((_) => conn.event(['all'],format: ESL.EventFormat.Json))
           .then((_) => conn.api('list_users'))
-          .then((packet) => print(new ESL.PeerList.fromMultilineBuffer(packet.rawBody)))
+            .then((packet) =>
+                print(new ESL.PeerList.fromMultilineBuffer(packet.rawBody)))
           .then((_) {
-          List<int> sequence = new List.generate(100, (int index) => index);
+            List<int> sequence = new List.generate(100, (int index) => index);
           return Future.wait(sequence.map((int i) => sendRequest(i, conn)));
-        })
-        .then((_) => conn.api('status').then(print))
-        .catchError((e) => print (e));
+        }).then(
+            (_) => conn.api('status').then(print)).catchError((e) => print(e));
         break;
 
       default:
@@ -62,7 +63,7 @@ main() {
 
         ESL.Channel channel = new ESL.Channel.fromPacket(event);
         channelList.update(channel);
-        print (channel.variables);
+        print(channel.variables);
         break;
       case ("CHANNEL_CREATE"):
         break;
@@ -73,9 +74,9 @@ main() {
   void signalDisconnect() => print('Disconnected!');
 
   print('Connecting...');
-  conn..onDone = signalDisconnect
-      ..connect('localhost', 8021)
-      .whenComplete(() => print ('Connected!'));
+  conn
+      ..onDone = signalDisconnect
+      ..connect('localhost', 8021).whenComplete(() => print('Connected!'));
 }
 
 void checkAuthentication(ESL.Reply reply) {
