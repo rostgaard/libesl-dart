@@ -1,7 +1,13 @@
 part of esl;
 
 /**
+ * Transformer for converting raw bytes into [Packet] objects.
+ * Handles the low-level parsing of network traffic, or any other byte stream
+ * for that matter, stores them in a buffer and encapsulates them in [Packet]
+ * objects which the [Connection] then re-casts and injects into the
+ * appropriate steam - for instance event stream.
  *
+ * Can also be used standalone for parsing, for instance, packet dumps.
  */
 class PacketTransformer implements StreamTransformer<List<int>, Packet> {
   final StreamController<Packet> _controller = new StreamController<Packet>();
@@ -19,6 +25,10 @@ class PacketTransformer implements StreamTransformer<List<int>, Packet> {
     return _controller.stream;
   }
 
+  /**
+   * Callback for receiving and processing bytes.
+   * Supports segmented transfers, such as TCP buffers.
+   */
   void _onData(List<int> bytes) {
 
     for (int offset = 0; offset < bytes.length; offset++) {
@@ -33,8 +43,11 @@ class PacketTransformer implements StreamTransformer<List<int>, Packet> {
               _contentLength = 0;
               bodyBuffer = [];
             } else {
-              if (!_currentPacket.hasHeader('Content-Type') && _currentPacket.headers.isNotEmpty) {
-                this._controller.sink.addError(new StateError('Bad header received: ${_currentPacket.headers}'));
+              if (!_currentPacket.hasHeader('Content-Type') &&
+                   _currentPacket.headers.isNotEmpty) {
+                this._controller.sink.addError
+                  (new StateError
+                      ('Bad header received: ${_currentPacket.headers}'));
               }
               /// Skip empty lines.
               else if (_currentPacket.headers.isNotEmpty) {
@@ -51,9 +64,11 @@ class PacketTransformer implements StreamTransformer<List<int>, Packet> {
               List<String> keyValuePair = headerLine.split(':');
 
               if (keyValuePair.length == 2) {
-                _currentPacket.addHeader(keyValuePair[0].trim(), keyValuePair[1].trim());
+                _currentPacket.addHeader(keyValuePair[0].trim(),
+                                         keyValuePair[1].trim());
               } else {
-                this._controller.addError (new StateError ('Skipping invalid buffer: "${headerLine}"'));
+                this._controller.addError
+                  (new StateError ('Skipping invalid buffer: "${headerLine}"'));
               }
             }
           }
