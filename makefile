@@ -4,7 +4,7 @@ dependencies:
 	pub get
 
 tests:
-	@(cd test; dart esl-packet_transformer.dart)
+	@(cd test; dart all_test.dart)
 
 analyze:
 	@dartanalyzer --no-hints --fatal-warnings --package-warnings lib/esl.dart
