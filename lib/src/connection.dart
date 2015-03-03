@@ -24,14 +24,14 @@ class Connection {
   Socket _socket = null;
 
   StreamController<Event> _eventStream = new StreamController.broadcast();
-  StreamController<Packet> _requestStream = new StreamController.broadcast();
+  StreamController<Request> _requestStream = new StreamController.broadcast();
 
   /**
    * Notice that this is a broadcast stream, and multiple listeners will
    * have to obey the rules of these.
    */
   Stream<Event>  get eventStream => this._eventStream.stream;
-  Stream<Packet> get requestStream => this._requestStream.stream;
+  Stream<Request> get requestStream => this._requestStream.stream;
 
   StreamController<Packet> _nonEventStream = new StreamController.broadcast();
 
@@ -132,7 +132,7 @@ class Connection {
     if (packet.isEvent) {
       this._eventStream.add(new Event.fromPacket(packet));
     } else if (packet.isRequest) {
-      this._requestStream.add(packet);
+      this._requestStream.add(new Request.fromPacket(packet));
     } else if (packet.isReply) {
       Completer<Reply> completer = this.replyQueue.removeFirst();
       if (!completer.isCompleted) {

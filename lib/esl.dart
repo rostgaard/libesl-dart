@@ -22,6 +22,7 @@ part 'src/packet_transformer.dart';
 part 'src/peer.dart';
 part 'src/peer_list.dart';
 part 'src/reply.dart';
+part 'src/request.dart';
 part 'src/response.dart';
 
 const String libraryName = 'ESL';
