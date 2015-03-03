@@ -7,8 +7,6 @@
 /// Utility library for communicating with a FreeSWTICH event socket.
 library esl;
 
-// TODO: Export any libraries intended for clients of this package.
-
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
