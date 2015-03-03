@@ -1,3 +1,7 @@
+# esl
+
+A library for Dart developers. It is awesome.
+
 libesl-dart
 ===========
 
@@ -62,3 +66,9 @@ This makes every log entry go to the root Logger, and inherit its loglevel.
 
 ------
 [1] https://pub.dartlang.org/packages/logging
+
+## Features and bugs
+
+Please file feature requests and bugs at the [issue tracker][tracker].
+
+[tracker]: https://github.com/rostgaard/libesl-dart/issues
