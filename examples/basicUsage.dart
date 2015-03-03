@@ -49,11 +49,11 @@ main() {
      manually using, for instance, a switch statement. */
   ESL.ChannelList channelList = new ESL.ChannelList();
 
-  conn.eventStream.listen((ESL.Packet packet) {
-    switch (packet.eventName) {
+  conn.eventStream.listen((ESL.Event event) {
+    switch (event.eventName) {
       case ("CUSTOM"):
 
-        ESL.Channel channel = new ESL.Channel.fromPacket(packet);
+        ESL.Channel channel = new ESL.Channel.fromPacket(event);
         channelList.update(channel);
         print (channel.variables);
         break;
