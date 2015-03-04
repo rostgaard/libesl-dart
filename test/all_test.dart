@@ -11,12 +11,13 @@ import 'package:esl/esl.dart' as ESL;
 import 'package:junitconfiguration/junitconfiguration.dart';
 
 part 'packet_transformer.dart';
-
+part 'peer_list.dart';
 
 main() {
   JUnitConfiguration.install();
 
   group('Parsing', () {
+    test('PeerList.fromMultilineBuffer', parsePeerBuffer);
     test('PacketTransformer (text files)', () {
       expect(packet_transformer(), completion(isNotNull));
     });
