@@ -4,7 +4,6 @@ class Event extends Packet {
 
   static final String _variable_prefix = 'variable_';
 
-  String _name = null;
   Channel _channel = null;
 
   String get uniqueID => this.contentAsMap['Unique-ID'];

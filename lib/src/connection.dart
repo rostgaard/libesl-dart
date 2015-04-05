@@ -33,8 +33,6 @@ class Connection {
   Stream<Event> get eventStream => this._eventStream.stream;
   Stream<Request> get requestStream => this._requestStream.stream;
 
-  StreamController<Packet> _nonEventStream = new StreamController.broadcast();
-
   /// The Job queue is a simple FIFO of Futures that complete in-order.
   Queue<Completer<Response>> apiJobQueue = new Queue<Completer<Response>>();
 
