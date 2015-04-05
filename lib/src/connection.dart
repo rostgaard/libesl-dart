@@ -10,6 +10,8 @@ abstract class EventFormat {
    * As of now, only JSON format is supported. Most of the raw packet handling
    * is done internally, so the transport serialization should be insignificant
    * for the usage og the library.
+   * These commands are implemented in reference to:
+   * https://freeswitch.org/confluence/display/FREESWITCH/mod_commands
    */
   static List<String> supportedFormats = [Json];
 }
@@ -52,6 +54,17 @@ class Connection {
     });
   }
 
+  /**
+   * Compare an IP to an Access Control List
+   */
+  Future<Reply> acl(String ipAddress, aclList, {int timeoutSeconds: 10}) =>
+      this._subscribeAndSendCommand(
+          'acl ${ipAddress} ${aclList}',
+          new Duration(seconds: timeoutSeconds));
+
+  /**
+   * Send an arbitrary API command.
+   */
   Future<Response> api(String command, {int timeoutSeconds: 10}) {
     Completer<Response> completer = new Completer<Response>();
     this.apiJobQueue.addLast(completer);
