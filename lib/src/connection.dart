@@ -63,6 +63,28 @@ class Connection {
           new Duration(seconds: timeoutSeconds));
 
   /**
+   * Add or remove an alias. '*' removes all aliases.
+   */
+  Future<Reply> alias(String alias, String command,
+      {bool remove, bool sticky, int timeoutSeconds: 10}) {
+    if (remove && sticky) {
+     return new Future.error
+         (new ArgumentError('Cannot have both sticky and remove flags'));
+    }
+
+    if (remove) {
+      command = '';
+    }
+
+    String arg1 = remove ? 'del' : sticky ? 'stickyadd' : 'add';
+
+    return this._subscribeAndSendCommand(
+        'alias ${arg1} $alias $command',
+        new Duration(seconds: timeoutSeconds));
+
+  }
+
+  /**
    * Send an arbitrary API command.
    */
   Future<Response> api(String command, {int timeoutSeconds: 10}) {
@@ -81,6 +103,22 @@ class Connection {
   Future<Reply> authenticate(String password, {int timeoutSeconds: 10}) =>
       this._subscribeAndSendCommand(
           'auth ${password}',
+          new Duration(seconds: timeoutSeconds));
+
+  /**
+   * Execute a system command in the background.
+   */
+  Future<Reply> bgSystem(String command, {int timeoutSeconds: 10}) =>
+      this._subscribeAndSendCommand(
+          'bg_system ${command}',
+          new Duration(seconds: timeoutSeconds));
+
+  /**
+   * Execute a system command.
+   */
+  Future<Reply> system(String command, {int timeoutSeconds: 10}) =>
+      this._subscribeAndSendCommand(
+          'system ${command}',
           new Duration(seconds: timeoutSeconds));
 
   /**
