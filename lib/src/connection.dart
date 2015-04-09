@@ -2,9 +2,9 @@ part of esl;
 
 /// "Enum" of event formats.
 abstract class EventFormat {
-  static String Plain = "plain";
-  static String Json = "json";
-  static String Xml = "xml";
+  static const String Plain = "plain";
+  static const String Json = "json";
+  static const String Xml = "xml";
 
   /**
    * As of now, only JSON format is supported. Most of the raw packet handling
