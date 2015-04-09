@@ -5,8 +5,10 @@ part of esl;
  */
 class Response {
 
+  /// String constants that map to responses.
   static const String OK = '+OK';
   static const String ERROR = '-ERR';
+  static const String USAGE = '-USAGE';
   static const String UNKNOWN = '';
 
   final String rawBody;
@@ -22,6 +24,8 @@ class Response {
     if (lastLine.startsWith(OK)) {
       return OK;
     } else if (lastLine.startsWith(ERROR)) {
+      return ERROR;
+    } else if (lastLine.startsWith(USAGE)) {
       return ERROR;
     } else {
       return UNKNOWN;
