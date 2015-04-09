@@ -75,6 +75,25 @@ class Connection {
           new Duration(seconds: timeoutSeconds));
 
   /**
+   * Tells FreeSWITCH not to close the socket connect when a channel hangs up.
+   * Instead, it keeps the socket connection open until the last event related
+   * to the channel has been received by the socket client.
+   */
+  Future<Reply> linger({int timeoutSeconds: 10}) =>
+      this._subscribeAndSendCommand(
+          'linger',
+          new Duration(seconds: timeoutSeconds));
+
+
+  /**
+   * Disable socket lingering. See linger above.
+   */
+  Future<Reply> nolinger({int timeoutSeconds: 10}) =>
+      this._subscribeAndSendCommand(
+          'nolinger',
+          new Duration(seconds: timeoutSeconds));
+
+  /**
    * Subscribe the socket to [events], which will be pumped into the
    * [eventStream].
    */
@@ -84,11 +103,32 @@ class Connection {
       return new Future.error(
           new UnsupportedError(
               'Format "$format" unsupported. Supported formats are: '
-                  '${EventFormat.supportedFormats}'));
+                  '${EventFormat.supportedFormats.join(', ')}'));
     }
 
     return this._subscribeAndSendCommand(
         'event ${format} ${events.join(' ')}',
+        new Duration(seconds: timeoutSeconds));
+  }
+
+  /**
+   * The 'myevents' subscription allows your inbound socket connection to
+   * behave like an outbound socket connect. It will "lock on" to the events
+   * for a particular uuid and will ignore all other events, closing the socket
+   * when the channel goes away or closing the channel when the socket
+   * disconnects and all applications have finished executing.
+   */
+  Future<Reply> myevents (String uuid, {String format: '',
+      int timeoutSeconds: 10}) {
+    if (!EventFormat.supportedFormats.contains(format)) {
+      return new Future.error(
+          new UnsupportedError(
+              'Format "$format" unsupported. Supported formats are: '
+                  '${EventFormat.supportedFormats.join(', ')}'));
+    }
+
+    return this._subscribeAndSendCommand(
+        'myevents $uuid',
         new Duration(seconds: timeoutSeconds));
   }
 
