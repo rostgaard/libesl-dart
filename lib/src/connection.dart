@@ -10,8 +10,6 @@ abstract class EventFormat {
    * As of now, only JSON format is supported. Most of the raw packet handling
    * is done internally, so the transport serialization should be insignificant
    * for the usage og the library.
-   * Commands reference can be found at;
-   * https://freeswitch.org/confluence/display/FREESWITCH/mod_commands
    */
   static List<String> supportedFormats = [Json];
 }
@@ -54,7 +52,9 @@ class Connection {
     });
   }
   /**
-   * Send an arbitrary API command.
+   * Send an arbitrary API command (blocking mode).
+   * Command reference can be found at;
+   * https://freeswitch.org/confluence/display/FREESWITCH/mod_commands
    */
   Future<Response> api(String command, {int timeoutSeconds: 10}) {
     Completer<Response> completer = new Completer<Response>();
