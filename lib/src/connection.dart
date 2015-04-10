@@ -133,6 +133,16 @@ class Connection {
   }
 
   /**
+   * The divert_events switch is available to allow events that an embedded
+   * script would expect to get in the inputcallback to be diverted to the
+   * event socket.
+   */
+  Future<Reply> divert_events(bool on, {int timeoutSeconds: 10}) =>
+      this._subscribeAndSendCommand(
+          'divert_events ${on ? 'on': 'off'}',
+          new Duration(seconds: timeoutSeconds));
+
+  /**
    * Convenience function to avoidhaving to handle this on every
    * command interface.
    */
