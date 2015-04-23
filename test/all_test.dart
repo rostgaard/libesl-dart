@@ -12,6 +12,7 @@ import 'package:junitconfiguration/junitconfiguration.dart';
 
 part 'packet_transformer.dart';
 part 'peer_list.dart';
+part 'response.dart';
 
 main() {
   JUnitConfiguration.install();
@@ -21,5 +22,9 @@ main() {
     test('PacketTransformer (text files)', () {
       expect(packet_transformer(), completion(isNotNull));
     });
+
+    test('Response (detects -USAGE)', Response.detectsUsage);
+    test('Response (detects -ERR)', Response.detectsError);
+    test('Response (detects +OK)', Response.detectsOK);
   });
 }
