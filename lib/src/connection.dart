@@ -153,71 +153,29 @@ class Connection {
           'divert_events ${on ? 'on': 'off'}',
           new Duration(seconds: timeoutSeconds));
 
-//  filter
-//
-//  Specify event types to listen for. Note, this is not a filter out but rather a "filter in," that is, when a filter is applied only the filtered values are received. Multiple filters on a socket connection are allowed.
-//
-//  Usage:
-//
-//    filter <EventHeader> <ValueToFilter>
-//
-//  filter delete
-//
-//  Specify the events which you want to revoke the filter. filter delete can be used when some filters are applied wrongly or when there is no use of the filter.
-//
-//  Usage:
-//
-//    filter delete <EventHeader> <ValueToFilter>
-//
-//  Example:
-//
-//    filter delete Event-Name HEARTBEAT
-//
-//  Now, you will no longer receive HEARTBEAT events. You can delete any filter that is applied by this way.
-//
-//    filter delete Unique-ID d29a070f-40ff-43d8-8b9d-d369b2389dfe
-//
-//  This is to delete the filter which is applied for the given unique-id. After this, you won't receive any events for this unique-id.
-//
-//    filter delete Unique-ID
-//
-//  This deletes all the filters which are applied based on the unique-id.
-//  sendevent
-//
-//  Send an event into the event system (multi line input for headers)
-//
-//  sendevent <event-name>
-//
-//  exit
-//
-//  exit
-//
-//  Close the socket connection.
-//  auth
-//
-//  auth <password>
-//
-//  log
-//
-//  log <level>
-//
-//  Enable log output. Levels same as the console.conf values
-//  nolog
-//
-//  nolog
-//
-//  Disable log output previously enabled by the log command
-//  nixevent
-//
-//  nixevent <event types | ALL  | CUSTOM custom event sub-class>
-//
-//  Suppress the specified type of event. Useful when you want to allow 'event all' followed by 'nixevent <some_event>' to see all but 1 type of event.
-//  noevents
-//
-//  noevents
-//
-//  Disable all events that were previously enabled with event.
+  /**
+   * Close the socket connection.
+   */
+  Future<Reply> exit({int timeoutSeconds: 10}) =>
+      this._subscribeAndSendCommand(
+          'exit',
+          new Duration(seconds: timeoutSeconds));
 
+  /**
+   * Enable log output. Levels same as the console.conf values
+   */
+  Future<Reply> logLevel(int level, {int timeoutSeconds: 10}) =>
+      this._subscribeAndSendCommand(
+          'log $level',
+          new Duration(seconds: timeoutSeconds));
+
+  /**
+   * Disable log output previously enabled by the log command.
+   */
+  Future<Reply> nolog({int timeoutSeconds: 10}) =>
+      this._subscribeAndSendCommand(
+          'nolog',
+          new Duration(seconds: timeoutSeconds));
   /**
    * Convenience function to avoidhaving to handle this on every
    * command interface.
