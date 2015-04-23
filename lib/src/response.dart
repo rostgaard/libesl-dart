@@ -26,7 +26,7 @@ class Response {
     } else if (lastLine.startsWith(ERROR)) {
       return ERROR;
     } else if (lastLine.startsWith(USAGE)) {
-      return ERROR;
+      return USAGE;
     } else {
       return UNKNOWN;
     }
