@@ -61,11 +61,12 @@ class PacketTransformer implements StreamTransformer<List<int>, Packet> {
 
             /// Ignore short lines.
             if (headerLine.length > 1) {
-              List<String> keyValuePair = headerLine.split(':');
-
-              if (keyValuePair.length == 2) {
-                _currentPacket.addHeader(keyValuePair[0].trim(),
-                                         keyValuePair[1].trim());
+              int splitIndex = headerLine.indexOf(':');
+              if (splitIndex > 0) {
+                String key = headerLine.substring(0, splitIndex);
+                String value = headerLine.substring(splitIndex+1);
+                _currentPacket.addHeader(key.trim(),
+                                         value.trim());
               } else {
                 this._controller.addError
                   (new StateError ('Skipping invalid buffer: "${headerLine}"'));
