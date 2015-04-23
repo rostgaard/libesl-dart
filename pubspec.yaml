@@ -1,5 +1,5 @@
 name: esl
-version: 0.0.13-beta
+version: 0.0.14-beta
 author: Kim Rostgaard Christensen <krc@retrospekt.dk>
 description: A FreeSWITCH event socket library for Dart.
 homepage: https://github.com/rostgaard/libesl-dart
