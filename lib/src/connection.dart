@@ -41,12 +41,26 @@ class Connection {
 
   Function onDone = () => null;
 
+
+  /**
+   * Performs Socket-post-mortem cleanup.
+   */
+  void _onDone () {
+    this.apiJobQueue.clear();
+    this.replyQueue.clear();
+    this._eventStream.close();
+    this._requestStream.close();
+
+    this.onDone();
+  }
+
+
   Future<Socket> connect(String hostname, int port) {
     return Socket.connect(hostname, port).then((Socket socket) {
       this._socket = socket;
 
       this._socket.transform(
-          new PacketTransformer()).listen(_dispatch, onDone: onDone);
+          new PacketTransformer()).listen(_dispatch, onDone: _onDone);
 
       return this._socket;
     });
