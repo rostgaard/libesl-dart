@@ -218,7 +218,7 @@ class Connection {
           new Duration(seconds: timeoutSeconds));
 
   /**
-   * Convenience function to avoidhaving to handle this on every
+   * Convenience function to avoid having to handle this on every
    * command interface.
    */
   Future<Reply> _subscribeAndSendCommand(String command, Duration timeout) {
