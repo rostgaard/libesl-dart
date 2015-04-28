@@ -200,7 +200,7 @@ class Connection {
   Future<Reply> filter(String eventHeader, String valueToFilter,
       {int timeoutSeconds: 10}) =>
       this._subscribeAndSendCommand(
-          'filter $eventHeader> <valueToFilter>',
+          'filter $eventHeader $valueToFilter',
           new Duration(seconds: timeoutSeconds));
 
   /**
@@ -214,7 +214,7 @@ class Connection {
   Future<Reply> filterDelete(String eventHeader, String valueToFilter,
       {int timeoutSeconds: 10}) =>
       this._subscribeAndSendCommand(
-          'filter delete $eventHeader> <valueToFilter>',
+          'filter delete $eventHeader $valueToFilter',
           new Duration(seconds: timeoutSeconds));
 
   /**
