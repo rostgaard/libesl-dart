@@ -41,6 +41,7 @@ class Connection {
 
   Function onDone = () => null;
 
+  StreamSubscription _socketListener;
 
   /**
    * Performs Socket-post-mortem cleanup.
@@ -50,6 +51,7 @@ class Connection {
     this.replyQueue.clear();
     this._eventStream.close();
     this._requestStream.close();
+    this._socketListener.cancel();
 
     this.onDone();
   }
@@ -59,7 +61,7 @@ class Connection {
     return Socket.connect(hostname, port).then((Socket socket) {
       this._socket = socket;
 
-      this._socket.transform(
+      this._socketListener = this._socket.transform(
           new PacketTransformer()).listen(_dispatch, onDone: _onDone);
 
       return this._socket;
