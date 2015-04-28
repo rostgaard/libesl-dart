@@ -190,6 +190,33 @@ class Connection {
       this._subscribeAndSendCommand(
           'nolog',
           new Duration(seconds: timeoutSeconds));
+
+
+  /**
+   * Specify event types to listen for. Note, this is not a filter out but
+   * rather a "filter in," that is, when a filter is applied only the filtered
+   * values are received. Multiple filters on a socket connection are allowed.
+   */
+  Future<Reply> filter(String eventHeader, String valueToFilter,
+      {int timeoutSeconds: 10}) =>
+      this._subscribeAndSendCommand(
+          'filter $eventHeader> <valueToFilter>',
+          new Duration(seconds: timeoutSeconds));
+
+  /**
+   * Specify the events which you want to revoke the filter. filter delete can
+   * be used when some filters are applied wrongly or when there is no use
+   * of the filter.
+   *
+   * Example:
+   *    filterDelete('Event-Name', 'HEARTBEAT')
+   */
+  Future<Reply> filterDelete(String eventHeader, String valueToFilter,
+      {int timeoutSeconds: 10}) =>
+      this._subscribeAndSendCommand(
+          'filter delete $eventHeader> <valueToFilter>',
+          new Duration(seconds: timeoutSeconds));
+
   /**
    * Convenience function to avoidhaving to handle this on every
    * command interface.
