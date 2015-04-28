@@ -218,6 +218,31 @@ class Connection {
           new Duration(seconds: timeoutSeconds));
 
   /**
+   * Send an event into the event system (multi line input for headers)
+   */
+  Future<Reply> sendevent(String eventName, {int timeoutSeconds: 10}) =>
+      this._subscribeAndSendCommand(
+          'sendevent $eventName',
+          new Duration(seconds: timeoutSeconds));
+
+  /**
+   * Suppress the specified type of event. Useful when you want to allow
+   * 'event all' followed by 'nixevent <some_event>' to see all but 1 type
+   * of event.
+   */
+  Future<Reply> nixevent(String eventTypes, {int timeoutSeconds: 10}) =>
+      this._subscribeAndSendCommand(
+          'nixevent $eventTypes',
+          new Duration(seconds: timeoutSeconds));
+  /**
+   * Disable all events that were previously enabled with event.
+   */
+  Future<Reply> noEvents({int timeoutSeconds: 10}) =>
+      this._subscribeAndSendCommand(
+          'noevents',
+          new Duration(seconds: timeoutSeconds));
+
+  /**
    * Convenience function to avoid having to handle this on every
    * command interface.
    */
