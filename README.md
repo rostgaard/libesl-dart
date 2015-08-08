@@ -1,13 +1,7 @@
-# esl
-
-A library for Dart developers. It is awesome.
-
-libesl-dart
-===========
-
+# libesl-dart
 FreeSWITCH event socket client library written in Dart
 
-The project is in an early state, and contributions are very welcome.
+The project is in an early state and contributions/bug reports are very welcome.
 See the examples directory for usage.
 
 ## Basic usage
