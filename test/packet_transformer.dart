@@ -13,8 +13,11 @@ class Result {
 
   String toString() =>
       '${file}\tpackets:${packetCount}' '\tmsec:${runtime.inMilliseconds}'
-          '\tbytes:${byteCount}' '\terrors:${errors.length}';
+      '\tbytes:${byteCount}' '\terrors:${errors.length}';
 }
+
+List l = [];
+var ost = l.join('2');
 
 Future<bool> packet_transformer() {
   String testDataPath = './test_data/';
@@ -33,15 +36,10 @@ Future<bool> packet_transformer() {
     }
   }
 
-  new List.generate(
-      3,
-      (_) =>
-          null).forEach(
-              (_) =>
-                  new IO.Directory(
-                      testDataPath).list(
-                          recursive: false,
-                          followLinks: true).listen((IO.FileSystemEntity fse) {
+  new List.generate(3, (_) => null).forEach(
+      (_) => new IO.Directory(testDataPath)
+          .list(recursive: false, followLinks: true)
+          .listen((IO.FileSystemEntity fse) {
     if (fse is IO.File) {
       String filename = fse.path.replaceAll(testDataPath, '');
       String suffix = filename.split('.').last;
@@ -62,21 +60,18 @@ Future<bool> packet_transformer() {
     if (seenTests == fileCount) {
       resultStream.close();
     }
-
   }).onDone(endRun);
 
   return testCompleter.future;
 }
 
-
 String summary(Result res) =>
     'processing speed: ${(res.byteCount~/res.runtime.inMilliseconds)/1000}MiB/s\n'
-        'total packets:${res.packetCount}\n'
-        'total running time (msec):${res.runtime.inMilliseconds}\n'
-        'bytes processed:${res.byteCount}\n' 'number of errors:${res.errors.length}\n'
-        'errors:\n'
-        '${res.errors.fold('', (buf, error) => buf + error.toString() + '\n')}';
-
+    'total packets:${res.packetCount}\n'
+    'total running time (msec):${res.runtime.inMilliseconds}\n'
+    'bytes processed:${res.byteCount}\n' 'number of errors:${res.errors.length}\n'
+    'errors:\n'
+    '${res.errors.fold('', (buf, error) => buf + error.toString() + '\n')}';
 
 void testFile(IO.File testFile, StreamController<Result> resultStream,
     {bool shouldFail: false}) {
@@ -84,10 +79,10 @@ void testFile(IO.File testFile, StreamController<Result> resultStream,
   DateTime start = new DateTime.now();
 
   Result res = new Result();
-  testFile.openRead().transform(
-      new ESL.PacketTransformer()).listen(
-          (ESL.Packet packet) => res.packetCount++,
-          onDone: () {
+  testFile
+      .openRead()
+      .transform(new ESL.PacketTransformer())
+      .listen((ESL.Packet packet) => res.packetCount++, onDone: () {
     res.runtime = new DateTime.now().difference(start);
     testFile.length().then((int length) {
       res.byteCount = length;
@@ -104,7 +99,6 @@ void testFile(IO.File testFile, StreamController<Result> resultStream,
     } else if (res.errors.isNotEmpty) {
       print(testFile);
       print(res.errors);
-
     }
   })..onError((error) => res.errors.add(error));
 
