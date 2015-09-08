@@ -9,7 +9,7 @@ part of esl;
  */
 
 /**
- * Converts a string buffer received from FreeSWITCH into a map.
+ * Converts a string buffer received from FreeSWITCH into a list of maps.
  * The string buffer is expected to be line-seperated, have the first line as
  * headers and every field seperated by a ','.
  */
