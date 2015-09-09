@@ -107,4 +107,39 @@ class Channel {
   int get hashCode {
     return this.UUID.toLowerCase().hashCode;
   }
+
+  /**
+   * Determine if a channel is inbound.
+   */
+  bool isInbound ()
+    => fields['Call-Direction'] == 'inbound' ? true : false;
+
+  /**
+   * Determine if a channel is internal.
+   */
+  bool isInternal () {
+    String cName = channelName ();
+
+    if (!cName.startsWith('sofia/')) {
+      throw new ArgumentError('only sofia channels are supported. Got: $cName');
+    }
+
+    String profile = cName.split('/')[1];
+
+    if (profile == 'internal') {
+      return true;
+    }
+    else if (profile == 'external') {
+      return false;
+    }
+
+    throw new ArgumentError('Failed to detect profile in channel name \'$cName\'.');
+  }
+
+  /**
+   * Gets the channel's name.
+   */
+  String channelName() => fields['Channel-Name'];
+
+
 }
