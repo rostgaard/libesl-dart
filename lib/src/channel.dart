@@ -67,6 +67,9 @@ class Channel {
     });
   }
 
+  /**
+   * Assemble a channel from fields and variables.
+   */
   Channel.assemble(this._fields, this._variables);
 
   /**
@@ -78,6 +81,9 @@ class Channel {
         'variables': this._variables
       });
 
+  /**
+   * Converts the channel into a map.
+   */
   Map toMap() {
     Map tmp = new Map.from(this._fields);
     tmp['variables'] = {};
