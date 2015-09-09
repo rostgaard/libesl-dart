@@ -16,6 +16,16 @@ class ChannelList extends IterableBase<Channel> {
   Iterator<Channel> get iterator => this._channelStorage.values.iterator;
 
   /**
+   * Replace the channels in the [ChannelList] with [channels].
+   */
+  void reload (Iterable<Channel> channels) {
+    this._channelStorage.clear();
+    channels.forEach((Channel channel) {
+      this._channelStorage[channel.UUID] = channel;
+    });
+  }
+
+  /**
    * Updates a channel stored in the channel list. Removes it, if it is
    * destroyed, adds it when it is created and merely updates the information
    * associated with channel (variables and fields) with the new information.
