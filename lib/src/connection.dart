@@ -246,7 +246,8 @@ class Connection {
 
     try {
       this._socket.writeln('${command}\n');
-    } catch (error) {
+    } catch (error, stackTrace) {
+      log.shout('Failed to send command "${command}"', error, stackTrace);
       this._shutdown();
       return new Future.error(new StateError('Failed to write to socket.'));
     }
@@ -260,9 +261,13 @@ class Connection {
 
   /**
    * Perform a graceful shutdown.
-   * Not yet implemented.
    */
-  void _shutdown() => throw new UnimplementedError();
+  void _shutdown() {
+    try {
+      disconnect();
+      _onDone();
+    } catch (_) {}
+  }
 
   /**
    * Perform a hard socket disconnect.
