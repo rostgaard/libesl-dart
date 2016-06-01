@@ -11,9 +11,10 @@ class Result {
   int byteCount = -1;
   List<Error> errors = [];
 
-  String toString() =>
-      '${file}\tpackets:${packetCount}' '\tmsec:${runtime.inMilliseconds}'
-      '\tbytes:${byteCount}' '\terrors:${errors.length}';
+  String toString() => '${file}\tpackets:${packetCount}'
+      '\tmsec:${runtime.inMilliseconds}'
+      '\tbytes:${byteCount}'
+      '\terrors:${errors.length}';
 }
 
 List l = [];
@@ -36,18 +37,18 @@ Future<bool> packet_transformer() {
     }
   }
 
-  new List.generate(3, (_) => null).forEach(
-      (_) => new IO.Directory(testDataPath)
+  new List.generate(3, (_) => null).forEach((_) =>
+      new IO.Directory(testDataPath)
           .list(recursive: false, followLinks: true)
           .listen((IO.FileSystemEntity fse) {
-    if (fse is IO.File) {
-      String filename = fse.path.replaceAll(testDataPath, '');
-      String suffix = filename.split('.').last;
+        if (fse is IO.File) {
+          String filename = fse.path.replaceAll(testDataPath, '');
+          String suffix = filename.split('.').last;
 
-      fileCount++;
-      testFile(fse, resultStream, shouldFail: (suffix == 'should_fail'));
-    }
-  }));
+          fileCount++;
+          testFile(fse, resultStream, shouldFail: (suffix == 'should_fail'));
+        }
+      }));
 
   int seenTests = 0;
   resultStream.stream.listen((Result res) {
@@ -69,13 +70,13 @@ String summary(Result res) =>
     'processing speed: ${(res.byteCount~/res.runtime.inMilliseconds)/1000}MiB/s\n'
     'total packets:${res.packetCount}\n'
     'total running time (msec):${res.runtime.inMilliseconds}\n'
-    'bytes processed:${res.byteCount}\n' 'number of errors:${res.errors.length}\n'
+    'bytes processed:${res.byteCount}\n'
+    'number of errors:${res.errors.length}\n'
     'errors:\n'
     '${res.errors.fold('', (buf, error) => buf + error.toString() + '\n')}';
 
 void testFile(IO.File testFile, StreamController<Result> resultStream,
     {bool shouldFail: false}) {
-  int packetCount = 0;
   DateTime start = new DateTime.now();
 
   Result res = new Result();
