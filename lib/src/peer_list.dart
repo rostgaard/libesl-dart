@@ -19,7 +19,7 @@ class PeerList extends IterableBase<Peer> {
    * Iterator forward. We can ignore the keys as they are also stored inside
    * the [Peer] object.
    */
-  Iterator get iterator => this._map.values.iterator;
+  Iterator get iterator => _map.values.iterator;
 
   /**
    * Creates a new empty [PeerList].
@@ -47,10 +47,10 @@ class PeerList extends IterableBase<Peer> {
       } else {
         if (!line.isEmpty && line != "+OK") {
           Peer newPeer = new Peer.fromLine(keys, line, splitOn);
-          if (!this._map.containsKey(newPeer.key)) {
-            this.add(newPeer);
+          if (!_map.containsKey(newPeer.key)) {
+            add(newPeer);
           } else {
-            this._map[newPeer.key].mergeGroups(newPeer);
+            _map[newPeer.key].mergeGroups(newPeer);
           }
         }
       }
@@ -61,24 +61,24 @@ class PeerList extends IterableBase<Peer> {
    * JSON representation is an immutable list representation of the
    * [PeerList] object.
    */
-  List toJson() => this.toList(growable: false);
+  List toJson() => toList(growable: false);
 
   /**
    * Add a [Peer] to the list.
    * Replaces the [Peer] element if it is already present.
    */
-  void add(Peer peer) => this.update(peer);
+  void add(Peer peer) => update(peer);
 
   /**
    * Retrive a Peer from the list.
    * Returns null if the element is not present.
    */
-  Peer get(String key) => this._map[key];
+  Peer get(String key) => _map[key];
 
   /**
    * Replaces the [Peer] element if it is already present.
    */
   void update(Peer peer) {
-    this._map[peer.key] = peer;
+    _map[peer.key] = peer;
   }
 }

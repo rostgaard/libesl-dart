@@ -13,40 +13,40 @@ class Peer {
   DateTime _lastSeen = null;
 
   /// Getters
-  String get ID => this._map['userid'];
+  String get ID => _map['userid'];
   set ID(String newID) {
-    this._map['userid'] = newID;
+    _map['userid'] = newID;
   }
 
-  String get context => this._map['context'];
-  String get domain => this._map['domain'];
-  String get contact => this._map['contact'];
+  String get context => _map['context'];
+  String get domain => _map['domain'];
+  String get contact => _map['contact'];
   set contact(String con) {
-    this._map['contact'] = con;
+    _map['contact'] = con;
   }
 
-  String get callgroup => this._map['callgroup'];
-  String get effectiveCallerIdName => this._map['effective_caller_id_name'];
-  String get effectiveCallerIdNumber => this._map['effective_caller_id_number'];
-  List<String> get groups => this._groups;
-  String get key => this.ID;
-  DateTime get lastSeen => this._lastSeen;
-  bool get registered => this.contact != null;
+  String get callgroup => _map['callgroup'];
+  String get effectiveCallerIdName => _map['effective_caller_id_name'];
+  String get effectiveCallerIdNumber => _map['effective_caller_id_number'];
+  List<String> get groups => _groups;
+  String get key => ID;
+  DateTime get lastSeen => _lastSeen;
+  bool get registered => contact != null;
 
   Peer();
 
   Peer.fromLine(List<String> keys, String line, [String seperator = '|']) {
     int index = 0;
     line.split(seperator).forEach((field) {
-      this._map[keys[index]] = field;
+      _map[keys[index]] = field;
       index++;
     });
 
-    this.groups.add(this._map['group']);
-    this._map.remove(['group']);
+    groups.add(_map['group']);
+    _map.remove(['group']);
 
-    if (this.contact.contains('error')) {
-      this._map['contact'] = null;
+    if (contact.contains('error')) {
+      _map['contact'] = null;
     }
 
     if (index != keys.length) {
@@ -56,33 +56,33 @@ class Peer {
   }
 
   void register(String contact) {
-    this._map['contact'] = contact;
-    this._lastSeen = new DateTime.now();
+    _map['contact'] = contact;
+    _lastSeen = new DateTime.now();
   }
 
   void unregister() {
-    this._map['contact'] = null;
-    this._lastSeen = new DateTime.now();
+    _map['contact'] = null;
+    _lastSeen = new DateTime.now();
   }
 
   static makeKey(String ID) => ID;
 
   void mergeGroups(Peer other) {
     other.groups.forEach((String group) {
-      if (!this.groups.contains(group)) {
-        this.groups.add(group);
+      if (!groups.contains(group)) {
+        groups.add(group);
       }
     });
   }
 
   String toString() {
-    return this.key;
+    return key;
   }
 
   Map toJson() {
-    this._map['groups'] = this.groups;
-    this._map['registered'] = this.registered;
-    return this._map;
+    _map['groups'] = groups;
+    _map['registered'] = registered;
+    return _map;
   }
 
   /**
@@ -93,11 +93,11 @@ class Peer {
    */
   @override
   bool operator ==(Peer other) {
-    return this.ID == other.ID && this.domain == other.domain;
+    return ID == other.ID && domain == other.domain;
   }
 
   /**
    *
    */
-  int get hashCode => this.key.hashCode;
+  int get hashCode => key.hashCode;
 }

@@ -12,15 +12,15 @@ part of esl;
 class ChannelList extends IterableBase<Channel> {
   Map<String, Channel> _channelStorage = new Map<String, Channel>();
 
-  Iterator<Channel> get iterator => this._channelStorage.values.iterator;
+  Iterator<Channel> get iterator => _channelStorage.values.iterator;
 
   /**
    * Replace the channels in the [ChannelList] with [channels].
    */
   void reload(Iterable<Channel> channels) {
-    this._channelStorage.clear();
+    _channelStorage.clear();
     channels.forEach((Channel channel) {
-      this._channelStorage[channel.UUID] = channel;
+      _channelStorage[channel.UUID] = channel;
     });
   }
 
@@ -30,35 +30,35 @@ class ChannelList extends IterableBase<Channel> {
    * associated with channel (variables and fields) with the new information.
    */
   void update(Channel channel) {
-    if (!this._channelStorage.containsKey(channel.UUID)) {
-      this._add(channel);
+    if (!_channelStorage.containsKey(channel.UUID)) {
+      _add(channel);
     } else {
-      Channel oldChannel = this._channelStorage[channel.UUID];
+      Channel oldChannel = _channelStorage[channel.UUID];
 
       if (channel.variables.isEmpty) {
-        this._channelStorage[channel.UUID] =
+        _channelStorage[channel.UUID] =
             new Channel.assemble(channel.fields, oldChannel.variables);
       } else {
-        this._channelStorage[channel.UUID] = channel;
+        _channelStorage[channel.UUID] = channel;
       }
     }
 
     if (channel.state == ChannelState.DESTROY) {
-      this._remove(channel);
+      _remove(channel);
     }
   }
 
   void _add(Channel channel) {
-    this._channelStorage[channel.UUID] = channel;
+    _channelStorage[channel.UUID] = channel;
   }
 
   /**
    * Retrieve a single channel identified by [channelID]. Returns [null] if no
    * channel is found in the list.
    */
-  Channel get(String channelID) => this._channelStorage[channelID];
+  Channel get(String channelID) => _channelStorage[channelID];
 
   void _remove(Channel channel) {
-    this._channelStorage.remove(channel.UUID);
+    _channelStorage.remove(channel.UUID);
   }
 }

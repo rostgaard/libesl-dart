@@ -9,17 +9,17 @@ class Event extends Packet {
 
   Channel _channel = null;
 
-  String get uniqueID => this.contentAsMap['Unique-ID'];
-  String get eventName => this.contentAsMap['Event-Name'];
+  String get uniqueID => contentAsMap['Unique-ID'];
+  String get eventName => contentAsMap['Event-Name'];
 
   Event.fromPacket(Packet packet) {
-    this.headers = packet.headers;
-    this.content = packet.content;
+    headers = packet.headers;
+    content = packet.content;
   }
 
   String get eventSubclass {
-    if (this.contentAsMap.containsKey('Event-Subclass')) {
-      return this.contentAsMap['Event-Subclass'];
+    if (contentAsMap.containsKey('Event-Subclass')) {
+      return contentAsMap['Event-Subclass'];
     } else {
       return "";
     }
@@ -29,10 +29,9 @@ class Event extends Packet {
    * May return List or String.
    */
   dynamic variable(String key) {
-    return this.contentAsMap['${_variable_prefix}key'];
+    return contentAsMap['${_variable_prefix}key'];
   }
 
-  Channel get channel => this._channel == null
-      ? this._channel = new Channel.fromPacket(this)
-      : this._channel;
+  Channel get channel =>
+      _channel == null ? _channel = new Channel.fromPacket(this) : _channel;
 }

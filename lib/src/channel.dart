@@ -46,10 +46,10 @@ class Channel {
 
   Map<String, String> _fields = new Map<String, String>();
   Map<String, dynamic> _variables = new Map<String, dynamic>();
-  String get UUID => this._fields['Unique-ID'];
-  String get state => this._fields['Channel-State'];
-  Map<String, String> get fields => this._fields;
-  Map<String, dynamic> get variables => this._variables;
+  String get UUID => _fields['Unique-ID'];
+  String get state => _fields['Channel-State'];
+  Map<String, String> get fields => _fields;
+  Map<String, dynamic> get variables => _variables;
 
   /**
    * Extracts the relevant information from the packet and stores
@@ -59,9 +59,9 @@ class Channel {
     packet.contentAsMap.forEach((key, value) {
       if (key.startsWith("variable_")) {
         String keyNoPrefix = (key.split("variable_")[1]);
-        this._variables[keyNoPrefix] = value;
+        _variables[keyNoPrefix] = value;
       } else if (!excludedFields.contains(key)) {
-        this._fields[key] = value;
+        _fields[key] = value;
       }
     });
   }
@@ -74,16 +74,15 @@ class Channel {
   /**
    * Returns a map representation of the channel.
    */
-  Map get asMap =>
-      {}..addAll(this._fields)..addAll({'variables': this._variables});
+  Map get asMap => {}..addAll(_fields)..addAll({'variables': _variables});
 
   /**
    * Converts the channel into a map.
    */
   Map toMap() {
-    Map tmp = new Map.from(this._fields);
+    Map tmp = new Map.from(_fields);
     tmp['variables'] = {};
-    tmp['variables'].addAll(this._variables);
+    tmp['variables'].addAll(_variables);
     return tmp;
   }
 
@@ -93,7 +92,7 @@ class Channel {
    */
   @override
   bool operator ==(Channel other) {
-    return this.UUID.toLowerCase() == other.UUID.toLowerCase();
+    return UUID.toLowerCase() == other.UUID.toLowerCase();
   }
 
   /**
@@ -101,7 +100,7 @@ class Channel {
    */
   @override
   int get hashCode {
-    return this.UUID.toLowerCase().hashCode;
+    return UUID.toLowerCase().hashCode;
   }
 
   /**
