@@ -5,7 +5,6 @@
 part of esl;
 
 class Event extends Packet {
-
   static final String _variable_prefix = 'variable_';
 
   Channel _channel = null;
@@ -33,7 +32,7 @@ class Event extends Packet {
     return this.contentAsMap['${_variable_prefix}key'];
   }
 
-  Channel get channel => this._channel == null ? this._channel =
-      new Channel.fromPacket(this) : this._channel;
-
+  Channel get channel => this._channel == null
+      ? this._channel = new Channel.fromPacket(this)
+      : this._channel;
 }

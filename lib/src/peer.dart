@@ -8,7 +8,6 @@ part of esl;
  *
  */
 class Peer {
-
   Map _map = {};
   List<String> _groups = [];
   DateTime _lastSeen = null;
@@ -18,12 +17,14 @@ class Peer {
   set ID(String newID) {
     this._map['userid'] = newID;
   }
+
   String get context => this._map['context'];
   String get domain => this._map['domain'];
   String get contact => this._map['contact'];
   set contact(String con) {
     this._map['contact'] = con;
   }
+
   String get callgroup => this._map['callgroup'];
   String get effectiveCallerIdName => this._map['effective_caller_id_name'];
   String get effectiveCallerIdNumber => this._map['effective_caller_id_number'];

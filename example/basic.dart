@@ -12,7 +12,6 @@ import 'package:logging/logging.dart';
 ESL.PeerList peerList = null;
 
 main() {
-
   /* Changing the root log level propagates to libesl-dart.*/
   Logger.root.level = Level.ALL;
 
@@ -34,17 +33,19 @@ main() {
         /* As the authentication call is a future, you can use .then
            blocks to schedule subsequent command or API calls when
            the authentication returns properly. */
-        conn.authenticate('1234')
-          .then(checkAuthentication)
-          .then((_) => conn.event(['all'],format: ESL.EventFormat.Json))
-          .then((_) => conn.api('list_users'))
+        conn
+            .authenticate('1234')
+            .then(checkAuthentication)
+            .then((_) => conn.event(['all'], format: ESL.EventFormat.Json))
+            .then((_) => conn.api('list_users'))
             .then((packet) =>
                 print(new ESL.PeerList.fromMultilineBuffer(packet.rawBody)))
-          .then((_) {
-            List<int> sequence = new List.generate(100, (int index) => index);
-          return Future.wait(sequence.map((int i) => sendRequest(i, conn)));
-        }).then(
-            (_) => conn.api('status').then(print)).catchError((e) => print(e));
+            .then((_) {
+              List<int> sequence = new List.generate(100, (int index) => index);
+              return Future.wait(sequence.map((int i) => sendRequest(i, conn)));
+            })
+            .then((_) => conn.api('status').then(print))
+            .catchError((e) => print(e));
         break;
 
       default:
@@ -60,7 +61,6 @@ main() {
   conn.eventStream.listen((ESL.Event event) {
     switch (event.eventName) {
       case ("CUSTOM"):
-
         ESL.Channel channel = new ESL.Channel.fromPacket(event);
         channelList.update(channel);
         print(channel.variables);
@@ -70,13 +70,12 @@ main() {
     }
   });
 
-
   void signalDisconnect() => print('Disconnected!');
 
   print('Connecting...');
   conn
-      ..onDone = signalDisconnect
-      ..connect('localhost', 8021).whenComplete(() => print('Connected!'));
+    ..onDone = signalDisconnect
+    ..connect('localhost', 8021).whenComplete(() => print('Connected!'));
 }
 
 void checkAuthentication(ESL.Reply reply) {
@@ -84,7 +83,6 @@ void checkAuthentication(ESL.Reply reply) {
     throw new StateError('Invalid credentials!');
   }
 }
-
 
 Future sendRequest(int seq, ESL.Connection conn) {
   return conn.api('echo $seq').then((ESL.Response response) {

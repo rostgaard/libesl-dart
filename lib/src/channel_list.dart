@@ -10,7 +10,6 @@ part of esl;
  * depending on the level of detail in the channel information you wish.
  */
 class ChannelList extends IterableBase<Channel> {
-
   Map<String, Channel> _channelStorage = new Map<String, Channel>();
 
   Iterator<Channel> get iterator => this._channelStorage.values.iterator;
@@ -18,7 +17,7 @@ class ChannelList extends IterableBase<Channel> {
   /**
    * Replace the channels in the [ChannelList] with [channels].
    */
-  void reload (Iterable<Channel> channels) {
+  void reload(Iterable<Channel> channels) {
     this._channelStorage.clear();
     channels.forEach((Channel channel) {
       this._channelStorage[channel.UUID] = channel;
@@ -42,7 +41,6 @@ class ChannelList extends IterableBase<Channel> {
       } else {
         this._channelStorage[channel.UUID] = channel;
       }
-
     }
 
     if (channel.state == ChannelState.DESTROY) {
@@ -60,9 +58,7 @@ class ChannelList extends IterableBase<Channel> {
    */
   Channel get(String channelID) => this._channelStorage[channelID];
 
-
   void _remove(Channel channel) {
     this._channelStorage.remove(channel.UUID);
   }
 }
-

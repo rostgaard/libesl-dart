@@ -9,7 +9,6 @@ part of esl;
  * Can be created from a string buffer or built up manually.
  */
 class PeerList extends IterableBase<Peer> {
-
   /**
    * Map used for [Peer] storage. Enables fast lookups, while still
    * preserving the apperance of an [Iterable] from the outside.
@@ -41,7 +40,6 @@ class PeerList extends IterableBase<Peer> {
   PeerList.fromMultilineBuffer(String buffer, {String splitOn: '|'}) {
     List<String> keys = new List<String>();
     buffer.split('\n').forEach((var line) {
-
       if (keys.isEmpty) {
         line.split(splitOn).forEach((f) {
           keys.add(f);

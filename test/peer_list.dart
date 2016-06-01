@@ -25,10 +25,8 @@ void parsePeerBuffer() {
     return true;
   }
 
-
   return expect(list.every(isValidPeer), isTrue);
 }
-
 
 const String testData =
     '''userid|context|domain|group|contact|callgroup|effective_caller_id_name|effective_caller_id_number

@@ -13,18 +13,17 @@ part of esl;
  * The string buffer is expected to be line-seperated, have the first line as
  * headers and every field seperated by a ','.
  */
-List<Map> channelMapParse (String buffer) {
+List<Map> channelMapParse(String buffer) {
   List<Map> retval = [];
 
-  bool      header = true;
+  bool header = true;
 
-  List      keymap = [];
-  int       offset = 0;
-  buffer.split("\n").forEach ((String line) {
+  List keymap = [];
+  int offset = 0;
+  buffer.split("\n").forEach((String line) {
     offset = 0;
 
     line.split(",").forEach((String item) {
-
       if (!header) {
         Map currentMap = null;
         if (offset == 0) {
@@ -34,7 +33,7 @@ List<Map> channelMapParse (String buffer) {
           currentMap = retval.last;
         }
 
-        currentMap.addAll ({keymap[offset] :  item});
+        currentMap.addAll({keymap[offset]: item});
       } else {
         keymap.add(item);
       }

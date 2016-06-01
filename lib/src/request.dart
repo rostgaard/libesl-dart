@@ -10,12 +10,10 @@ part of esl;
  * request a connection meets, is the 'auth' request.
  */
 class Request extends Packet {
-
   String get type => this.contentType;
 
   Request.fromPacket(Packet packet) {
     this.headers = packet.headers;
     this.content = packet.content;
   }
-
 }

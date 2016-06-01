@@ -5,7 +5,6 @@
 part of esl;
 
 class Reply extends Packet {
-
   Reply.fromPacket(Packet packet) {
     this.headers = packet.headers;
   }
@@ -25,5 +24,4 @@ class Reply extends Packet {
       return UNKNOWN;
     }
   }
-
 }

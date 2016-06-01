@@ -28,21 +28,21 @@ abstract class ChannelState {
  * channel information stored in a packet.
  */
 class Channel {
-
   static const String nullChannelID = null;
 
   static final List<String> excludedFields = [
-      'Event-Name',
-      'Core-UUID',
-      'FreeSWITCH-Hostname',
-      'FreeSWITCH-IPv4',
-      'FreeSWITCH-IPv6',
-      'Event-Date-Local',
-      'Event-Date-GMT',
-      'Event-Date-Timestamp',
-      'Event-Calling-File',
-      'Event-Calling-Function',
-      'Event-Calling-Line-Number'];
+    'Event-Name',
+    'Core-UUID',
+    'FreeSWITCH-Hostname',
+    'FreeSWITCH-IPv4',
+    'FreeSWITCH-IPv6',
+    'Event-Date-Local',
+    'Event-Date-GMT',
+    'Event-Date-Timestamp',
+    'Event-Calling-File',
+    'Event-Calling-Function',
+    'Event-Calling-Line-Number'
+  ];
 
   Map<String, String> _fields = new Map<String, String>();
   Map<String, dynamic> _variables = new Map<String, dynamic>();
@@ -58,7 +58,6 @@ class Channel {
   Channel.fromPacket(Packet packet) {
     packet.contentAsMap.forEach((key, value) {
       if (key.startsWith("variable_")) {
-
         String keyNoPrefix = (key.split("variable_")[1]);
         this._variables[keyNoPrefix] = value;
       } else if (!excludedFields.contains(key)) {
@@ -75,11 +74,8 @@ class Channel {
   /**
    * Returns a map representation of the channel.
    */
-  Map get asMap => {}
-      ..addAll(this._fields)
-      ..addAll({
-        'variables': this._variables
-      });
+  Map get asMap =>
+      {}..addAll(this._fields)..addAll({'variables': this._variables});
 
   /**
    * Converts the channel into a map.
@@ -111,14 +107,13 @@ class Channel {
   /**
    * Determine if a channel is inbound.
    */
-  bool isInbound ()
-    => fields['Call-Direction'] == 'inbound' ? true : false;
+  bool isInbound() => fields['Call-Direction'] == 'inbound' ? true : false;
 
   /**
    * Determine if a channel is internal.
    */
-  bool isInternal () {
-    String cName = channelName ();
+  bool isInternal() {
+    String cName = channelName();
 
     if (!cName.startsWith('sofia/')) {
       throw new ArgumentError('only sofia channels are supported. Got: $cName');
@@ -128,18 +123,16 @@ class Channel {
 
     if (profile == 'internal') {
       return true;
-    }
-    else if (profile == 'external') {
+    } else if (profile == 'external') {
       return false;
     }
 
-    throw new ArgumentError('Failed to detect profile in channel name \'$cName\'.');
+    throw new ArgumentError(
+        'Failed to detect profile in channel name \'$cName\'.');
   }
 
   /**
    * Gets the channel's name.
    */
   String channelName() => fields['Channel-Name'];
-
-
 }

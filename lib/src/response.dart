@@ -8,7 +8,6 @@ part of esl;
  * Class representing a reponse received from the FreeSWTICH event socket.
  */
 class Response {
-
   /// String constants that map to responses.
   static const String OK = '+OK';
   static const String ERROR = '-ERR';
@@ -45,8 +44,7 @@ class Response {
     if (lastLine.startsWith(OK)) {
       return lastLine.substring(OK.length, lastLine.length).trim();
     } else {
-      throw new StateError(
-          'Response does not carry channel information. '
+      throw new StateError('Response does not carry channel information. '
           'Raw body: ${this.rawBody}');
     }
   }

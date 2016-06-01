@@ -15,15 +15,15 @@ abstract class ContentType {
   static const String Command_Reply = "command/reply";
 
   static final List<String> Event_Types = [
-      Text_Event_JSON,
-      Text_Event_Plain,
-      Text_Event_Xml];
+    Text_Event_JSON,
+    Text_Event_Plain,
+    Text_Event_Xml
+  ];
   static final List<String> Requests = [Auth_Request];
   static final List<String> Responses = [API_Reponse];
 }
 
 class Packet {
-
   static final Logger log = new Logger('${libraryName}.Packet');
 
   static int count = 0;
@@ -38,10 +38,9 @@ class Packet {
   }
 
   String get contentType => this.headers['Content-Type'];
-  int get contentLength =>
-      this.hasHeader('Content-Length') ?
-          int.parse(this.headers['Content-Length']) :
-          0;
+  int get contentLength => this.hasHeader('Content-Length')
+      ? int.parse(this.headers['Content-Length'])
+      : 0;
 
   bool get isEvent => ContentType.Event_Types.contains(this.contentType);
   bool get isReply => ContentType.Command_Reply == this.contentType;
@@ -68,13 +67,11 @@ class Packet {
               'string:\n${this.content}',
               stacktrace);
         }
-
       }
       return this.contentMap;
     } else {
-      throw new UnsupportedError(
-          'Supported event formats are currently '
-              'limited to${EventFormat.supportedFormats}');
+      throw new UnsupportedError('Supported event formats are currently '
+          'limited to${EventFormat.supportedFormats}');
     }
   }
 }
