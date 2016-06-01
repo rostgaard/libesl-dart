@@ -33,14 +33,14 @@ class Connection {
    * Notice that this is a broadcast stream, and multiple listeners will
    * have to obey the rules of these.
    */
-  Stream<Event> get eventStream => this._eventStream.stream;
-  Stream<Request> get requestStream => this._requestStream.stream;
+  Stream<Event> get eventStream => _eventStream.stream;
+  Stream<Request> get requestStream => _requestStream.stream;
 
   /// The Job queue is a simple FIFO of Futures that complete in-order.
-  Queue<Completer<Response>> apiJobQueue = new Queue<Completer<Response>>();
+  Queue<Completer<Response>> _apiJobQueue = new Queue<Completer<Response>>();
 
   /// The Job queue is a simple FIFO of Futures that complete in-order.
-  Queue<Completer<Reply>> replyQueue = new Queue<Completer<Reply>>();
+  Queue<Completer<Reply>> _replyQueue = new Queue<Completer<Reply>>();
 
   Function onDone = () => null;
 
@@ -50,26 +50,26 @@ class Connection {
    * Performs Socket-post-mortem cleanup.
    */
   void _onDone() {
-    this.apiJobQueue.clear();
-    this.replyQueue.clear();
-    this._eventStream.close();
-    this._requestStream.close();
-    this._socketListener.cancel();
+    _apiJobQueue.clear();
+    _replyQueue.clear();
+    _eventStream.close();
+    _requestStream.close();
+    _socketListener.cancel();
 
-    this.onDone();
+    onDone();
   }
 
-  Future<Socket> connect(String hostname, int port) {
-    return Socket.connect(hostname, port).then((Socket socket) {
-      this._socket = socket;
+  Future<Socket> connect(String hostname, int port) async {
+    _socket = await Socket.connect(hostname, port);
 
-      this._socketListener = this
-          ._socket
-          .transform(new PacketTransformer())
-          .listen(_dispatch, onDone: _onDone);
+    if (_socketListener != null) {
+      await _socketListener.cancel();
+    }
+    _socketListener = _socket
+        .transform(new PacketTransformer())
+        .listen(_dispatch, onDone: _onDone);
 
-      return this._socket;
-    });
+    return _socket;
   }
 
   /**
@@ -79,9 +79,9 @@ class Connection {
    */
   Future<Response> api(String command, {int timeoutSeconds: 10}) {
     Completer<Response> completer = new Completer<Response>();
-    this.apiJobQueue.addLast(completer);
+    _apiJobQueue.addLast(completer);
 
-    return this._sendSerializedCommand(
+    return _sendSerializedCommand(
         'api $command', completer, new Duration(seconds: timeoutSeconds));
   }
 
@@ -91,14 +91,14 @@ class Connection {
    * https://freeswitch.org/confluence/display/FREESWITCH/mod_commands
    */
   Future<Reply> bgapi(String command, {int timeoutSeconds: 10}) =>
-      this._subscribeAndSendCommand(
+      _subscribeAndSendCommand(
           'bgapi ${command}', new Duration(seconds: timeoutSeconds));
 
   /**
    * Authenticate on the FreeSWITCH server.
    */
   Future<Reply> authenticate(String password, {int timeoutSeconds: 10}) =>
-      this._subscribeAndSendCommand(
+      _subscribeAndSendCommand(
           'auth ${password}', new Duration(seconds: timeoutSeconds));
 
   /**
@@ -107,15 +107,13 @@ class Connection {
    * to the channel has been received by the socket client.
    */
   Future<Reply> linger({int timeoutSeconds: 10}) =>
-      this._subscribeAndSendCommand(
-          'linger', new Duration(seconds: timeoutSeconds));
+      _subscribeAndSendCommand('linger', new Duration(seconds: timeoutSeconds));
 
   /**
    * Disable socket lingering. See linger above.
    */
-  Future<Reply> nolinger({int timeoutSeconds: 10}) =>
-      this._subscribeAndSendCommand(
-          'nolinger', new Duration(seconds: timeoutSeconds));
+  Future<Reply> nolinger({int timeoutSeconds: 10}) => _subscribeAndSendCommand(
+      'nolinger', new Duration(seconds: timeoutSeconds));
 
   /**
    * Subscribe the socket to [events], which will be pumped into the
@@ -129,7 +127,7 @@ class Connection {
           '${EventFormat.supportedFormats.join(', ')}'));
     }
 
-    return this._subscribeAndSendCommand('event ${format} ${events.join(' ')}',
+    return _subscribeAndSendCommand('event ${format} ${events.join(' ')}',
         new Duration(seconds: timeoutSeconds));
   }
 
@@ -148,7 +146,7 @@ class Connection {
           '${EventFormat.supportedFormats.join(', ')}'));
     }
 
-    return this._subscribeAndSendCommand(
+    return _subscribeAndSendCommand(
         'myevents $uuid', new Duration(seconds: timeoutSeconds));
   }
 
@@ -158,27 +156,27 @@ class Connection {
    * event socket.
    */
   Future<Reply> divert_events(bool on, {int timeoutSeconds: 10}) =>
-      this._subscribeAndSendCommand('divert_events ${on ? 'on': 'off'}',
+      _subscribeAndSendCommand('divert_events ${on ? 'on': 'off'}',
           new Duration(seconds: timeoutSeconds));
 
   /**
    * Close the socket connection.
    */
-  Future<Reply> exit({int timeoutSeconds: 10}) => this
-      ._subscribeAndSendCommand('exit', new Duration(seconds: timeoutSeconds));
+  Future<Reply> exit({int timeoutSeconds: 10}) =>
+      _subscribeAndSendCommand('exit', new Duration(seconds: timeoutSeconds));
 
   /**
    * Enable log output. Levels same as the console.conf values
    */
   Future<Reply> logLevel(int level, {int timeoutSeconds: 10}) =>
-      this._subscribeAndSendCommand(
+      _subscribeAndSendCommand(
           'log $level', new Duration(seconds: timeoutSeconds));
 
   /**
    * Disable log output previously enabled by the log command.
    */
-  Future<Reply> nolog({int timeoutSeconds: 10}) => this
-      ._subscribeAndSendCommand('nolog', new Duration(seconds: timeoutSeconds));
+  Future<Reply> nolog({int timeoutSeconds: 10}) =>
+      _subscribeAndSendCommand('nolog', new Duration(seconds: timeoutSeconds));
 
   /**
    * Specify event types to listen for. Note, this is not a filter out but
@@ -187,7 +185,7 @@ class Connection {
    */
   Future<Reply> filter(String eventHeader, String valueToFilter,
           {int timeoutSeconds: 10}) =>
-      this._subscribeAndSendCommand('filter $eventHeader $valueToFilter',
+      _subscribeAndSendCommand('filter $eventHeader $valueToFilter',
           new Duration(seconds: timeoutSeconds));
 
   /**
@@ -200,14 +198,14 @@ class Connection {
    */
   Future<Reply> filterDelete(String eventHeader, String valueToFilter,
           {int timeoutSeconds: 10}) =>
-      this._subscribeAndSendCommand('filter delete $eventHeader $valueToFilter',
+      _subscribeAndSendCommand('filter delete $eventHeader $valueToFilter',
           new Duration(seconds: timeoutSeconds));
 
   /**
    * Send an event into the event system (multi line input for headers)
    */
   Future<Reply> sendevent(String eventName, {int timeoutSeconds: 10}) =>
-      this._subscribeAndSendCommand(
+      _subscribeAndSendCommand(
           'sendevent $eventName', new Duration(seconds: timeoutSeconds));
 
   /**
@@ -216,14 +214,13 @@ class Connection {
    * of event.
    */
   Future<Reply> nixevent(String eventTypes, {int timeoutSeconds: 10}) =>
-      this._subscribeAndSendCommand(
+      _subscribeAndSendCommand(
           'nixevent $eventTypes', new Duration(seconds: timeoutSeconds));
   /**
    * Disable all events that were previously enabled with event.
    */
-  Future<Reply> noEvents({int timeoutSeconds: 10}) =>
-      this._subscribeAndSendCommand(
-          'noevents', new Duration(seconds: timeoutSeconds));
+  Future<Reply> noEvents({int timeoutSeconds: 10}) => _subscribeAndSendCommand(
+      'noevents', new Duration(seconds: timeoutSeconds));
 
   /**
    * Convenience function to avoid having to handle this on every
@@ -231,9 +228,9 @@ class Connection {
    */
   Future<Reply> _subscribeAndSendCommand(String command, Duration timeout) {
     Completer<Reply> completer = new Completer<Reply>();
-    this.replyQueue.addLast(completer);
+    _replyQueue.addLast(completer);
 
-    return this._sendSerializedCommand(command, completer, timeout);
+    return _sendSerializedCommand(command, completer, timeout);
   }
 
   /**
@@ -242,13 +239,13 @@ class Connection {
   Future _sendSerializedCommand(
       String command, Completer completer, Duration timeout) {
     /// Write the command to socket.
-    this.log.finest('Sending "${command}"');
+    log.finest('Sending "${command}"');
 
     try {
-      this._socket.writeln('${command}\n');
+      _socket.writeln('${command}\n');
     } catch (error, stackTrace) {
       log.shout('Failed to send command "${command}"', error, stackTrace);
-      this._shutdown();
+      _shutdown();
       return new Future.error(new StateError('Failed to write to socket.'));
     }
 
@@ -272,32 +269,32 @@ class Connection {
   /**
    * Perform a hard socket disconnect.
    */
-  Future disconnect() => this._socket.close();
+  Future disconnect() => _socket.close();
 
   /**
    * Dispatches a packet by injecting it into the appropriate stream.
    */
   void _dispatch(Packet packet) {
     if (packet.isEvent) {
-      this._eventStream.add(new Event.fromPacket(packet));
+      _eventStream.add(new Event.fromPacket(packet));
     } else if (packet.isRequest) {
-      this._requestStream.add(new Request.fromPacket(packet));
+      _requestStream.add(new Request.fromPacket(packet));
     } else if (packet.isReply) {
-      Completer<Reply> completer = this.replyQueue.removeFirst();
+      Completer<Reply> completer = _replyQueue.removeFirst();
       if (!completer.isCompleted) {
         completer.complete(new Reply.fromPacket(packet));
       } else {
-        this.log.info('Discarding packet for timed out command.');
+        log.info('Discarding packet for timed out command.');
       }
     } else if (packet.isResponse) {
-      Completer<Response> completer = this.apiJobQueue.removeFirst();
+      Completer<Response> completer = _apiJobQueue.removeFirst();
       if (!completer.isCompleted) {
         completer.complete(new Response.fromPacketBody(packet.content.trim()));
       } else {
-        this.log.info('Discarding packet for timed out api command.');
+        log.info('Discarding packet for timed out api command.');
       }
     } else {
-      this.log.severe('Discarding unknown packet type ${packet.contentType}');
+      log.severe('Discarding unknown packet type ${packet.contentType}');
     }
   }
 }
