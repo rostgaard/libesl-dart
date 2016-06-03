@@ -90,9 +90,14 @@ class Connection {
    * Command reference can be found at;
    * https://freeswitch.org/confluence/display/FREESWITCH/mod_commands
    */
-  Future<Reply> bgapi(String command, {int timeoutSeconds: 10}) =>
-      _subscribeAndSendCommand(
-          'bgapi ${command}', new Duration(seconds: timeoutSeconds));
+  Future<Reply> bgapi(String command,
+      {String jobUuid: '', int timeoutSeconds: 10}) {
+    final String commandString =
+        '${command}' + (jobUuid.isNotEmpty ? '\nJob-UUID: ${jobUuid}' : '');
+
+    return _subscribeAndSendCommand(
+        'bgapi ${commandString}', new Duration(seconds: timeoutSeconds));
+  }
 
   /**
    * Authenticate on the FreeSWITCH server.
