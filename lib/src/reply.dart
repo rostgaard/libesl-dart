@@ -5,25 +5,23 @@
 part of esl;
 
 class Reply extends Packet {
-
   Reply.fromPacket(Packet packet) {
-    this.headers = packet.headers;
+    headers = packet.headers;
   }
 
   static const String OK = Response.OK;
   static const String ERROR = Response.ERROR;
   static const String UNKNOWN = Response.UNKNOWN;
 
-  String get replyRaw => this.headers['Reply-Text'];
+  String get replyRaw => headers['Reply-Text'];
 
   String get status {
-    if (this.replyRaw.startsWith(OK)) {
+    if (replyRaw.startsWith(OK)) {
       return OK;
-    } else if (this.replyRaw.startsWith(ERROR)) {
+    } else if (replyRaw.startsWith(ERROR)) {
       return ERROR;
     } else {
       return UNKNOWN;
     }
   }
-
 }

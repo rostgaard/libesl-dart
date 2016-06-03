@@ -17,7 +17,7 @@ class PacketTransformer implements StreamTransformer<List<int>, Packet> {
   final StreamController<Packet> _controller = new StreamController<Packet>();
   Packet _currentPacket = new Packet();
   List<int> headerBuffer = [];
-  List<int> bodyBuffer   = [];
+  List<int> bodyBuffer = [];
   bool _readingHeader = true;
   int _contentLength = 0;
   int _currentChar;
@@ -25,7 +25,7 @@ class PacketTransformer implements StreamTransformer<List<int>, Packet> {
 
   @override
   Stream<Packet> bind(Stream<List<int>> stream) {
-    stream.listen(_onData, onDone: this._controller.close);
+    stream.listen(_onData, onDone: _controller.close);
     return _controller.stream;
   }
 
@@ -34,7 +34,6 @@ class PacketTransformer implements StreamTransformer<List<int>, Packet> {
    * Supports segmented transfers, such as TCP buffers.
    */
   void _onData(List<int> bytes) {
-
     for (int offset = 0; offset < bytes.length; offset++) {
       int lastChar = _currentChar;
       _currentChar = bytes[offset];
@@ -48,18 +47,17 @@ class PacketTransformer implements StreamTransformer<List<int>, Packet> {
               bodyBuffer = [];
             } else {
               if (!_currentPacket.hasHeader('Content-Type') &&
-                   _currentPacket.headers.isNotEmpty) {
-                this._controller.sink.addError
-                  (new StateError
-                      ('Bad header received: ${_currentPacket.headers}'));
+                  _currentPacket.headers.isNotEmpty) {
+                _controller.sink.addError(new StateError(
+                    'Bad header received: ${_currentPacket.headers}'));
               }
+
               /// Skip empty lines.
               else if (_currentPacket.headers.isNotEmpty) {
-                this._controller.sink.add(_currentPacket);
+                _controller.sink.add(_currentPacket);
               }
               _currentPacket = new Packet();
             }
-
           } else {
             String headerLine = new String.fromCharCodes(headerBuffer);
 
@@ -68,22 +66,20 @@ class PacketTransformer implements StreamTransformer<List<int>, Packet> {
               int splitIndex = headerLine.indexOf(':');
               if (splitIndex > 0) {
                 String key = headerLine.substring(0, splitIndex);
-                String value = headerLine.substring(splitIndex+1);
-                _currentPacket.addHeader(key.trim(),
-                                         value.trim());
+                String value = headerLine.substring(splitIndex + 1);
+                _currentPacket.addHeader(key.trim(), value.trim());
               } else {
-                this._controller.addError
-                  (new StateError ('Skipping invalid buffer: "${headerLine}"'));
+                _controller.addError(
+                    new StateError('Skipping invalid buffer: "${headerLine}"'));
               }
             }
           }
           headerBuffer = [];
-
         } else {
           headerBuffer.add(_currentChar);
         }
       } else {
-        assert (_currentPacket.contentLength > 0);
+        assert(_currentPacket.contentLength > 0);
         bodyBuffer.add(_currentChar);
         _contentLength++;
         if (_contentLength == _currentPacket.contentLength) {
@@ -91,11 +87,12 @@ class PacketTransformer implements StreamTransformer<List<int>, Packet> {
           _readingHeader = true;
 
           /// Sink on the packet.
-          this._controller.sink.add(_currentPacket);
+          _controller.sink.add(_currentPacket);
 
           /// Clear the state.
           bodyBuffer = [];
-          _currentPacket = new Packet();}
+          _currentPacket = new Packet();
+        }
       }
     }
   }
