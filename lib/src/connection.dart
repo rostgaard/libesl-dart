@@ -26,8 +26,11 @@ class Connection {
 
   Socket _socket = null;
 
-  StreamController<Event> _eventStream = new StreamController.broadcast();
-  StreamController<Request> _requestStream = new StreamController.broadcast();
+  final StreamController<Event> _eventStream = new StreamController.broadcast();
+  final StreamController<Request> _requestStream =
+      new StreamController.broadcast();
+  final StreamController<Packet> _noticeStream =
+      new StreamController.broadcast();
 
   /**
    * Notice that this is a broadcast stream, and multiple listeners will
@@ -35,6 +38,7 @@ class Connection {
    */
   Stream<Event> get eventStream => _eventStream.stream;
   Stream<Request> get requestStream => _requestStream.stream;
+  Stream<Packet> get noticeStream => _noticeStream.stream;
 
   /// The Job queue is a simple FIFO of Futures that complete in-order.
   Queue<Completer<Response>> _apiJobQueue = new Queue<Completer<Response>>();
@@ -298,6 +302,8 @@ class Connection {
       } else {
         log.info('Discarding packet for timed out api command.');
       }
+    } else if (packet.isNotice) {
+      _noticeStream.add(packet);
     } else {
       log.severe('Discarding unknown packet type ${packet.contentType}');
     }

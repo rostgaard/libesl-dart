@@ -8,6 +8,7 @@ abstract class ContentType {
   static const String Text_Event_Plain = "text/event-plain";
   static const String Text_Event_JSON = "text/event-json";
   static const String Text_Event_Xml = "text/event-xml";
+  static const String Text_Disconnect_Notice = 'text/disconnect-notice';
 
   static const String Auth_Request = "auth/request";
 
@@ -19,8 +20,9 @@ abstract class ContentType {
     Text_Event_Plain,
     Text_Event_Xml
   ];
-  static final List<String> Requests = [Auth_Request];
-  static final List<String> Responses = [API_Reponse];
+  static const List<String> Requests = const [Auth_Request];
+  static const List<String> Responses = const [API_Reponse];
+  static const List<String> Notices = const [Text_Disconnect_Notice];
 }
 
 class Packet {
@@ -46,6 +48,7 @@ class Packet {
   bool get isRequest => ContentType.Requests.contains(contentType);
   bool get isResponse => ContentType.Responses.contains(contentType);
   bool get eventType => ContentType.Event_Types.contains(contentType);
+  bool get isNotice => ContentType.Notices.contains(contentType);
 
   bool hasHeader(String key) => headers.containsKey(key);
 
