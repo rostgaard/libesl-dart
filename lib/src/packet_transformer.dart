@@ -21,7 +21,7 @@ class PacketTransformer implements StreamTransformer<List<int>, Packet> {
   bool _readingHeader = true;
   int _contentLength = 0;
   int _currentChar;
-  static final int NEWLINE = '\n'.codeUnits.first;
+  static final int _newLine = '\n'.codeUnits.first;
 
   @override
   Stream<Packet> bind(Stream<List<int>> stream) {
@@ -39,8 +39,8 @@ class PacketTransformer implements StreamTransformer<List<int>, Packet> {
       _currentChar = bytes[offset];
 
       if (_readingHeader) {
-        if (_currentChar == NEWLINE) {
-          if (lastChar == NEWLINE) {
+        if (_currentChar == _newLine) {
+          if (lastChar == _newLine) {
             if (_currentPacket.hasHeader('Content-Length')) {
               _readingHeader = false;
               _contentLength = 0;

@@ -20,7 +20,7 @@ class Result {
 List l = [];
 var ost = l.join('2');
 
-Future<bool> packet_transformer() {
+Future<bool> packetTransformer() {
   String testDataPath = './test_data/';
   StreamController<Result> resultStream = new StreamController<Result>();
   int fileCount = 0;

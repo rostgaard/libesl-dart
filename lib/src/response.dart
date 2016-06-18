@@ -9,29 +9,38 @@ part of esl;
  */
 class Response {
   /// String constants that map to responses.
+  @deprecated
   static const String OK = '+OK';
+  @deprecated
   static const String ERROR = '-ERR';
+  @deprecated
   static const String USAGE = '-USAGE';
+  @deprecated
   static const String UNKNOWN = '';
+
+  static const String ok = '+OK';
+  static const String error = '-ERR';
+  static const String usage = '-USAGE';
+  static const String unknown = '';
 
   final String rawBody;
 
   Response.fromPacketBody(String this.rawBody);
 
   /**
-   * The status of the response. Can be either [OK], [ERROR] or [UNKNOWN].
+   * The status of the response. Can be either [ok], [error] or [unknown].
    */
   String get status {
     String lastLine = rawBody.split('\n').last;
 
-    if (lastLine.startsWith(OK)) {
-      return OK;
-    } else if (lastLine.startsWith(ERROR)) {
-      return ERROR;
-    } else if (lastLine.startsWith(USAGE)) {
-      return USAGE;
+    if (lastLine.startsWith(ok)) {
+      return ok;
+    } else if (lastLine.startsWith(error)) {
+      return error;
+    } else if (lastLine.startsWith(usage)) {
+      return usage;
     } else {
-      return UNKNOWN;
+      return unknown;
     }
   }
 
@@ -41,8 +50,8 @@ class Response {
   String get channelUUID {
     String lastLine = rawBody.split('\n').last;
 
-    if (lastLine.startsWith(OK)) {
-      return lastLine.substring(OK.length, lastLine.length).trim();
+    if (lastLine.startsWith(ok)) {
+      return lastLine.substring(ok.length, lastLine.length).trim();
     } else {
       throw new StateError('Response does not carry channel information. '
           'Raw body: ${rawBody}');

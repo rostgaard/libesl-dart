@@ -20,7 +20,7 @@ class ChannelList extends IterableBase<Channel> {
   void reload(Iterable<Channel> channels) {
     _channelStorage.clear();
     channels.forEach((Channel channel) {
-      _channelStorage[channel.UUID] = channel;
+      _channelStorage[channel.uuid] = channel;
     });
   }
 
@@ -30,26 +30,26 @@ class ChannelList extends IterableBase<Channel> {
    * associated with channel (variables and fields) with the new information.
    */
   void update(Channel channel) {
-    if (!_channelStorage.containsKey(channel.UUID)) {
+    if (!_channelStorage.containsKey(channel.uuid)) {
       _add(channel);
     } else {
-      Channel oldChannel = _channelStorage[channel.UUID];
+      Channel oldChannel = _channelStorage[channel.uuid];
 
       if (channel.variables.isEmpty) {
-        _channelStorage[channel.UUID] =
+        _channelStorage[channel.uuid] =
             new Channel.assemble(channel.fields, oldChannel.variables);
       } else {
-        _channelStorage[channel.UUID] = channel;
+        _channelStorage[channel.uuid] = channel;
       }
     }
 
-    if (channel.state == ChannelState.DESTROY) {
+    if (channel.state == _ChannelState._destroy) {
       _remove(channel);
     }
   }
 
   void _add(Channel channel) {
-    _channelStorage[channel.UUID] = channel;
+    _channelStorage[channel.uuid] = channel;
   }
 
   /**
@@ -59,6 +59,6 @@ class ChannelList extends IterableBase<Channel> {
   Channel get(String channelID) => _channelStorage[channelID];
 
   void _remove(Channel channel) {
-    _channelStorage.remove(channel.UUID);
+    _channelStorage.remove(channel.uuid);
   }
 }

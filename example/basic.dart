@@ -11,7 +11,7 @@ import 'package:logging/logging.dart';
 
 ESL.PeerList peerList = null;
 
-main() {
+main() async {
   /* Changing the root log level propagates to libesl-dart.*/
   Logger.root.level = Level.ALL;
 
@@ -34,17 +34,10 @@ main() {
            blocks to schedule subsequent command or API calls when
            the authentication returns properly. */
         conn
-            .authenticate('1234')
+            .authenticate('openreception-tests')
             .then(checkAuthentication)
-            .then((_) => conn.event(['all'], format: ESL.EventFormat.Json))
-            .then((_) => conn.api('list_users'))
-            .then((packet) =>
-                print(new ESL.PeerList.fromMultilineBuffer(packet.rawBody)))
-            .then((_) {
-              List<int> sequence = new List.generate(100, (int index) => index);
-              return Future.wait(sequence.map((int i) => sendRequest(i, conn)));
-            })
-            .then((_) => conn.api('status').then(print))
+            .then((_) =>
+                conn.event(['BACKGROUND_JOB'], format: ESL.EventFormat.Json))
             .catchError((e) => print(e));
         break;
 
@@ -59,6 +52,7 @@ main() {
   ESL.ChannelList channelList = new ESL.ChannelList();
 
   conn.eventStream.listen((ESL.Event event) {
+    print(event.content);
     switch (event.eventName) {
       case ("CUSTOM"):
         ESL.Channel channel = new ESL.Channel.fromPacket(event);
@@ -70,12 +64,16 @@ main() {
     }
   });
 
+  conn.noticeStream.listen((packet) => print(packet.contentType));
+
   void signalDisconnect() => print('Disconnected!');
 
   print('Connecting...');
-  conn
-    ..onDone = signalDisconnect
-    ..connect('localhost', 8021).whenComplete(() => print('Connected!'));
+  conn.onDone = signalDisconnect;
+  await conn.connect('localhost', 8021).whenComplete(() => print('Connected!'));
+
+  await new Future.delayed(new Duration(seconds: 1));
+  print(await conn.bgapi('status'));
 }
 
 void checkAuthentication(ESL.Reply reply) {

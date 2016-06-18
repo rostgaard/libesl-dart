@@ -9,19 +9,26 @@ class Reply extends Packet {
     headers = packet.headers;
   }
 
-  static const String OK = Response.OK;
-  static const String ERROR = Response.ERROR;
-  static const String UNKNOWN = Response.UNKNOWN;
+  @deprecated
+  static const String OK = ok;
+  @deprecated
+  static const String ERROR = error;
+  @deprecated
+  static const String UNKNOWN = unknown;
+
+  static const String ok = Response.ok;
+  static const String error = Response.error;
+  static const String unknown = Response.unknown;
 
   String get replyRaw => headers['Reply-Text'];
 
   String get status {
-    if (replyRaw.startsWith(OK)) {
-      return OK;
-    } else if (replyRaw.startsWith(ERROR)) {
-      return ERROR;
+    if (replyRaw.startsWith(ok)) {
+      return ok;
+    } else if (replyRaw.startsWith(error)) {
+      return error;
     } else {
-      return UNKNOWN;
+      return unknown;
     }
   }
 }
