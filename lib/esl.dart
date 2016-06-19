@@ -13,7 +13,7 @@ import 'dart:convert';
 import 'dart:collection';
 import 'package:logging/logging.dart';
 
-export 'src/connection_pool.dart';
+//export 'src/connection_pool.dart';
 
 part 'src/channel.dart';
 part 'src/channel_list.dart';
