@@ -5,7 +5,7 @@
 part of esl;
 
 /**
- * Class representing a reponse received from the FreeSWTICH event socket.
+ * Class representing a reponse received from the FreeSWITCH event socket.
  */
 class Response {
   /// String constants that map to responses.
