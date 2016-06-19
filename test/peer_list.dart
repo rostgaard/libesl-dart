@@ -11,8 +11,8 @@ void parsePeerBuffer() {
     if (peer.callgroup == null) {
       throw new ArgumentError('peer.callgroup == null!');
     }
-    if (peer.ID.isEmpty) {
-      throw new ArgumentError('peer.ID.isEmpty!');
+    if (peer.id.isEmpty) {
+      throw new ArgumentError('peer.id.isEmpty!');
     }
     if (peer.context == null) {
       throw new ArgumentError('peer.context == null!');

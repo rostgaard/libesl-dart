@@ -6,7 +6,7 @@ abstract class Response {
 
     ESL.Response response = new ESL.Response.fromPacketBody(buffer);
 
-    expect(response.status, equals(ESL.Response.USAGE));
+    expect(response.status, equals(ESL.Response.usage));
   }
 
   static void detectsError() {
@@ -14,7 +14,7 @@ abstract class Response {
 
     ESL.Response response = new ESL.Response.fromPacketBody(buffer);
 
-    expect(response.status, equals(ESL.Response.ERROR));
+    expect(response.status, equals(ESL.Response.error));
   }
 
   static void detectsOK() {
@@ -22,6 +22,6 @@ abstract class Response {
 
     ESL.Response response = new ESL.Response.fromPacketBody(buffer);
 
-    expect(response.status, equals(ESL.Response.OK));
+    expect(response.status, equals(ESL.Response.ok));
   }
 }

@@ -13,7 +13,13 @@ class Peer {
   DateTime _lastSeen = null;
 
   /// Getters
-  String get ID => _map['userid'];
+  @deprecated
+  String get ID => id;
+  String get id => _map['userid'];
+  set id(String newId) {
+    _map['userid'] = newId;
+  }
+
   set ID(String newID) {
     _map['userid'] = newID;
   }
@@ -29,7 +35,7 @@ class Peer {
   String get effectiveCallerIdName => _map['effective_caller_id_name'];
   String get effectiveCallerIdNumber => _map['effective_caller_id_number'];
   List<String> get groups => _groups;
-  String get key => ID;
+  String get key => id;
   DateTime get lastSeen => _lastSeen;
   bool get registered => contact != null;
 
@@ -65,7 +71,7 @@ class Peer {
     _lastSeen = new DateTime.now();
   }
 
-  static makeKey(String ID) => ID;
+  static makeKey(String id) => id;
 
   void mergeGroups(Peer other) {
     other.groups.forEach((String group) {
@@ -92,9 +98,8 @@ class Peer {
    * fields must thus match for two Peer object to be identical.
    */
   @override
-  bool operator ==(Peer other) {
-    return ID == other.ID && domain == other.domain;
-  }
+  bool operator ==(Object other) =>
+      other is Peer && id == other.id && domain == other.domain;
 
   /**
    *

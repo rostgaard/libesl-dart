@@ -19,7 +19,7 @@ class PeerList extends IterableBase<Peer> {
    * Iterator forward. We can ignore the keys as they are also stored inside
    * the [Peer] object.
    */
-  Iterator get iterator => _map.values.iterator;
+  Iterator<Peer> get iterator => _map.values.iterator;
 
   /**
    * Creates a new empty [PeerList].

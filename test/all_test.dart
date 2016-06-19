@@ -20,7 +20,7 @@ main() {
   group('Parsing', () {
     test('PeerList.fromMultilineBuffer', parsePeerBuffer);
     test('PacketTransformer (text files)', () {
-      expect(packet_transformer(), completion(isNotNull));
+      expect(packetTransformer(), completion(isNotNull));
     });
 
     test('Response (detects -USAGE)', Response.detectsUsage);

@@ -7,20 +7,20 @@ part of esl;
 /**
  * 'Enum' type representing channel states.
  */
-abstract class ChannelState {
-  static const String NEW = "CS_NEW";
-  static const String INIT = "CS_INIT";
-  static const String ROUTING = "CS_ROUTING";
-  static const String SOFT_EXECUTE = "CS_SOFT_EXECUTE";
-  static const String EXECUTE = "CS_EXECUTE";
-  static const String EXCHANGE_MEDIA = "CS_EXCHANGE_MEDIA";
-  static const String PARK = "CS_PARK";
-  static const String CONSUME_MEDIA = "CS_CONSUME_MEDIA";
-  static const String HIBERNATE = "CS_HIBERNATE";
-  static const String RESET = "CS_RESET";
-  static const String HANGUP = "CS_HANGUP";
-  static const String REPORTING = "CS_REPORTING";
-  static const String DESTROY = "CS_DESTROY";
+abstract class _ChannelState {
+  // static const String _new = "CS_NEW";
+  // static const String _init = "CS_INIT";
+  // static const String _routing = "CS_ROUTING";
+  // static const String _softExecute = "CS_SOFT_EXECUTE";
+  // static const String _execute = "CS_EXECUTE";
+  // static const String _exchangeMedia = "CS_EXCHANGE_MEDIA";
+  // static const String _park = "CS_PARK";
+  // static const String _consume_media = "CS_CONSUME_MEDIA";
+  // static const String _hibernate = "CS_HIBERNATE";
+  // static const String _reset = "CS_RESET";
+  // static const String _hangup = "CS_HANGUP";
+  // static const String _reporting = "CS_REPORTING";
+  static const String _destroy = "CS_DESTROY";
 }
 
 /**
@@ -46,7 +46,12 @@ class Channel {
 
   Map<String, String> _fields = new Map<String, String>();
   Map<String, dynamic> _variables = new Map<String, dynamic>();
-  String get UUID => _fields['Unique-ID'];
+
+  @deprecated
+  String get UUID => uuid;
+
+  String get uuid => _fields['Unique-ID'];
+
   String get state => _fields['Channel-State'];
   Map<String, String> get fields => _fields;
   Map<String, dynamic> get variables => _variables;
@@ -91,16 +96,15 @@ class Channel {
    * - regardless of state.
    */
   @override
-  bool operator ==(Channel other) {
-    return UUID.toLowerCase() == other.UUID.toLowerCase();
-  }
+  bool operator ==(Object other) =>
+      other is Channel && uuid.toLowerCase() == other.uuid.toLowerCase();
 
   /**
    * Hashcode follows the convention from the [==] operator.
    */
   @override
   int get hashCode {
-    return UUID.toLowerCase().hashCode;
+    return uuid.toLowerCase().hashCode;
   }
 
   /**

@@ -5,7 +5,7 @@
 part of esl;
 
 class Event extends Packet {
-  static final String _variable_prefix = 'variable_';
+  static final String _variablePrefix = 'variable_';
 
   Channel _channel = null;
 
@@ -29,7 +29,7 @@ class Event extends Packet {
    * May return List or String.
    */
   dynamic variable(String key) {
-    return contentAsMap['${_variable_prefix}key'];
+    return contentAsMap['${_variablePrefix}key'];
   }
 
   Channel get channel =>

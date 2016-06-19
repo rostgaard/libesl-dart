@@ -5,23 +5,52 @@
 part of esl;
 
 abstract class ContentType {
+  static const String textEventPlain = "text/event-plain";
+  static const String textEventJson = "text/event-json";
+  static const String textEventXml = "text/event-xml";
+  static const String textDisconnectNotice = 'text/disconnect-notice';
+
+  static const String authRequest = "auth/request";
+
+  static const String apiReponse = "api/response";
+  static const String commandReply = "command/reply";
+
+  static final List<String> eventTypes = [
+    textEventJson,
+    textEventPlain,
+    textEventXml
+  ];
+
+  static const List<String> requests = const [authRequest];
+  static const List<String> responses = const [apiReponse];
+  static const List<String> notices = const [textDisconnectNotice];
+
+  @deprecated
   static const String Text_Event_Plain = "text/event-plain";
+  @deprecated
   static const String Text_Event_JSON = "text/event-json";
+  @deprecated
   static const String Text_Event_Xml = "text/event-xml";
+  @deprecated
   static const String Text_Disconnect_Notice = 'text/disconnect-notice';
-
+  @deprecated
   static const String Auth_Request = "auth/request";
-
+  @deprecated
   static const String API_Reponse = "api/response";
+  @deprecated
   static const String Command_Reply = "command/reply";
 
+  @deprecated
   static final List<String> Event_Types = [
     Text_Event_JSON,
     Text_Event_Plain,
     Text_Event_Xml
   ];
+  @deprecated
   static const List<String> Requests = const [Auth_Request];
+  @deprecated
   static const List<String> Responses = const [API_Reponse];
+  @deprecated
   static const List<String> Notices = const [Text_Disconnect_Notice];
 }
 
@@ -32,7 +61,7 @@ class Packet {
 
   Map<String, String> headers = null;
   String content = null;
-  Map<String, String> contentMap = null;
+  Map<String, dynamic> contentMap = null;
 
   Packet() {
     headers = {};
@@ -58,11 +87,11 @@ class Packet {
 
   String field(String key) => contentAsMap[key];
 
-  Map<String, String> get contentAsMap {
+  Map<String, dynamic> get contentAsMap {
     if (contentType == ContentType.Text_Event_JSON) {
       if (contentMap == null) {
         try {
-          contentMap = JSON.decode(content);
+          contentMap = JSON.decode(content) as Map<String, dynamic>;
         } catch (error, stacktrace) {
           log.severe(
               'Failed to parse following packet content as JSON '
