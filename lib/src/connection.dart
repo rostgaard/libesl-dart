@@ -81,12 +81,14 @@ class Connection {
    * Command reference can be found at;
    * https://freeswitch.org/confluence/display/FREESWITCH/mod_commands
    */
-  Future<Response> api(String command, {int timeoutSeconds: 10}) {
+  Future<Response> api(String command, {int timeoutSeconds: 10}) async {
     Completer<Response> completer = new Completer<Response>();
     _apiJobQueue.addLast(completer);
 
-    return _sendSerializedCommand(
+    await _sendSerializedCommand(
         'api $command', completer, new Duration(seconds: timeoutSeconds));
+
+    return completer.future;
   }
 
   /**
@@ -235,11 +237,14 @@ class Connection {
    * Convenience function to avoid having to handle this on every
    * command interface.
    */
-  Future<Reply> _subscribeAndSendCommand(String command, Duration timeout) {
+  Future<Reply> _subscribeAndSendCommand(
+      String command, Duration timeout) async {
     Completer<Reply> completer = new Completer<Reply>();
     _replyQueue.addLast(completer);
 
-    return _sendSerializedCommand(command, completer, timeout);
+    await _sendSerializedCommand(command, completer, timeout);
+
+    return completer.future;
   }
 
   /**
