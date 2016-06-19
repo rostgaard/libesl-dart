@@ -9,15 +9,6 @@ part of esl;
  */
 class Response {
   /// String constants that map to responses.
-  @deprecated
-  static const String OK = '+OK';
-  @deprecated
-  static const String ERROR = '-ERR';
-  @deprecated
-  static const String USAGE = '-USAGE';
-  @deprecated
-  static const String UNKNOWN = '';
-
   static const String ok = '+OK';
   static const String error = '-ERR';
   static const String usage = '-USAGE';

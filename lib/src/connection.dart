@@ -10,19 +10,12 @@ abstract class EventFormat {
   static const String json = "json";
   static const String xml = "xml";
 
-  @deprecated
-  static const String Plain = plain;
-  @deprecated
-  static const String Json = json;
-  @deprecated
-  static const String Xml = xml;
-
   /**
    * As of now, only JSON format is supported. Most of the raw packet handling
    * is done internally, so the transport serialization should be insignificant
    * for the usage og the library.
    */
-  static List<String> supportedFormats = [Json, json];
+  static List<String> supportedFormats = [json];
 }
 
 /**
@@ -171,9 +164,6 @@ class Connection {
    * script would expect to get in the inputcallback to be diverted to the
    * event socket.
    */
-  @deprecated
-  Future<Reply> divert_events(bool on, {int timeoutSeconds: 10}) =>
-      divert_events(on, timeoutSeconds: timeoutSeconds);
   Future<Reply> divertEvents(bool on, {int timeoutSeconds: 10}) =>
       _subscribeAndSendCommand('divert_events ${on ? 'on': 'off'}',
           new Duration(seconds: timeoutSeconds));

@@ -28,7 +28,7 @@ main() async {
 
       /* An authentication request should be responded to be an
          authentication. This is an example on how to do it. */
-      case (ESL.ContentType.Auth_Request):
+      case (ESL.ContentType.authRequest):
 
         /* As the authentication call is a future, you can use .then
            blocks to schedule subsequent command or API calls when
@@ -37,7 +37,7 @@ main() async {
             .authenticate('openreception-tests')
             .then(checkAuthentication)
             .then((_) =>
-                conn.event(['BACKGROUND_JOB'], format: ESL.EventFormat.Json))
+                conn.event(['BACKGROUND_JOB'], format: ESL.EventFormat.json))
             .catchError((e) => print(e));
         break;
 
@@ -77,7 +77,7 @@ main() async {
 }
 
 void checkAuthentication(ESL.Reply reply) {
-  if (reply.status != ESL.Reply.OK) {
+  if (reply.status != ESL.Reply.ok) {
     throw new StateError('Invalid credentials!');
   }
 }

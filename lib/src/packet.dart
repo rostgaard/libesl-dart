@@ -24,34 +24,6 @@ abstract class ContentType {
   static const List<String> requests = const [authRequest];
   static const List<String> responses = const [apiReponse];
   static const List<String> notices = const [textDisconnectNotice];
-
-  @deprecated
-  static const String Text_Event_Plain = "text/event-plain";
-  @deprecated
-  static const String Text_Event_JSON = "text/event-json";
-  @deprecated
-  static const String Text_Event_Xml = "text/event-xml";
-  @deprecated
-  static const String Text_Disconnect_Notice = 'text/disconnect-notice';
-  @deprecated
-  static const String Auth_Request = "auth/request";
-  @deprecated
-  static const String API_Reponse = "api/response";
-  @deprecated
-  static const String Command_Reply = "command/reply";
-
-  @deprecated
-  static final List<String> Event_Types = [
-    Text_Event_JSON,
-    Text_Event_Plain,
-    Text_Event_Xml
-  ];
-  @deprecated
-  static const List<String> Requests = const [Auth_Request];
-  @deprecated
-  static const List<String> Responses = const [API_Reponse];
-  @deprecated
-  static const List<String> Notices = const [Text_Disconnect_Notice];
 }
 
 class Packet {
@@ -72,12 +44,13 @@ class Packet {
   int get contentLength =>
       hasHeader('Content-Length') ? int.parse(headers['Content-Length']) : 0;
 
-  bool get isEvent => ContentType.Event_Types.contains(contentType);
-  bool get isReply => ContentType.Command_Reply == contentType;
-  bool get isRequest => ContentType.Requests.contains(contentType);
-  bool get isResponse => ContentType.Responses.contains(contentType);
-  bool get eventType => ContentType.Event_Types.contains(contentType);
-  bool get isNotice => ContentType.Notices.contains(contentType);
+  bool get isEvent => ContentType.eventTypes.contains(contentType);
+  bool get isReply => ContentType.commandReply == contentType;
+  bool get isRequest => ContentType.requests.contains(contentType);
+  bool get isResponse => ContentType.responses.contains(contentType);
+  //TODO: Fix this
+  bool get eventType => ContentType.eventTypes.contains(contentType);
+  bool get isNotice => ContentType.notices.contains(contentType);
 
   bool hasHeader(String key) => headers.containsKey(key);
 
@@ -88,7 +61,7 @@ class Packet {
   String field(String key) => contentAsMap[key];
 
   Map<String, dynamic> get contentAsMap {
-    if (contentType == ContentType.Text_Event_JSON) {
+    if (contentType == ContentType.textEventJson) {
       if (contentMap == null) {
         try {
           contentMap = JSON.decode(content) as Map<String, dynamic>;
