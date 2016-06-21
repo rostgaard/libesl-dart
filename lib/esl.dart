@@ -27,5 +27,3 @@ part 'src/reply.dart';
 part 'src/request.dart';
 part 'src/response.dart';
 part 'src/utils.dart';
-
-const String libraryName = 'ESL';

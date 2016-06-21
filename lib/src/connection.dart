@@ -22,7 +22,7 @@ abstract class EventFormat {
  * FreeSWTICH event socket connection.
  */
 class Connection {
-  final Logger log = new Logger(libraryName);
+  final Logger log = new Logger('esl');
 
   Socket _socket = null;
 

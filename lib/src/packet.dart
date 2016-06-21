@@ -27,7 +27,7 @@ abstract class ContentType {
 }
 
 class Packet {
-  static final Logger log = new Logger('${libraryName}.Packet');
+  static final Logger log = new Logger('esl.Packet');
 
   static int count = 0;
 
