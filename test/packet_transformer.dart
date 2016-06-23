@@ -21,7 +21,7 @@ List l = [];
 var ost = l.join('2');
 
 Future<bool> packetTransformer() {
-  String testDataPath = './test_data/';
+  String testDataPath = 'test/test_data/';
   StreamController<Result> resultStream = new StreamController<Result>();
   int fileCount = 0;
   Completer<bool> testCompleter = new Completer<bool>();
