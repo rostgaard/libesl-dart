@@ -6,17 +6,14 @@ library esl.test;
 
 import 'dart:io' as IO;
 import 'dart:async';
-import 'package:unittest/unittest.dart';
+import 'package:test/test.dart';
 import 'package:esl/esl.dart' as ESL;
-import 'package:junitconfiguration/junitconfiguration.dart';
 
 part 'packet_transformer.dart';
 part 'peer_list.dart';
 part 'response.dart';
 
 main() {
-  JUnitConfiguration.install();
-
   group('Parsing', () {
     test('PeerList.fromMultilineBuffer', parsePeerBuffer);
     test('PacketTransformer (text files)', () {

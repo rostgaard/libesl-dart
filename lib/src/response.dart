@@ -5,19 +5,10 @@
 part of esl;
 
 /**
- * Class representing a reponse received from the FreeSWTICH event socket.
+ * Class representing a reponse received from the FreeSWITCH event socket.
  */
 class Response {
   /// String constants that map to responses.
-  @deprecated
-  static const String OK = '+OK';
-  @deprecated
-  static const String ERROR = '-ERR';
-  @deprecated
-  static const String USAGE = '-USAGE';
-  @deprecated
-  static const String UNKNOWN = '';
-
   static const String ok = '+OK';
   static const String error = '-ERR';
   static const String usage = '-USAGE';

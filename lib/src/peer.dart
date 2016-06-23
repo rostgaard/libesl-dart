@@ -13,15 +13,10 @@ class Peer {
   DateTime _lastSeen = null;
 
   /// Getters
-  @deprecated
-  String get ID => id;
+
   String get id => _map['userid'];
   set id(String newId) {
     _map['userid'] = newId;
-  }
-
-  set ID(String newID) {
-    _map['userid'] = newID;
   }
 
   String get context => _map['context'];

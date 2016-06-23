@@ -16,8 +16,8 @@ part of esl;
 class PacketTransformer implements StreamTransformer<List<int>, Packet> {
   final StreamController<Packet> _controller = new StreamController<Packet>();
   Packet _currentPacket = new Packet();
-  List<int> headerBuffer = [];
-  List<int> bodyBuffer = [];
+  List<int> _headerBuffer = [];
+  List<int> _bodyBuffer = [];
   bool _readingHeader = true;
   int _contentLength = 0;
   int _currentChar;
@@ -44,7 +44,7 @@ class PacketTransformer implements StreamTransformer<List<int>, Packet> {
             if (_currentPacket.hasHeader('Content-Length')) {
               _readingHeader = false;
               _contentLength = 0;
-              bodyBuffer = [];
+              _bodyBuffer = [];
             } else {
               if (!_currentPacket.hasHeader('Content-Type') &&
                   _currentPacket.headers.isNotEmpty) {
@@ -59,7 +59,7 @@ class PacketTransformer implements StreamTransformer<List<int>, Packet> {
               _currentPacket = new Packet();
             }
           } else {
-            String headerLine = new String.fromCharCodes(headerBuffer);
+            String headerLine = new String.fromCharCodes(_headerBuffer);
 
             /// Ignore short lines.
             if (headerLine.length > 1) {
@@ -74,23 +74,23 @@ class PacketTransformer implements StreamTransformer<List<int>, Packet> {
               }
             }
           }
-          headerBuffer = [];
+          _headerBuffer = [];
         } else {
-          headerBuffer.add(_currentChar);
+          _headerBuffer.add(_currentChar);
         }
       } else {
         assert(_currentPacket.contentLength > 0);
-        bodyBuffer.add(_currentChar);
+        _bodyBuffer.add(_currentChar);
         _contentLength++;
         if (_contentLength == _currentPacket.contentLength) {
-          _currentPacket.content = new String.fromCharCodes(bodyBuffer);
+          _currentPacket.content = new String.fromCharCodes(_bodyBuffer);
           _readingHeader = true;
 
           /// Sink on the packet.
           _controller.sink.add(_currentPacket);
 
           /// Clear the state.
-          bodyBuffer = [];
+          _bodyBuffer = [];
           _currentPacket = new Packet();
         }
       }

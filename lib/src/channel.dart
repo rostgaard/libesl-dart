@@ -47,9 +47,6 @@ class Channel {
   Map<String, String> _fields = new Map<String, String>();
   Map<String, dynamic> _variables = new Map<String, dynamic>();
 
-  @deprecated
-  String get UUID => uuid;
-
   String get uuid => _fields['Unique-ID'];
 
   String get state => _fields['Channel-State'];

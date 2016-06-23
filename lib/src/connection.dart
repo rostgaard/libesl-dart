@@ -10,26 +10,19 @@ abstract class EventFormat {
   static const String json = "json";
   static const String xml = "xml";
 
-  @deprecated
-  static const String Plain = plain;
-  @deprecated
-  static const String Json = json;
-  @deprecated
-  static const String Xml = xml;
-
   /**
    * As of now, only JSON format is supported. Most of the raw packet handling
    * is done internally, so the transport serialization should be insignificant
    * for the usage og the library.
    */
-  static List<String> supportedFormats = [Json, json];
+  static List<String> supportedFormats = [json];
 }
 
 /**
  * FreeSWTICH event socket connection.
  */
 class Connection {
-  final Logger log = new Logger(libraryName);
+  final Logger log = new Logger('esl');
 
   Socket _socket = null;
 
@@ -88,12 +81,14 @@ class Connection {
    * Command reference can be found at;
    * https://freeswitch.org/confluence/display/FREESWITCH/mod_commands
    */
-  Future<Response> api(String command, {int timeoutSeconds: 10}) {
+  Future<Response> api(String command, {int timeoutSeconds: 10}) async {
     Completer<Response> completer = new Completer<Response>();
     _apiJobQueue.addLast(completer);
 
-    return _sendSerializedCommand(
+    await _sendSerializedCommand(
         'api $command', completer, new Duration(seconds: timeoutSeconds));
+
+    return completer.future;
   }
 
   /**
@@ -171,9 +166,6 @@ class Connection {
    * script would expect to get in the inputcallback to be diverted to the
    * event socket.
    */
-  @deprecated
-  Future<Reply> divert_events(bool on, {int timeoutSeconds: 10}) =>
-      divert_events(on, timeoutSeconds: timeoutSeconds);
   Future<Reply> divertEvents(bool on, {int timeoutSeconds: 10}) =>
       _subscribeAndSendCommand('divert_events ${on ? 'on': 'off'}',
           new Duration(seconds: timeoutSeconds));
@@ -245,44 +237,39 @@ class Connection {
    * Convenience function to avoid having to handle this on every
    * command interface.
    */
-  Future<Reply> _subscribeAndSendCommand(String command, Duration timeout) {
+  Future<Reply> _subscribeAndSendCommand(
+      String command, Duration timeout) async {
     Completer<Reply> completer = new Completer<Reply>();
     _replyQueue.addLast(completer);
 
-    return _sendSerializedCommand(command, completer, timeout);
+    await _sendSerializedCommand(command, completer, timeout);
+
+    return completer.future;
   }
 
   /**
    * Send pre-serialized command.
    */
   Future _sendSerializedCommand(
-      String command, Completer completer, Duration timeout) {
+      String command, Completer completer, Duration timeout) async {
     /// Write the command to socket.
     log.finest('Sending "${command}"');
 
     try {
       _socket.writeln('${command}\n');
     } catch (error, stackTrace) {
-      log.shout('Failed to send command "${command}"', error, stackTrace);
-      _shutdown();
-      return new Future.error(new StateError('Failed to write to socket.'));
+      final msg = 'Failed to send command "${command}" - socket write failed.'
+          ' Error: $error';
+      log.shout(msg, error, stackTrace);
+      completer.completeError(new StateError(msg), stackTrace);
     }
 
-    return completer.future
-      ..timeout(timeout,
-          onTimeout: () => completer
-              .completeError(new TimeoutException('Failed to get response to '
-                  'command $command')));
-  }
-
-  /**
-   * Perform a graceful shutdown.
-   */
-  void _shutdown() {
     try {
-      disconnect();
-      _onDone();
-    } catch (_) {}
+      await completer.future.timeout(timeout);
+    } on TimeoutException {
+      completer.completeError(new TimeoutException('Failed to get response to '
+          'command $command'));
+    }
   }
 
   /**
