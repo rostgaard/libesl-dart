@@ -251,33 +251,25 @@ class Connection {
    * Send pre-serialized command.
    */
   Future _sendSerializedCommand(
-      String command, Completer completer, Duration timeout) {
+      String command, Completer completer, Duration timeout) async {
     /// Write the command to socket.
     log.finest('Sending "${command}"');
 
     try {
       _socket.writeln('${command}\n');
     } catch (error, stackTrace) {
-      log.shout('Failed to send command "${command}"', error, stackTrace);
-      _shutdown();
-      return new Future.error(new StateError('Failed to write to socket.'));
+      final msg = 'Failed to send command "${command}" - socket write failed.'
+          ' Error: $error';
+      log.shout(msg, error, stackTrace);
+      completer.completeError(new StateError(msg), stackTrace);
     }
 
-    return completer.future
-      ..timeout(timeout,
-          onTimeout: () => completer
-              .completeError(new TimeoutException('Failed to get response to '
-                  'command $command')));
-  }
-
-  /**
-   * Perform a graceful shutdown.
-   */
-  void _shutdown() {
     try {
-      disconnect();
-      _onDone();
-    } catch (_) {}
+      await completer.future.timeout(timeout);
+    } on TimeoutException {
+      completer.completeError(new TimeoutException('Failed to get response to '
+          'command $command'));
+    }
   }
 
   /**
