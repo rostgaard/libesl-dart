@@ -10,7 +10,7 @@ part of esl;
 class Peer {
   Map _map = {};
   List<String> _groups = [];
-  DateTime _lastSeen = null;
+  DateTime _lastSeen;
 
   /// Getters
 
@@ -76,6 +76,7 @@ class Peer {
     });
   }
 
+  @override
   String toString() {
     return key;
   }
@@ -99,5 +100,6 @@ class Peer {
   /**
    *
    */
+  @override
   int get hashCode => key.hashCode;
 }

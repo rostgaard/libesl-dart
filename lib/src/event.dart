@@ -7,7 +7,7 @@ part of esl;
 class Event extends Packet {
   static final String _variablePrefix = 'variable_';
 
-  Channel _channel = null;
+  Channel _channel;
 
   String get uniqueID => contentAsMap['Unique-ID'];
   String get eventName => contentAsMap['Event-Name'];

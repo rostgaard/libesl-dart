@@ -27,3 +27,13 @@ part 'src/reply.dart';
 part 'src/request.dart';
 part 'src/response.dart';
 part 'src/utils.dart';
+
+class EslException implements Exception {}
+
+class AuthenticationFailure implements EslException {
+  final String message;
+  const AuthenticationFailure([this.message = ""]);
+
+  @override
+  String toString() => "AuthenticationFailure: $message";
+}

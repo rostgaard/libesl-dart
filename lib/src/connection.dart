@@ -24,7 +24,7 @@ abstract class EventFormat {
 class Connection {
   final Logger log = new Logger('esl');
 
-  Socket _socket = null;
+  Socket _socket;
 
   final StreamController<Event> _eventStream = new StreamController.broadcast();
   final StreamController<Request> _requestStream =

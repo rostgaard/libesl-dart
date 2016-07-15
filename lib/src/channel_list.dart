@@ -12,6 +12,7 @@ part of esl;
 class ChannelList extends IterableBase<Channel> {
   Map<String, Channel> _channelStorage = new Map<String, Channel>();
 
+  @override
   Iterator<Channel> get iterator => _channelStorage.values.iterator;
 
   /**

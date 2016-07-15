@@ -19,6 +19,7 @@ class PeerList extends IterableBase<Peer> {
    * Iterator forward. We can ignore the keys as they are also stored inside
    * the [Peer] object.
    */
+  @override
   Iterator<Peer> get iterator => _map.values.iterator;
 
   /**

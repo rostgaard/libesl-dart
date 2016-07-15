@@ -25,7 +25,7 @@ List<Map> channelMapParse(String buffer) {
 
     line.split(",").forEach((String item) {
       if (!header) {
-        Map currentMap = null;
+        Map currentMap = {};
         if (offset == 0) {
           currentMap = {};
           retval.add(currentMap);

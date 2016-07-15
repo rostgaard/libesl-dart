@@ -166,6 +166,8 @@ class _PacketProcessResult {
 
   _PacketProcessResult(
       this.file, this.runtime, this.packetCount, this.byteCount, this.errors);
+
+  @override
   String toString() => '${file}\tpackets:${packetCount}'
       '\tmsec:${runtime.inMilliseconds}'
       '\tbytes:${byteCount}'

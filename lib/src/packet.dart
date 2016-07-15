@@ -31,9 +31,9 @@ class Packet {
 
   static int count = 0;
 
-  Map<String, String> headers = null;
-  String content = null;
-  Map<String, dynamic> contentMap = null;
+  Map<String, String> headers;
+  String content;
+  Map<String, dynamic> contentMap = {};
 
   Packet() {
     headers = {};
