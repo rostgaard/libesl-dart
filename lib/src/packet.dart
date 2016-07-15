@@ -48,8 +48,11 @@ class Packet {
   bool get isReply => ContentType.commandReply == contentType;
   bool get isRequest => ContentType.requests.contains(contentType);
   bool get isResponse => ContentType.responses.contains(contentType);
-  //TODO: Fix this
-  bool get eventType => ContentType.eventTypes.contains(contentType);
+
+  String get eventType => isEvent
+      ? contentAsMap['Event-Name']
+      : throw new StateError('Packet is not an event, but ${contentType}');
+
   bool get isNotice => ContentType.notices.contains(contentType);
 
   bool hasHeader(String key) => headers.containsKey(key);
