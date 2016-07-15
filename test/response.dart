@@ -4,24 +4,24 @@ abstract class Response {
   static void detectsUsage() {
     const String buffer = '-USAGE: <uuid> [cause]';
 
-    ESL.Response response = new ESL.Response.fromPacketBody(buffer);
+    esl.Response response = new esl.Response.fromPacketBody(buffer);
 
-    expect(response.status, equals(ESL.Response.usage));
+    expect(response.status, equals(esl.Response.usage));
   }
 
   static void detectsError() {
     const String buffer = '-ERR USER_NOT_REGISTERED';
 
-    ESL.Response response = new ESL.Response.fromPacketBody(buffer);
+    esl.Response response = new esl.Response.fromPacketBody(buffer);
 
-    expect(response.status, equals(ESL.Response.error));
+    expect(response.status, equals(esl.Response.error));
   }
 
   static void detectsOK() {
     const String buffer = '+OK';
 
-    ESL.Response response = new ESL.Response.fromPacketBody(buffer);
+    esl.Response response = new esl.Response.fromPacketBody(buffer);
 
-    expect(response.status, equals(ESL.Response.ok));
+    expect(response.status, equals(esl.Response.ok));
   }
 }

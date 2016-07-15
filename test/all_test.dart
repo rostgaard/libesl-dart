@@ -4,21 +4,15 @@
 
 library esl.test;
 
-import 'dart:io' as IO;
-import 'dart:async';
 import 'package:test/test.dart';
-import 'package:esl/esl.dart' as ESL;
+import 'package:esl/esl.dart' as esl;
 
-part 'packet_transformer.dart';
 part 'peer_list.dart';
 part 'response.dart';
 
 main() {
   group('Parsing', () {
     test('PeerList.fromMultilineBuffer', parsePeerBuffer);
-    test('PacketTransformer (text files)', () {
-      expect(packetTransformer(), completion(isNotNull));
-    });
 
     test('Response (detects -USAGE)', Response.detectsUsage);
     test('Response (detects -ERR)', Response.detectsError);

@@ -5,9 +5,9 @@
 part of esl.test;
 
 void parsePeerBuffer() {
-  ESL.PeerList list = new ESL.PeerList.fromMultilineBuffer(testData);
+  esl.PeerList list = new esl.PeerList.fromMultilineBuffer(testData);
 
-  bool isValidPeer(ESL.Peer peer) {
+  bool isValidPeer(esl.Peer peer) {
     if (peer.callgroup == null) {
       throw new ArgumentError('peer.callgroup == null!');
     }
