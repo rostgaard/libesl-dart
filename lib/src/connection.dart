@@ -31,6 +31,8 @@ class Connection {
       new StreamController.broadcast();
   final StreamController<Packet> _noticeStream =
       new StreamController.broadcast();
+  final StreamController<Socket> _disconnectStream =
+      new StreamController.broadcast();
 
   /**
    * Notice that this is a broadcast stream, and multiple listeners will
@@ -39,6 +41,7 @@ class Connection {
   Stream<Event> get eventStream => _eventStream.stream;
   Stream<Request> get requestStream => _requestStream.stream;
   Stream<Packet> get noticeStream => _noticeStream.stream;
+  Stream<Socket> get onDisconnect => _disconnectStream.stream;
 
   /// The Job queue is a simple FIFO of Futures that complete in-order.
   Queue<Completer<Response>> _apiJobQueue = new Queue<Completer<Response>>();
@@ -60,6 +63,7 @@ class Connection {
     _requestStream.close();
     _socketListener.cancel();
 
+    _disconnectStream.add(_socket);
     onDone();
   }
 
