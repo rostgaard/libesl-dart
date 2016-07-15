@@ -4,10 +4,10 @@ dependencies:
 	pub get
 
 tests:
-	pub run test test/all_test.dart
+	pub run test 
 
 tests-to-json-file:
-	pub run test test/all_test.dart --reporter json > test-report.json
+	pub run test --reporter json > test-report.json
 
 analyze:
 	@dartanalyzer --no-hints --fatal-warnings --package-warnings lib/esl.dart
