@@ -9,7 +9,7 @@ import 'dart:async';
 import 'package:esl/esl.dart' as ESL;
 import 'package:logging/logging.dart';
 
-ESL.PeerList peerList = null;
+ESL.PeerList peerList;
 
 main() async {
   /* Changing the root log level propagates to libesl-dart.*/
