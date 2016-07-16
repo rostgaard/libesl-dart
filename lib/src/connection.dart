@@ -6,20 +6,23 @@ part of esl;
 
 /// "Enum" of event formats.
 abstract class EventFormat {
+  /// Plaintext event format
   static const String plain = "plain";
+
+  /// JSON-encoded strings
   static const String json = "json";
+
+  /// XML-encoded data
   static const String xml = "xml";
 
-  /**
-   * As of now, only JSON format is supported. Most of the raw packet handling
-   * is done internally, so the transport serialization should be insignificant
-   * for the usage og the library.
-   */
+  /// As of now, only JSON format is supported. Most of the raw packet
+  /// handling is done internally, so the transport deserialization should
+  /// be insignificant for the usage of this library.
   static List<String> supportedFormats = [json];
 }
 
 /**
- * FreeSWTICH event socket connection.
+ * FreeSWITCH event socket connection.
  */
 class Connection {
   final Logger log = new Logger('esl');
