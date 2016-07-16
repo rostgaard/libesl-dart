@@ -25,7 +25,7 @@ void parsePeerBuffer() {
     return true;
   }
 
-  return expect(list.every(isValidPeer), isTrue);
+  expect(list.every(isValidPeer), isTrue);
 }
 
 const String testData =
