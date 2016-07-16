@@ -1,8 +1,11 @@
 // Copyright (c) 2015, Kim Rostgaard Christensen. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file.
+library esl.packet_transformer;
 
-part of esl;
+import 'dart:async';
+
+import 'package:esl/esl.dart';
 
 /**
  * Transformer for converting raw bytes into [Packet] objects.

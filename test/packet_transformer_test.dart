@@ -4,11 +4,13 @@
 
 library esl.test.packet_transformer;
 
-import 'dart:io' as io;
 import 'dart:async';
-import 'package:test/test.dart';
+import 'dart:io' as io;
+
 import 'package:esl/esl.dart' as esl;
+import 'package:esl/packet_transformer.dart' as esl;
 import 'package:logging/logging.dart';
+import 'package:test/test.dart';
 
 Logger _log = new Logger('esl.test.packet_transformer');
 
