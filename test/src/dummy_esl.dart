@@ -48,7 +48,7 @@ class DummyEsl {
   }
 
   ///
-  _authenticationChallenge(_ClientConnection client) async {
+  Future _authenticationChallenge(_ClientConnection client) async {
     _log.finest('Sending authentication challenge');
     _send(client, ['Content-Type: auth/request']);
 

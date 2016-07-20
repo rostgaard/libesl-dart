@@ -10,7 +10,7 @@ import 'package:esl/esl.dart' as esl;
 part 'peer_list.dart';
 part 'response.dart';
 
-main() {
+void main() {
   group('Parsing', () {
     test('PeerList.fromMultilineBuffer', parsePeerBuffer);
 
