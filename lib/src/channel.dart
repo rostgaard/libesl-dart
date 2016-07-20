@@ -89,9 +89,7 @@ class Channel {
 
   /// Hashcode follows the convention from the [==] operator.
   @override
-  int get hashCode {
-    return uuid.toLowerCase().hashCode;
-  }
+  int get hashCode => uuid.toLowerCase().hashCode;
 
   /// Determine if a channel is inbound.
   bool isInbound() => fields['Call-Direction'] == 'inbound' ? true : false;
