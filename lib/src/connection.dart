@@ -25,7 +25,7 @@ abstract class EventFormat {
  * FreeSWITCH event socket connection.
  */
 class Connection {
-  final Logger log = new Logger('esl');
+  final Logger _log = new Logger('esl');
 
   Socket _socket;
 
@@ -60,6 +60,7 @@ class Connection {
    * Performs Socket-post-mortem cleanup.
    */
   void _onDone() {
+    _log.finest('Disconnected. Closing streams');
     _apiJobQueue.clear();
     _replyQueue.clear();
     _eventStream.close();
@@ -106,10 +107,10 @@ class Connection {
   Future<Reply> bgapi(String command,
       {String jobUuid: '', int timeoutSeconds: 10}) {
     final String commandString =
-        '${command}' + (jobUuid.isNotEmpty ? '\nJob-UUID: ${jobUuid}' : '');
+        '$command' + (jobUuid.isNotEmpty ? '\nJob-UUID: $jobUuid' : '');
 
     return _subscribeAndSendCommand(
-        'bgapi ${commandString}', new Duration(seconds: timeoutSeconds));
+        'bgapi $commandString', new Duration(seconds: timeoutSeconds));
   }
 
   /**
@@ -117,7 +118,7 @@ class Connection {
    */
   Future<Reply> authenticate(String password, {int timeoutSeconds: 10}) =>
       _subscribeAndSendCommand(
-          'auth ${password}', new Duration(seconds: timeoutSeconds));
+          'auth $password', new Duration(seconds: timeoutSeconds));
 
   /**
    * Tells FreeSWITCH not to close the socket connect when a channel hangs up.
@@ -145,7 +146,7 @@ class Connection {
           '${EventFormat.supportedFormats.join(', ')}'));
     }
 
-    return _subscribeAndSendCommand('event ${format} ${events.join(' ')}',
+    return _subscribeAndSendCommand('event $format ${events.join(' ')}',
         new Duration(seconds: timeoutSeconds));
   }
 
@@ -260,14 +261,14 @@ class Connection {
   Future _sendSerializedCommand(
       String command, Completer completer, Duration timeout) async {
     /// Write the command to socket.
-    log.finest('Sending "${command}"');
+    _log.finest('Sending "${command}"');
 
     try {
-      _socket.writeln('${command}\n');
+      _socket.writeln('$command\n');
     } catch (error, stackTrace) {
       final msg = 'Failed to send command "${command}" - socket write failed.'
           ' Error: $error';
-      log.shout(msg, error, stackTrace);
+      _log.shout(msg, error, stackTrace);
       completer.completeError(new StateError(msg), stackTrace);
     }
 
@@ -297,19 +298,19 @@ class Connection {
       if (!completer.isCompleted) {
         completer.complete(new Reply.fromPacket(packet));
       } else {
-        log.info('Discarding packet for timed out command.');
+        _log.info('Discarding packet for timed out command.');
       }
     } else if (packet.isResponse) {
       Completer<Response> completer = _apiJobQueue.removeFirst();
       if (!completer.isCompleted) {
         completer.complete(new Response.fromPacketBody(packet.content.trim()));
       } else {
-        log.info('Discarding packet for timed out api command.');
+        _log.info('Discarding packet for timed out api command.');
       }
     } else if (packet.isNotice) {
       _noticeStream.add(packet);
     } else {
-      log.severe('Discarding unknown packet type ${packet.contentType}');
+      _log.severe('Discarding unknown packet type ${packet.contentType}');
     }
   }
 }

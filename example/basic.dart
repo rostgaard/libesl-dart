@@ -9,15 +9,19 @@ import 'dart:async';
 import 'package:esl/esl.dart' as ESL;
 import 'package:logging/logging.dart';
 
-ESL.PeerList peerList;
+ESL.PeerList _peerList;
 
-main() async {
+Future main() async {
   /* Changing the root log level propagates to libesl-dart.*/
   Logger.root.level = Level.ALL;
+  final List<String> events = ['BACKGROUND_JOB'];
 
   /* You can use chaining to attach log handlers, or merely set
      it up later using the connection handle. */
-  ESL.Connection conn = new ESL.Connection()..log.onRecord.listen(print);
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen(print);
+
+  ESL.Connection conn = new ESL.Connection();
 
   /* FreeSWITCH will send requests to your connection - for instance
     authentication requests.
@@ -35,9 +39,8 @@ main() async {
            the authentication returns properly. */
         conn
             .authenticate('openreception-tests')
-            .then(checkAuthentication)
-            .then((_) =>
-                conn.event(['BACKGROUND_JOB'], format: ESL.EventFormat.json))
+            .then(_checkAuthentication)
+            .then((_) => conn.event(events, format: ESL.EventFormat.json))
             .catchError((e) => print(e));
         break;
 
@@ -76,19 +79,9 @@ main() async {
   print(await conn.bgapi('status'));
 }
 
-void checkAuthentication(ESL.Reply reply) {
+/// Checks authentication reply
+void _checkAuthentication(ESL.Reply reply) {
   if (reply.status != ESL.Reply.ok) {
     throw new StateError('Invalid credentials!');
   }
-}
-
-Future sendRequest(int seq, ESL.Connection conn) {
-  return conn.api('echo $seq').then((ESL.Response response) {
-    print('$seq, ${response.rawBody}');
-    assert(int.parse(response.rawBody) == seq);
-  });
-}
-
-void loadPeerListFromPacket(ESL.Packet packet) {
-  peerList = new ESL.PeerList.fromMultilineBuffer(packet.content);
 }
