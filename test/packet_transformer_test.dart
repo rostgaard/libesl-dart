@@ -299,7 +299,7 @@ Future<bool> packetTransformer() async {
 String summary(_PacketProcessResult res) {
   final double mibPerSecond = res.byteCount / res.runtime.inMicroseconds;
 
-  return 'processing speed: ${mibPerSecond.toStringAsFixed(2)}MiB/µs\n'
+  return 'processing speed: ${mibPerSecond.toStringAsFixed(2)}MiB/s\n'
       'total packets:${res.packetCount}\n'
       'total running time (msec):${res.runtime.inMilliseconds}\n'
       'bytes processed:${res.byteCount}\n'
