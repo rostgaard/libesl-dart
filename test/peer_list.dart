@@ -6,7 +6,7 @@ part of esl.test;
 
 /// Peer bufer parsing test.
 void parsePeerBuffer() {
-  esl.PeerList list = new esl.PeerList.fromMultilineBuffer(testData);
+  esl.PeerList list = new esl.PeerList.fromMultilineBuffer(_testData);
 
   bool isValidPeer(esl.Peer peer) {
     if (peer.callgroup == null) {
@@ -29,7 +29,7 @@ void parsePeerBuffer() {
   expect(list.every(isValidPeer), isTrue);
 }
 
-const String testData =
+const String _testData =
     '''userid|context|domain|group|contact|callgroup|effective_caller_id_name|effective_caller_id_number
 1000|default|192.168.1.178|default|error/user_not_registered|techsupport|Extension 1000|1000
 1001|default|192.168.1.178|default|error/user_not_registered|techsupport|Extension 1001|1001
