@@ -72,7 +72,7 @@ class PacketTransformer implements StreamTransformer<List<int>, Packet> {
                 _currentPacket.addHeader(key.trim(), value.trim());
               } else {
                 _controller.addError(
-                    new StateError('Skipping invalid buffer: "${headerLine}"'));
+                    new StateError('Skipping invalid buffer: "$headerLine"'));
               }
             }
           }
