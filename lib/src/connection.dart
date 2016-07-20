@@ -261,12 +261,12 @@ class Connection {
   Future _sendSerializedCommand(
       String command, Completer completer, Duration timeout) async {
     /// Write the command to socket.
-    _log.finest('Sending "${command}"');
+    _log.finest('Sending "$command"');
 
     try {
       _socket.writeln('$command\n');
     } catch (error, stackTrace) {
-      final msg = 'Failed to send command "${command}" - socket write failed.'
+      final msg = 'Failed to send command "$command" - socket write failed.'
           ' Error: $error';
       _log.shout(msg, error, stackTrace);
       completer.completeError(new StateError(msg), stackTrace);
