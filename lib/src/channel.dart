@@ -28,7 +28,7 @@ class Channel {
   @deprecated
   static const String nullChannelID = null;
 
-  static final List<String> excludedFields = [
+  static const List<String> _excludedFields = const [
     'Event-Name',
     'Core-UUID',
     'FreeSWITCH-Hostname',
@@ -55,7 +55,7 @@ class Channel {
       if (key.startsWith("variable_")) {
         String keyNoPrefix = (key.split("variable_")[1]);
         _variables[keyNoPrefix] = value;
-      } else if (!excludedFields.contains(key)) {
+      } else if (!_excludedFields.contains(key)) {
         _fields[key] = value;
       }
     });
