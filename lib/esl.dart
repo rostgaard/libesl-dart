@@ -25,8 +25,6 @@ part 'src/peer_list.dart';
 part 'src/reply.dart';
 part 'src/request.dart';
 part 'src/response.dart';
-part 'src/utils.dart';
-//export 'src/connection_pool.dart';
 
 class EslException implements Exception {}
 
