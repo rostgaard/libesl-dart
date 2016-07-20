@@ -4,9 +4,7 @@
 
 part of esl;
 
-/**
- * 'Enum' type representing channel states.
- */
+///'Enum' type representing channel states.
 abstract class _ChannelState {
   // static const String _new = "CS_NEW";
   // static const String _init = "CS_INIT";
@@ -23,11 +21,11 @@ abstract class _ChannelState {
   static const String _destroy = "CS_DESTROY";
 }
 
-/**
- * Wrapper class for a channel. Provides easy access to various
- * channel information stored in a packet.
- */
+/// Wrapper class for a channel. Provides easy access to various channel
+/// information stored in a packet.
 class Channel {
+  /// Null channel identifier. To be removed.
+  @deprecated
   static const String nullChannelID = null;
 
   static final List<String> excludedFields = [
@@ -47,16 +45,11 @@ class Channel {
   Map<String, String> _fields = new Map<String, String>();
   Map<String, dynamic> _variables = new Map<String, dynamic>();
 
-  String get uuid => _fields['Unique-ID'];
+  /// Assemble a channel from fields and variables.
+  Channel.assemble(this._fields, this._variables);
 
-  String get state => _fields['Channel-State'];
-  Map<String, String> get fields => _fields;
-  Map<String, dynamic> get variables => _variables;
-
-  /**
-   * Extracts the relevant information from the packet and stores
-   * it in an internal map.
-   */
+  /// Extracts the relevant information from the packet and stores it in an
+  /// internal map.
   Channel.fromPacket(Packet packet) {
     packet.contentAsMap.forEach((key, value) {
       if (key.startsWith("variable_")) {
@@ -68,50 +61,42 @@ class Channel {
     });
   }
 
-  /**
-   * Assemble a channel from fields and variables.
-   */
-  Channel.assemble(this._fields, this._variables);
+  /// Get the unique ID (uuid) of the channel.
+  String get uuid => _fields['Unique-ID'];
 
-  /**
-   * Returns a map representation of the channel.
-   */
+  /// Get the current channel state.
+  String get state => _fields['Channel-State'];
+
+  /// Get the fields of the channel.
+  Map<String, String> get fields => _fields;
+
+  /// Get the variables of the channel.
+  Map<String, dynamic> get variables => _variables;
+
+  /// Returns a map representation of the channel.
+  /// Deprecated, use [toMap()] instead.
+  @deprecated
   Map get asMap => {}..addAll(_fields)..addAll({'variables': _variables});
 
-  /**
-   * Converts the channel into a map.
-   */
-  Map toMap() {
-    Map tmp = new Map.from(_fields);
-    tmp['variables'] = {};
-    tmp['variables'].addAll(_variables);
-    return tmp;
-  }
+  /// Returns a map representation of the channel.
+  Map toMap() => new Map.from(_fields)..addAll({'variables': _variables});
 
-  /**
-   * Two channel is equivalent, if their UUID's are the same
-   * - regardless of state.
-   */
+  /// Two channel are equivalent, if their UUID's are the same regardless
+  /// of state or variables.
   @override
   bool operator ==(Object other) =>
       other is Channel && uuid.toLowerCase() == other.uuid.toLowerCase();
 
-  /**
-   * Hashcode follows the convention from the [==] operator.
-   */
+  /// Hashcode follows the convention from the [==] operator.
   @override
   int get hashCode {
     return uuid.toLowerCase().hashCode;
   }
 
-  /**
-   * Determine if a channel is inbound.
-   */
+  /// Determine if a channel is inbound.
   bool isInbound() => fields['Call-Direction'] == 'inbound' ? true : false;
 
-  /**
-   * Determine if a channel is internal.
-   */
+  /// Determine if a channel is internal.
   bool isInternal() {
     String cName = channelName();
 
@@ -131,8 +116,6 @@ class Channel {
         'Failed to detect profile in channel name \'$cName\'.');
   }
 
-  /**
-   * Gets the channel's name.
-   */
+  /// Gets the channel's name.
   String channelName() => fields['Channel-Name'];
 }

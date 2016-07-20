@@ -17,7 +17,8 @@ import 'src/dummy_esl.dart';
 part 'peer_list.dart';
 part 'response.dart';
 
-main() {
+/// Test group
+void main() {
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen(print);
   group('AuthenticationHandler', () {

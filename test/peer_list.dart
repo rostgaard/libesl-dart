@@ -4,6 +4,7 @@
 
 part of esl.test;
 
+/// Peer bufer parsing test.
 void parsePeerBuffer() {
   esl.PeerList list = new esl.PeerList.fromMultilineBuffer(testData);
 

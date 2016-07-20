@@ -4,20 +4,17 @@
 
 part of esl;
 
-/**
- * Channel list. Can be used to keep track of channels in the FreeSWITCH PBX by
- * using the [update] method as event handler for CHANNEL_STATE and others,
- * depending on the level of detail in the channel information you wish.
- */
+/// Channel list. Can be used to keep track of channels in the FreeSWITCH
+/// PBX by using the [update] method as event handler for CHANNEL_STATE and
+/// others - depending on the level of detail in the channel information
+/// you wish.
 class ChannelList extends IterableBase<Channel> {
   Map<String, Channel> _channelStorage = new Map<String, Channel>();
 
   @override
   Iterator<Channel> get iterator => _channelStorage.values.iterator;
 
-  /**
-   * Replace the channels in the [ChannelList] with [channels].
-   */
+  /// Replace the channels in the [ChannelList] with [channels].
   void reload(Iterable<Channel> channels) {
     _channelStorage.clear();
     channels.forEach((Channel channel) {
@@ -25,11 +22,10 @@ class ChannelList extends IterableBase<Channel> {
     });
   }
 
-  /**
-   * Updates a channel stored in the channel list. Removes it, if it is
-   * destroyed, adds it when it is created and merely updates the information
-   * associated with channel (variables and fields) with the new information.
-   */
+  /// Updates a channel stored in the channel list. Removes it, if it is
+  /// already destroyed, adds it when it is created and merely updates the
+  /// information associated with channel (variables and fields) with the
+  /// new information.
   void update(Channel channel) {
     if (!_channelStorage.containsKey(channel.uuid)) {
       _add(channel);
@@ -53,12 +49,11 @@ class ChannelList extends IterableBase<Channel> {
     _channelStorage[channel.uuid] = channel;
   }
 
-  /**
-   * Retrieve a single channel identified by [channelID]. Returns [null] if no
-   * channel is found in the list.
-   */
+  /// Retrieve a single channel identified by [channelID]. Returns [null]
+  /// if no channel is found in the list.
   Channel get(String channelID) => _channelStorage[channelID];
 
+  /// Removes a channel from the channel storage.
   void _remove(Channel channel) {
     _channelStorage.remove(channel.uuid);
   }

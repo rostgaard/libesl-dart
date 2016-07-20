@@ -26,12 +26,21 @@ part 'src/reply.dart';
 part 'src/request.dart';
 part 'src/response.dart';
 
+/// General ESL exception. Useful for catching exceptions thrown by this
+/// library.
 class EslException implements Exception {}
 
+/// Thrown when an authentication failure occurs within an authentication
+/// handler. May be used be outside of the library.
 class AuthenticationFailure implements EslException {
+  /// The message carried in the exception.
   final String message;
+
+  /// Default constructor. Takes in the optional [message] argument, which
+  /// is empty, if omitted.
   const AuthenticationFailure([this.message = ""]);
 
+  /// Returns a string representation of the object.
   @override
   String toString() => "AuthenticationFailure: $message";
 }

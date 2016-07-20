@@ -20,6 +20,7 @@ class DummyEsl {
   final String _password;
   final Set<_ClientConnection> _clients = new Set();
 
+  /// Default constructor.
   DummyEsl(this._socket, this._password) {
     _log.info('Server listening on ${_socket.address.address}:${_socket.port}');
 
