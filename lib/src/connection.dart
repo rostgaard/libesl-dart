@@ -63,11 +63,12 @@ class Connection {
     _log.finest('Disconnected. Closing streams');
     _apiJobQueue.clear();
     _replyQueue.clear();
+    _noticeStream.close();
     _eventStream.close();
     _requestStream.close();
     _socketListener.cancel();
-
     _disconnectStream.add(_socket);
+
     onDone();
   }
 
