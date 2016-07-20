@@ -10,6 +10,8 @@ import 'dart:io';
 import 'package:logging/logging.dart';
 import 'package:test/test.dart';
 import 'package:esl/esl.dart' as esl;
+import 'package:esl/util.dart' as esl;
+
 import 'src/dummy_esl.dart';
 
 part 'peer_list.dart';

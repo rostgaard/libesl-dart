@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file.
 
-part of esl;
+part of esl.util;
 
 /// Utility function for handling the authentication process. Returns a
 /// future that completes normally or throws an [AuthenticationFailure].

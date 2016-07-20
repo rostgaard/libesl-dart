@@ -15,7 +15,6 @@ import 'dart:io';
 import 'package:esl/packet_transformer.dart';
 import 'package:logging/logging.dart';
 
-part 'src/authentication_handler.dart';
 part 'src/channel.dart';
 part 'src/channel_list.dart';
 part 'src/connection.dart';
