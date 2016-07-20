@@ -284,7 +284,9 @@ class Connection {
   /**
    * Perform a hard socket disconnect.
    */
-  Future disconnect() => _socket.close();
+  Future disconnect() async {
+    await _socket.close();
+  }
 
   /**
    * Dispatches a packet by injecting it into the appropriate stream.
