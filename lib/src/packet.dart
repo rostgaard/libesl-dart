@@ -4,28 +4,7 @@
 
 part of esl;
 
-abstract class ContentType {
-  static const String textEventPlain = "text/event-plain";
-  static const String textEventJson = "text/event-json";
-  static const String textEventXml = "text/event-xml";
-  static const String textDisconnectNotice = 'text/disconnect-notice';
-
-  static const String authRequest = "auth/request";
-
-  static const String apiReponse = "api/response";
-  static const String commandReply = "command/reply";
-
-  static final List<String> eventTypes = [
-    textEventJson,
-    textEventPlain,
-    textEventXml
-  ];
-
-  static const List<String> requests = const [authRequest];
-  static const List<String> responses = const [apiReponse];
-  static const List<String> notices = const [textDisconnectNotice];
-}
-
+/// Model class of an ESL packet.
 class Packet {
   static final Logger log = new Logger('esl.Packet');
 
@@ -44,11 +23,26 @@ class Packet {
   int get contentLength =>
       hasHeader('Content-Length') ? int.parse(headers['Content-Length']) : 0;
 
-  bool get isEvent => ContentType.eventTypes.contains(contentType);
-  bool get isReply => ContentType.commandReply == contentType;
-  bool get isRequest => ContentType.requests.contains(contentType);
-  bool get isResponse => ContentType.responses.contains(contentType);
+  /// Determines if the [Packet] is an event and may be cast to an [Event].
+  bool get isEvent => _constant.ContentType.eventTypes.contains(contentType);
 
+  /// Determines if the [Packet] is a reply and may be cast to a [Reply].
+  bool get isReply => _constant.ContentType.commandReply == contentType;
+
+  /// Determines if the [Packet] is a request and may be cast to a
+  /// [Request].
+  bool get isRequest => _constant.ContentType.requests.contains(contentType);
+
+  /// Determines if the [Packet] is a response and may be cast to a
+  /// [Response].
+  bool get isResponse => _constant.ContentType.responses.contains(contentType);
+
+  /// Determines if the [Packet] is a notice.
+  bool get isNotice => _constant.ContentType.notices.contains(contentType);
+
+  /// The name of the event. If the [Packet] is not an event, it will throw
+  /// a [StateError].
+  @deprecated
   String get eventType => isEvent
       ? contentAsMap['Event-Name']
       : throw new StateError('Packet is not an event, but ${contentType}');
@@ -64,8 +58,8 @@ class Packet {
   String field(String key) => contentAsMap[key];
 
   Map<String, dynamic> get contentAsMap {
-    if (contentType == ContentType.textEventJson) {
-      if (contentMap == null) {
+    if (contentType == _constant.ContentType.textEventJson) {
+      if (_contentMap.isEmpty) {
         try {
           contentMap = JSON.decode(content) as Map<String, dynamic>;
         } catch (error, stacktrace) {

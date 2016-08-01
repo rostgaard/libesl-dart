@@ -8,6 +8,7 @@ library esl.util;
 import 'dart:async';
 
 import 'package:esl/esl.dart';
+import 'package:esl/constants.dart';
 import 'package:logging/logging.dart';
 
 part 'src/authentication_handler.dart';

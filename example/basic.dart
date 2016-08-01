@@ -6,10 +6,11 @@ library esl.example;
 
 import 'dart:async';
 
-import 'package:esl/esl.dart' as ESL;
+import 'package:esl/constants.dart' as esl;
+import 'package:esl/esl.dart' as esl;
 import 'package:logging/logging.dart';
 
-ESL.PeerList _peerList;
+esl.PeerList _peerList;
 
 Future main() async {
   /* Changing the root log level propagates to libesl-dart.*/
@@ -21,18 +22,18 @@ Future main() async {
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen(print);
 
-  ESL.Connection conn = new ESL.Connection();
+  esl.Connection conn = new esl.Connection();
 
   /* FreeSWITCH will send requests to your connection - for instance
     authentication requests.
     In order to respond to them automatically, you can subscribe to
     them from the requestStream. */
-  conn.requestStream.listen((ESL.Packet packet) {
+  conn.requestStream.listen((esl.Packet packet) {
     switch (packet.contentType) {
 
       /* An authentication request should be responded to be an
          authentication. This is an example on how to do it. */
-      case (ESL.ContentType.authRequest):
+      case (esl.ContentType.authRequest):
 
         /* As the authentication call is a future, you can use .then
            blocks to schedule subsequent command or API calls when
@@ -40,7 +41,7 @@ Future main() async {
         conn
             .authenticate('openreception-tests')
             .then(_checkAuthentication)
-            .then((_) => conn.event(events, format: ESL.EventFormat.json))
+            .then((_) => conn.event(events, format: esl.EventFormat.json))
             .catchError((e) => print(e));
         break;
 
@@ -52,13 +53,13 @@ Future main() async {
   /* Each connection object has an event stream that can be subscribed
      to globally. This means that you have to handle further dispatching
      manually using, for instance, a switch statement. */
-  ESL.ChannelList channelList = new ESL.ChannelList();
+  esl.ChannelList channelList = new esl.ChannelList();
 
-  conn.eventStream.listen((ESL.Event event) {
+  conn.eventStream.listen((esl.Event event) {
     print(event.content);
     switch (event.eventName) {
       case ("CUSTOM"):
-        ESL.Channel channel = new ESL.Channel.fromPacket(event);
+        esl.Channel channel = new esl.Channel.fromPacket(event);
         channelList.update(channel);
         print(channel.variables);
         break;
@@ -80,8 +81,8 @@ Future main() async {
 }
 
 /// Checks authentication reply
-void _checkAuthentication(ESL.Reply reply) {
-  if (reply.status != ESL.Reply.ok) {
+void _checkAuthentication(esl.Reply reply) {
+  if (reply.status != esl.Reply.ok) {
     throw new StateError('Invalid credentials!');
   }
 }

@@ -14,7 +14,8 @@ import 'package:test/test.dart';
 
 Logger _log = new Logger('esl.test.packet_transformer');
 
-main() {
+/// Packet tests runner
+void main() {
   Logger.root.level = Level.ALL;
   Logger.root.onRecord.listen(print);
   const String dumpfilePath = 'test/test_data';
