@@ -86,11 +86,11 @@ class DummyEsl {
             });
   }
 
-  ///
+  /// Closes all client connections and server socket.
   Future close() async {
     for (_ClientConnection client in _clients) {
       try {
-        client.socket.close();
+        await client.socket.close();
       } catch (e) {
         _log.warning('Failed to close socket', e);
       }

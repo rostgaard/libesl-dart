@@ -21,9 +21,7 @@ abstract class EventFormat {
   static List<String> supportedFormats = [json];
 }
 
-/**
- * FreeSWITCH event socket connection.
- */
+/// FreeSWITCH event socket connection.
 class Connection {
   final Logger _log = new Logger('esl');
 
@@ -34,13 +32,9 @@ class Connection {
       new StreamController.broadcast();
   final StreamController<Packet> _noticeStream =
       new StreamController.broadcast();
-  final StreamController<Socket> _disconnectStream =
-      new StreamController.broadcast();
 
-  /**
-   * Notice that this is a broadcast stream, and multiple listeners will
-   * have to obey the rules of these.
-   */
+  /// Stream that spawns a [Event] object every time the ESL socket sends
+  /// an event packet.
   Stream<Event> get eventStream => _eventStream.stream;
 
   /// Stream that spawns a [Request] object every time the ESL socket sends
@@ -50,10 +44,6 @@ class Connection {
   /// Stream that spawns a [Packet] object every time the ESL socket sends
   /// a notice packet.
   Stream<Packet> get noticeStream => _noticeStream.stream;
-
-  /// Stream that emits the disconnected [Socket] whenever the
-  /// socket connection is broken.
-  Stream<Socket> get onDisconnect => _disconnectStream.stream;
 
   /// The Job queue is a simple FIFO of Futures that complete in-order.
   Queue<Completer<Response>> _apiJobQueue = new Queue<Completer<Response>>();
@@ -68,9 +58,7 @@ class Connection {
   /// disconnect.
   StreamSubscription _socketListener;
 
-  /**
-   * Performs Socket-post-mortem cleanup.
-   */
+  /// Performs Socket-post-mortem cleanup.
   void _onDone() {
     _log.finest('Disconnected. Closing streams');
     _apiJobQueue.clear();
@@ -79,7 +67,6 @@ class Connection {
     _eventStream.close();
     _requestStream.close();
     _socketListener.cancel();
-    _disconnectStream.add(_socket);
 
     onDone();
   }
@@ -98,11 +85,10 @@ class Connection {
     return _socket;
   }
 
-  /**
-   * Send an arbitrary API command (blocking mode).
-   * Command reference can be found at;
-   * https://freeswitch.org/confluence/display/FREESWITCH/mod_commands
-   */
+  /// Send an arbitrary API command (blocking mode).
+  ///
+  /// Command reference can be found at;
+  /// https://freeswitch.org/confluence/display/FREESWITCH/mod_commands
   Future<Response> api(String command, {int timeoutSeconds: 10}) async {
     Completer<Response> completer = new Completer<Response>();
     _apiJobQueue.addLast(completer);
@@ -113,11 +99,10 @@ class Connection {
     return completer.future;
   }
 
-  /**
-   * Send an arbitrary API command (non-blocking mode).
-   * Command reference can be found at;
-   * https://freeswitch.org/confluence/display/FREESWITCH/mod_commands
-   */
+  /// Send an arbitrary API command (non-blocking mode).
+  ///
+  /// Command reference can be found at;
+  /// https://freeswitch.org/confluence/display/FREESWITCH/mod_commands
   Future<Reply> bgapi(String command,
       {String jobUuid: '', int timeoutSeconds: 10}) {
     final String commandString =
@@ -127,31 +112,24 @@ class Connection {
         'bgapi $commandString', new Duration(seconds: timeoutSeconds));
   }
 
-  /**
-   * Authenticate on the FreeSWITCH server.
-   */
+  /// Authenticate on the FreeSWITCH server.
   Future<Reply> authenticate(String password, {int timeoutSeconds: 10}) =>
       _subscribeAndSendCommand(
           'auth $password', new Duration(seconds: timeoutSeconds));
 
-  /**
-   * Tells FreeSWITCH not to close the socket connect when a channel hangs up.
-   * Instead, it keeps the socket connection open until the last event related
-   * to the channel has been received by the socket client.
-   */
+  /// Tells FreeSWITCH not to close the socket connect when a channel
+  /// hangs up. Instead, it keeps the socket connection open until the
+  /// last event related to the channel has been received by
+  /// the socket client.
   Future<Reply> linger({int timeoutSeconds: 10}) =>
       _subscribeAndSendCommand('linger', new Duration(seconds: timeoutSeconds));
 
-  /**
-   * Disable socket lingering. See linger above.
-   */
+  /// Disable socket lingering. See linger above.
   Future<Reply> nolinger({int timeoutSeconds: 10}) => _subscribeAndSendCommand(
       'nolinger', new Duration(seconds: timeoutSeconds));
 
-  /**
-   * Subscribe the socket to [events], which will be pumped into the
-   * [eventStream].
-   */
+  /// Subscribe the socket to [events], which will be pumped into
+  /// the [eventStream].
   Future<Reply> event(List<String> events,
       {String format: '', int timeoutSeconds: 10}) {
     if (!EventFormat.supportedFormats.contains(format)) {
@@ -164,13 +142,12 @@ class Connection {
         new Duration(seconds: timeoutSeconds));
   }
 
-  /**
-   * The 'myevents' subscription allows your inbound socket connection to
-   * behave like an outbound socket connect. It will "lock on" to the events
-   * for a particular uuid and will ignore all other events, closing the socket
-   * when the channel goes away or closing the channel when the socket
-   * disconnects and all applications have finished executing.
-   */
+  /// The 'myevents' subscription allows your inbound socket connection to
+  /// behave like an outbound socket connect. It will "lock on" to the
+  /// events for a particular uuid and will ignore all other events,
+  /// closing the socket when the channel goes away or closing the channel
+  /// when the socket disconnects and all applications have
+  /// finished executing.
   Future<Reply> myevents(String uuid,
       {String format: '', int timeoutSeconds: 10}) {
     if (!EventFormat.supportedFormats.contains(format)) {
@@ -183,82 +160,66 @@ class Connection {
         'myevents $uuid', new Duration(seconds: timeoutSeconds));
   }
 
-  /**
-   * The divert_events switch is available to allow events that an embedded
-   * script would expect to get in the inputcallback to be diverted to the
-   * event socket.
-   */
+  /// The divert_events switch is available to allow events that an embedded
+  /// script would expect to get in the inputcallback to be diverted to the
+  /// event socket.
   Future<Reply> divertEvents(bool on, {int timeoutSeconds: 10}) =>
       _subscribeAndSendCommand('divert_events ${on ? 'on': 'off'}',
           new Duration(seconds: timeoutSeconds));
 
-  /**
-   * Close the socket connection.
-   */
+  /// Close the socket connection.
   Future<Reply> exit({int timeoutSeconds: 10}) =>
       _subscribeAndSendCommand('exit', new Duration(seconds: timeoutSeconds));
 
-  /**
-   * Enable log output. Levels same as the console.conf values
-   */
+  /// Enable log output. Levels same as the console.conf values
   Future<Reply> logLevel(int level, {int timeoutSeconds: 10}) =>
       _subscribeAndSendCommand(
           'log $level', new Duration(seconds: timeoutSeconds));
 
-  /**
-   * Disable log output previously enabled by the log command.
-   */
+  /// Disable log output previously enabled by the log command.
   Future<Reply> nolog({int timeoutSeconds: 10}) =>
       _subscribeAndSendCommand('nolog', new Duration(seconds: timeoutSeconds));
 
-  /**
-   * Specify event types to listen for. Note, this is not a filter out but
-   * rather a "filter in," that is, when a filter is applied only the filtered
-   * values are received. Multiple filters on a socket connection are allowed.
-   */
+  /// Specify event types to listen for. Note, this is not a filter out but
+  /// rather a "filter in," that is, when a filter is applied only the
+  /// filtered values are received. Multiple filters on a socket
+  /// connection are allowed.
+
   Future<Reply> filter(String eventHeader, String valueToFilter,
           {int timeoutSeconds: 10}) =>
       _subscribeAndSendCommand('filter $eventHeader $valueToFilter',
           new Duration(seconds: timeoutSeconds));
 
-  /**
-   * Specify the events which you want to revoke the filter. filter delete can
-   * be used when some filters are applied wrongly or when there is no use
-   * of the filter.
-   *
-   * Example:
-   *    filterDelete('Event-Name', 'HEARTBEAT')
-   */
+  /// Specify the events which you want to revoke the filter. filter delete
+  /// can be used when some filters are applied wrongly or when there is
+  /// no use of the filter.
+  ///
+  /// Example:
+  ///    filterDelete('Event-Name', 'HEARTBEAT')
+  ///
   Future<Reply> filterDelete(String eventHeader, String valueToFilter,
           {int timeoutSeconds: 10}) =>
       _subscribeAndSendCommand('filter delete $eventHeader $valueToFilter',
           new Duration(seconds: timeoutSeconds));
 
-  /**
-   * Send an event into the event system (multi line input for headers)
-   */
+  /// Send an event into the event system (multi line input for headers)
   Future<Reply> sendevent(String eventName, {int timeoutSeconds: 10}) =>
       _subscribeAndSendCommand(
           'sendevent $eventName', new Duration(seconds: timeoutSeconds));
 
-  /**
-   * Suppress the specified type of event. Useful when you want to allow
-   * 'event all' followed by 'nixevent <some_event>' to see all but 1 type
-   * of event.
-   */
+  /// Suppress the specified type of event. Useful when you want to allow
+  /// 'event all' followed by 'nixevent <some_event>' to see all but 1 type
+  /// of event.
   Future<Reply> nixevent(String eventTypes, {int timeoutSeconds: 10}) =>
       _subscribeAndSendCommand(
           'nixevent $eventTypes', new Duration(seconds: timeoutSeconds));
-  /**
-   * Disable all events that were previously enabled with event.
-   */
+
+  /// Disable all events that were previously enabled with event.
   Future<Reply> noEvents({int timeoutSeconds: 10}) => _subscribeAndSendCommand(
       'noevents', new Duration(seconds: timeoutSeconds));
 
-  /**
-   * Convenience function to avoid having to handle this on every
-   * command interface.
-   */
+  /// Convenience function to avoid having to handle this on every
+  /// command interface.
   Future<Reply> _subscribeAndSendCommand(
       String command, Duration timeout) async {
     Completer<Reply> completer = new Completer<Reply>();
@@ -269,9 +230,7 @@ class Connection {
     return completer.future;
   }
 
-  /**
-   * Send pre-serialized command.
-   */
+  /// Send pre-serialized command.
   Future _sendSerializedCommand(
       String command, Completer completer, Duration timeout) async {
     /// Write the command to socket.
@@ -294,16 +253,12 @@ class Connection {
     }
   }
 
-  /**
-   * Perform a hard socket disconnect.
-   */
+  /// Perform a hard socket disconnect.
   Future disconnect() async {
     await _socket.close();
   }
 
-  /**
-   * Dispatches a packet by injecting it into the appropriate stream.
-   */
+  /// Dispatches a packet by injecting it into the appropriate stream.
   void _dispatch(Packet packet) {
     if (packet.isEvent) {
       _eventStream.add(new Event.fromPacket(packet));

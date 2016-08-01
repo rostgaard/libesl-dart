@@ -4,23 +4,28 @@
 
 part of esl;
 
-/**
- * Class representing a reponse received from the FreeSWITCH event socket.
- */
+///Class representing a reponse received from the FreeSWITCH event socket.
 class Response {
-  /// String constants that map to responses.
+  /// Command response `+OK` constant.
   static const String ok = '+OK';
+
+  /// Command response `-ERR` constant.
   static const String error = '-ERR';
+
+  /// Command response `-USAGE` constant.
   static const String usage = '-USAGE';
+
+  /// Command reply for all other values.
   static const String unknown = '';
 
+  /// Raw response body as string.
   final String rawBody;
 
+  /// Construct a new [Response] object from a packet body String.
   Response.fromPacketBody(this.rawBody);
 
-  /**
-   * The status of the response. Can be either [ok], [error] or [unknown].
-   */
+  /// The status of the response. Can be either [ok], [error], [usage]
+  /// or [unknown].
   String get status {
     String lastLine = rawBody.split('\n').last;
 
@@ -35,9 +40,7 @@ class Response {
     }
   }
 
-  /**
-   * Reponses may carry the UUID of a channel.
-   */
+  /// Reponses may carry the UUID of a channel.
   String get channelUUID {
     String lastLine = rawBody.split('\n').last;
 
@@ -49,10 +52,8 @@ class Response {
     }
   }
 
-  /**
-   * String representation of a Response for debug purposes or
-   * manual processing.
-   */
+  /// String representation of a Response for debug purposes or
+  ///  manual processing.
   @override
   String toString() {
     return rawBody;

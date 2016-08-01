@@ -14,7 +14,7 @@ class Reply extends Packet {
   /// Command reply `+OK` constant.
   static const String ok = Response.ok;
 
-  /// Command reply `+ERROR` constant.
+  /// Command reply `-ERR` constant.
   static const String error = Response.error;
 
   /// Command reply for all other values other than [ok] and [error].
