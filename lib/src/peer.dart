@@ -4,38 +4,17 @@
 
 part of esl;
 
-/**
- *
- */
+/// Peer model class as represented by ESL `list_users` API command.
 class Peer {
   Map _map = {};
   List<String> _groups = [];
   DateTime _lastSeen;
 
-  /// Getters
-
-  String get id => _map['userid'];
-  set id(String newId) {
-    _map['userid'] = newId;
-  }
-
-  String get context => _map['context'];
-  String get domain => _map['domain'];
-  String get contact => _map['contact'];
-  set contact(String con) {
-    _map['contact'] = con;
-  }
-
-  String get callgroup => _map['callgroup'];
-  String get effectiveCallerIdName => _map['effective_caller_id_name'];
-  String get effectiveCallerIdNumber => _map['effective_caller_id_number'];
-  List<String> get groups => _groups;
-  String get key => id;
-  DateTime get lastSeen => _lastSeen;
-  bool get registered => contact != null;
-
+  /// Default constructor. Creates and un-initialized [Peer] object.
   Peer();
 
+  /// Parsing constructor. Creates a new [Peer] object by parsing [line]
+  /// using [seperator] as delimiter and [keys] as header fields.
   Peer.fromLine(List<String> keys, String line, [String seperator = '|']) {
     int index = 0;
     line.split(seperator).forEach((field) {
@@ -56,18 +35,65 @@ class Peer {
     }
   }
 
+  /// User ID of the [Peer].
+  String get id => _map['userid'];
+  set id(String newId) {
+    _map['userid'] = newId;
+  }
+
+  /// Returns the peer context
+  String get context => _map['context'];
+
+  /// Returns the peer domain
+  String get domain => _map['domain'];
+
+  /// Returns the peer contact uri as a String
+  String get contact => _map['contact'];
+
+  /// Update the peer contact uri.
+  set contact(String con) {
+    _map['contact'] = con;
+  }
+
+  /// Returns the peer callgroup
+  String get callgroup => _map['callgroup'];
+
+  /// Returns the peer caller ID name
+  String get effectiveCallerIdName => _map['effective_caller_id_name'];
+
+  /// Returns the peer caller ID number
+  String get effectiveCallerIdNumber => _map['effective_caller_id_number'];
+
+  /// Returns the peer groups
+  List<String> get groups => _groups;
+
+  /// Value suitable for map key.
+  @deprecated
+  String get key => id;
+
+  /// When the [Peer] was last seen
+  DateTime get lastSeen => _lastSeen;
+
+  /// Whether the [Peer] is registered.
+  bool get registered => contact != null;
+
+  /// Register the peer with [contact] endpoint.
   void register(String contact) {
     _map['contact'] = contact;
     _lastSeen = new DateTime.now();
   }
 
+  /// Unregister the peer.
   void unregister() {
     _map['contact'] = null;
     _lastSeen = new DateTime.now();
   }
 
-  static makeKey(String id) => id;
+  /// Builds a key suitable for map storage of [Peer] objects.
+  @deprecated
+  static String makeKey(String id) => id;
 
+  /// Merges groups from [other] [Peer] with [this] [Peer].
   void mergeGroups(Peer other) {
     other.groups.forEach((String group) {
       if (!groups.contains(group)) {
@@ -76,30 +102,28 @@ class Peer {
     });
   }
 
+  /// Returns a string represention of the [Peer], showing only the [id].
   @override
-  String toString() {
-    return key;
-  }
+  String toString() => id;
 
+  /// Returns a Map representation of the [Peer] suitable and safe for
+  /// serialization.
   Map toJson() {
     _map['groups'] = groups;
     _map['registered'] = registered;
     return _map;
   }
 
-  /**
-   * Determine if two Peer objects are identical.
-   *
-   * A Peer object is identied by the tuple (userid, domain) and all
-   * fields must thus match for two Peer object to be identical.
-   */
+  /// Determine if two Peer objects are identical.
+  ///
+  /// A Peer object is identied by the tuple (userid, domain) and all
+  /// fields must thus match for two Peer object to be identical.
   @override
   bool operator ==(Object other) =>
       other is Peer && id == other.id && domain == other.domain;
 
-  /**
-   *
-   */
+  /// The hashcode of the object. Hashes are identical for [Peer] objects
+  /// that share [id].
   @override
-  int get hashCode => key.hashCode;
+  int get hashCode => id.hashCode;
 }

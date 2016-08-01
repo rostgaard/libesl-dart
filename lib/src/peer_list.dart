@@ -16,16 +16,16 @@ class PeerList extends IterableBase<Peer> {
   Map<String, Peer> _map = {};
 
   /**
+   * Creates a new empty [PeerList].
+   */
+  PeerList.empty();
+
+  /**
    * Iterator forward. We can ignore the keys as they are also stored inside
    * the [Peer] object.
    */
   @override
   Iterator<Peer> get iterator => _map.values.iterator;
-
-  /**
-   * Creates a new empty [PeerList].
-   */
-  PeerList.empty();
 
   /**
    * Creates a peerList from a table-formatted string buffer. The format is
@@ -46,12 +46,12 @@ class PeerList extends IterableBase<Peer> {
           keys.add(f);
         });
       } else {
-        if (!line.isEmpty && line != "+OK") {
+        if (line.isNotEmpty && line != "+OK") {
           Peer newPeer = new Peer.fromLine(keys, line, splitOn);
-          if (!_map.containsKey(newPeer.key)) {
+          if (!_map.containsKey(newPeer.id)) {
             add(newPeer);
           } else {
-            _map[newPeer.key].mergeGroups(newPeer);
+            _map[newPeer.id].mergeGroups(newPeer);
           }
         }
       }
@@ -80,6 +80,6 @@ class PeerList extends IterableBase<Peer> {
    * Replaces the [Peer] element if it is already present.
    */
   void update(Peer peer) {
-    _map[peer.key] = peer;
+    _map[peer.id] = peer;
   }
 }

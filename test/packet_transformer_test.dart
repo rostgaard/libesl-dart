@@ -29,7 +29,7 @@ void main() {
       expect(res.byteCount, greaterThan(0));
 
       expect(res.errors, isEmpty);
-      _log.finest(summary(res));
+      _log.finest(_summary(res));
     });
 
     test('call session plain', () async {
@@ -39,7 +39,7 @@ void main() {
       expect(res.runtime.inMicroseconds, greaterThan(0));
       expect(res.byteCount, greaterThan(0));
       expect(res.errors, isEmpty);
-      _log.finest(summary(res));
+      _log.finest(_summary(res));
     });
 
     test('event background job plain', () async {
@@ -49,7 +49,7 @@ void main() {
       expect(res.runtime.inMicroseconds, greaterThan(0));
       expect(res.byteCount, greaterThan(0));
       expect(res.errors, isEmpty);
-      _log.finest(summary(res));
+      _log.finest(_summary(res));
     });
 
     test('event re-scedule', () async {
@@ -59,7 +59,7 @@ void main() {
       expect(res.runtime.inMicroseconds, greaterThan(0));
       expect(res.byteCount, greaterThan(0));
       expect(res.errors, isEmpty);
-      _log.finest(summary(res));
+      _log.finest(_summary(res));
     });
 
     test('call session - json format', () async {
@@ -69,7 +69,7 @@ void main() {
       expect(res.runtime.inMicroseconds, greaterThan(0));
       expect(res.byteCount, greaterThan(0));
       expect(res.errors, isEmpty);
-      _log.finest(summary(res));
+      _log.finest(_summary(res));
     });
 
     test('event channel hangup complete', () async {
@@ -79,14 +79,14 @@ void main() {
       expect(res.runtime.inMicroseconds, greaterThan(0));
       expect(res.byteCount, greaterThan(0));
       expect(res.errors, isEmpty);
-      _log.finest(summary(res));
+      _log.finest(_summary(res));
     });
 
     test('call session 2 - json format', () async {
       final _PacketProcessResult res =
           await _parseFile(dumpfilePath + '/json_session.ok');
       expect(res.errors, isEmpty);
-      _log.finest(summary(res));
+      _log.finest(_summary(res));
     });
 
     test('shutdown session', () async {
@@ -96,14 +96,14 @@ void main() {
       expect(res.runtime.inMicroseconds, greaterThan(0));
       expect(res.byteCount, greaterThan(0));
       expect(res.errors, isEmpty);
-      _log.finest(summary(res));
+      _log.finest(_summary(res));
     });
 
     test('event heartbeat', () async {
       final _PacketProcessResult res =
           await _parseFile(dumpfilePath + '/event_heartbeat.ok');
       expect(res.errors, isEmpty);
-      _log.finest(summary(res));
+      _log.finest(_summary(res));
     });
 
     test('voicemail session', () async {
@@ -113,7 +113,7 @@ void main() {
       expect(res.runtime.inMicroseconds, greaterThan(0));
       expect(res.byteCount, greaterThan(0));
       expect(res.errors, isEmpty);
-      _log.finest(summary(res));
+      _log.finest(_summary(res));
     });
 
     test('benchmark', () async {
@@ -123,7 +123,7 @@ void main() {
       expect(res.runtime.inMicroseconds, greaterThan(0));
       expect(res.byteCount, greaterThan(0));
       expect(res.errors, isEmpty);
-      _log.finest(summary(res));
+      _log.finest(_summary(res));
     });
 
     // Failure scenarios
@@ -132,28 +132,28 @@ void main() {
       final _PacketProcessResult res = await _parseFile(dumpfilePath +
           '/event_channel_answer_content_length_mismatch.should_fail');
       expect(res.errors, isNotEmpty);
-      _log.finest(summary(res));
+      _log.finest(_summary(res));
     });
 
     test('event missing_header (should fail)', () async {
       final _PacketProcessResult res = await _parseFile(
           dumpfilePath + '/event_channel_destroy_missing_header.should_fail');
       expect(res.errors, isNotEmpty);
-      _log.finest(summary(res));
+      _log.finest(_summary(res));
     });
 
     test('event missing header - alternate (should fail)', () async {
       final _PacketProcessResult res = await _parseFile(
           dumpfilePath + '/event_channel_destroy_missing_header.should_fail');
       expect(res.errors, isNotEmpty);
-      _log.finest(summary(res));
+      _log.finest(_summary(res));
     });
 
     test('event channel create (should fail)', () async {
       final _PacketProcessResult res =
           await _parseFile(dumpfilePath + '/event_channel_create.should_fail');
       expect(res.errors, isNotEmpty);
-      _log.finest(summary(res));
+      _log.finest(_summary(res));
     });
   });
 }
@@ -165,16 +165,16 @@ class _PacketProcessResult {
   int byteCount = -1;
   List errors = [];
 
-  _PacketProcessResult.empty();
-
   _PacketProcessResult(
       this.file, this.runtime, this.packetCount, this.byteCount, this.errors);
 
+  _PacketProcessResult.empty();
+
   @override
-  String toString() => '${file}\tpackets:${packetCount}'
-      '\tmsec:${runtime.inMilliseconds}'
-      '\tbytes:${byteCount}'
-      '\terrors:${errors.length}';
+  String toString() => '$file\tpackets:$packetCount'
+      '\tmsec:$runtime.inMilliseconds'
+      '\tbytes:$byteCount'
+      '\terrors:$errors.length';
 }
 
 Future<_PacketProcessResult> _parseFile(String testfilePath) async {
@@ -250,6 +250,7 @@ Future<_PacketProcessResult> _processAllDumpFiles(String testDataPath,
   return sum;
 }
 
+/// Packet transformer benchmark test
 Future<bool> packetTransformer() async {
   String testDataPath = 'test/test_data/';
   StreamController<_PacketProcessResult> resultStream =
@@ -297,7 +298,7 @@ Future<bool> packetTransformer() async {
   return testCompleter.future;
 }
 
-String summary(_PacketProcessResult res) {
+String _summary(_PacketProcessResult res) {
   final double mibPerSecond = res.byteCount / res.runtime.inMicroseconds;
 
   return 'processing speed: ${mibPerSecond.toStringAsFixed(2)}MiB/s\n'
@@ -309,8 +310,6 @@ String summary(_PacketProcessResult res) {
       '${res.errors.fold('', (buf, error) => buf + error.toString() + '\n')}';
 }
 
-///
-///
 Future<_PacketProcessResult> _testFile(
     io.File testFile, StreamController<_PacketProcessResult> resultStream,
     {bool shouldFail: false}) async {
@@ -330,7 +329,7 @@ Future<_PacketProcessResult> _testFile(
 
     if (shouldFail) {
       if (res.errors.isEmpty) {
-        res.errors.add(new StateError('Expected failure! ${testFile}'));
+        res.errors.add(new StateError('Expected failure! $testFile'));
       } else {
         res.errors = [];
       }

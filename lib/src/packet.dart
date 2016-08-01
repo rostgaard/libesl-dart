@@ -6,20 +6,28 @@ part of esl;
 
 /// Model class of an ESL packet.
 class Packet {
-  static final Logger log = new Logger('esl.Packet');
+  static final Logger _log = new Logger('esl.Packet');
 
-  static int count = 0;
-
+  /// The headers of the packet.
   Map<String, String> headers;
-  String content;
-  Map<String, dynamic> contentMap = {};
 
+  /// The raw (stringified) payload of the packet.
+  String content;
+
+  final Map<String, dynamic> _contentMap = {};
+
+  /// Create a new empty packet.
   Packet() {
     headers = {};
     content = "";
   }
 
+  /// The content type of the packet. Looks up the `Content-Type` field
+  /// of the header.
   String get contentType => headers['Content-Type'];
+
+  /// The content type of the packet. Looks up the `Content-Length` field
+  /// of the header. If no header is present, returned value is `0`.
   int get contentLength =>
       hasHeader('Content-Length') ? int.parse(headers['Content-Length']) : 0;
 
@@ -45,31 +53,33 @@ class Packet {
   @deprecated
   String get eventType => isEvent
       ? contentAsMap['Event-Name']
-      : throw new StateError('Packet is not an event, but ${contentType}');
+      : throw new StateError('Packet is not an event, but $contentType');
 
-  bool get isNotice => ContentType.notices.contains(contentType);
-
+  /// Returns true if the [Packet] headers contains field [key].
   bool hasHeader(String key) => headers.containsKey(key);
 
+  /// Adds a header to the [Packet].
   void addHeader(String key, String value) {
     headers[key] = value;
   }
 
+  /// The value of content field identified at key [key].
   String field(String key) => contentAsMap[key];
 
+  /// The content of the [Packet] as a map.
   Map<String, dynamic> get contentAsMap {
     if (contentType == _constant.ContentType.textEventJson) {
       if (_contentMap.isEmpty) {
         try {
-          contentMap = JSON.decode(content) as Map<String, dynamic>;
+          _contentMap.addAll(JSON.decode(content) as Map<String, dynamic>);
         } catch (error, stacktrace) {
-          log.severe(
+          _log.severe(
               'Failed to parse following packet content as JSON '
-              'string:\n${content}',
+              'string:\n$content',
               stacktrace);
         }
       }
-      return contentMap;
+      return _contentMap;
     } else {
       throw new UnsupportedError('Supported event formats are currently '
           'limited to${EventFormat.supportedFormats}');

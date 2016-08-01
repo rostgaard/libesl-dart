@@ -16,7 +16,7 @@ class Response {
 
   final String rawBody;
 
-  Response.fromPacketBody(String this.rawBody);
+  Response.fromPacketBody(this.rawBody);
 
   /**
    * The status of the response. Can be either [ok], [error] or [unknown].
@@ -45,7 +45,7 @@ class Response {
       return lastLine.substring(ok.length, lastLine.length).trim();
     } else {
       throw new StateError('Response does not carry channel information. '
-          'Raw body: ${rawBody}');
+          'Raw body: $rawBody');
     }
   }
 
