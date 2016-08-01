@@ -42,8 +42,17 @@ class Connection {
    * have to obey the rules of these.
    */
   Stream<Event> get eventStream => _eventStream.stream;
+
+  /// Stream that spawns a [Request] object every time the ESL socket sends
+  /// a request packet.
   Stream<Request> get requestStream => _requestStream.stream;
+
+  /// Stream that spawns a [Packet] object every time the ESL socket sends
+  /// a notice packet.
   Stream<Packet> get noticeStream => _noticeStream.stream;
+
+  /// Stream that emits the disconnected [Socket] whenever the
+  /// socket connection is broken.
   Stream<Socket> get onDisconnect => _disconnectStream.stream;
 
   /// The Job queue is a simple FIFO of Futures that complete in-order.
@@ -52,8 +61,11 @@ class Connection {
   /// The Job queue is a simple FIFO of Futures that complete in-order.
   Queue<Completer<Reply>> _replyQueue = new Queue<Completer<Reply>>();
 
+  /// Callback function that triggeres when the socket is interrupted.
   Function onDone = () => null;
 
+  /// Internal subscription. Kept, as it needs to be cancelled upon socket
+  /// disconnect.
   StreamSubscription _socketListener;
 
   /**
@@ -72,6 +84,7 @@ class Connection {
     onDone();
   }
 
+  /// Connects the connection.
   Future<Socket> connect(String hostname, int port) async {
     _socket = await Socket.connect(hostname, port);
 
