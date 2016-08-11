@@ -5,11 +5,13 @@
 library esl.test;
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:logging/logging.dart';
 import 'package:test/test.dart';
 import 'package:esl/esl.dart' as esl;
+import 'package:esl/constants.dart' as esl;
 import 'package:esl/util.dart' as esl;
 
 import 'src/dummy_esl.dart';
@@ -29,26 +31,26 @@ void main() {
 
 Future _correctPassword() async {
   final String password = 'dummy';
-  final esl.Connection connection = new esl.Connection();
   final DummyEsl dummyEsl =
       new DummyEsl(await ServerSocket.bind('127.0.0.1', 18021), password);
 
-  await connection.connect('127.0.0.1', 18021);
+  final Socket clientSocket = await Socket.connect('127.0.0.1', 18021);
+  final esl.Connection connection = new esl.Connection(clientSocket);
 
   Future authentication = esl.authHandler(connection, password);
 
   await authentication;
-  await connection.disconnect();
+  await clientSocket.close();
   await dummyEsl.close();
 }
 
 Future _wrongPassword() async {
   final String password = 'dummy';
-  final esl.Connection connection = new esl.Connection();
   final DummyEsl dummyEsl =
       new DummyEsl(await ServerSocket.bind('127.0.0.1', 18021), password);
 
-  await connection.connect('127.0.0.1', 18021);
+  final Socket clientSocket = await Socket.connect('127.0.0.1', 18021);
+  final esl.Connection connection = new esl.Connection(clientSocket);
 
   Future authentication = esl.authHandler(connection, password + 'wrong');
 
@@ -58,6 +60,6 @@ Future _wrongPassword() async {
     // Expected result.
   }
 
-  await connection.disconnect();
+  await clientSocket.close();
   await dummyEsl.close();
 }

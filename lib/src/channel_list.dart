@@ -40,7 +40,7 @@ class ChannelList extends IterableBase<Channel> {
       }
     }
 
-    if (channel.state == _ChannelState._destroy) {
+    if (channel.state == _constant.ChannelState.destroy) {
       _remove(channel);
     }
   }

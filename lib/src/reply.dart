@@ -5,33 +5,23 @@
 part of esl;
 
 /// Reply packet class. Specialization of [Packet] class.
-class Reply extends Packet {
+class Reply {
   /// Creates new [Reply] object from a general [Packet] object.
-  Reply.fromPacket(Packet packet) {
-    headers = packet.headers;
-  }
-
-  /// Command reply `+OK` constant.
-  static const String ok = Response.ok;
-
-  /// Command reply `-ERR` constant.
-  static const String error = Response.error;
-
-  /// Command reply for all other values other than [ok] and [error].
-  static const String unknown = Response.unknown;
+  Reply.fromPacket(Packet packet) : replyRaw = packet.headers['Reply-Text'];
 
   /// Returns the reply body, without parsing it.
-  String get replyRaw => headers['Reply-Text'];
+  final String replyRaw;
 
-  /// Parses and retrieves the response status as either [ok], [error] or
-  /// [unknown].
+  /// Parses and retrieves the response status as either
+  /// [_constant.CommandReply.ok], [_constant.CommandReply.error] or
+  /// [_constant.CommandReply.unknown].
   String get status {
-    if (replyRaw.startsWith(ok)) {
-      return ok;
-    } else if (replyRaw.startsWith(error)) {
-      return error;
+    if (replyRaw.startsWith(_constant.CommandReply.ok)) {
+      return _constant.CommandReply.ok;
+    } else if (replyRaw.startsWith(_constant.CommandReply.error)) {
+      return _constant.CommandReply.error;
     } else {
-      return unknown;
+      return _constant.CommandReply.unknown;
     }
   }
 }

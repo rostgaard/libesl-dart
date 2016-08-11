@@ -9,18 +9,13 @@ class Packet {
   static final Logger _log = new Logger('esl.Packet');
 
   /// The headers of the packet.
-  Map<String, String> headers;
+  final Map<String, String> headers;
 
-  /// The raw (stringified) payload of the packet.
-  String content;
-
-  final Map<String, dynamic> _contentMap = {};
+  /// The raw payload of the packet in bytes.
+  final List<int> payload;
 
   /// Create a new empty packet.
-  Packet() {
-    headers = {};
-    content = "";
-  }
+  const Packet(this.headers, this.payload);
 
   /// The content type of the packet. Looks up the `Content-Type` field
   /// of the header.
@@ -48,41 +43,6 @@ class Packet {
   /// Determines if the [Packet] is a notice.
   bool get isNotice => _constant.ContentType.notices.contains(contentType);
 
-  /// The name of the event. If the [Packet] is not an event, it will throw
-  /// a [StateError].
-  @deprecated
-  String get eventType => isEvent
-      ? contentAsMap['Event-Name']
-      : throw new StateError('Packet is not an event, but $contentType');
-
   /// Returns true if the [Packet] headers contains field [key].
   bool hasHeader(String key) => headers.containsKey(key);
-
-  /// Adds a header to the [Packet].
-  void addHeader(String key, String value) {
-    headers[key] = value;
-  }
-
-  /// The value of content field identified at key [key].
-  String field(String key) => contentAsMap[key];
-
-  /// The content of the [Packet] as a map.
-  Map<String, dynamic> get contentAsMap {
-    if (contentType == _constant.ContentType.textEventJson) {
-      if (_contentMap.isEmpty) {
-        try {
-          _contentMap.addAll(JSON.decode(content) as Map<String, dynamic>);
-        } catch (error, stacktrace) {
-          _log.severe(
-              'Failed to parse following packet content as JSON '
-              'string:\n$content',
-              stacktrace);
-        }
-      }
-      return _contentMap;
-    } else {
-      throw new UnsupportedError('Supported event formats are currently '
-          'limited to${EventFormat.supportedFormats}');
-    }
-  }
 }

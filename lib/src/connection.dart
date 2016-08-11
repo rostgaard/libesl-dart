@@ -4,38 +4,40 @@
 
 part of esl;
 
-/// "Enum" of event formats.
-abstract class EventFormat {
-  /// Plaintext event format
-  static const String plain = "plain";
-
-  /// JSON-encoded strings
-  static const String json = "json";
-
-  /// XML-encoded data
-  static const String xml = "xml";
-
-  /// As of now, only JSON format is supported. Most of the raw packet
-  /// handling is done internally, so the transport deserialization should
-  /// be insignificant for the usage of this library.
-  static List<String> supportedFormats = [json];
-}
+/// As of now, only JSON format is supported. Most of the raw packet
+/// handling is done internally, so the transport deserialization should
+/// be insignificant for the usage of this library.
+const List<String> supportedEventFormats = const <String>[
+  _constant.EventFormat.json
+];
 
 /// FreeSWITCH event socket connection.
+/// TODO: Create notice packet.
+/// TODO: Remove timout seconds
 class Connection {
   final Logger _log = new Logger('esl');
 
-  Socket _socket;
+  final Socket _socket;
+  final Function _onDisconnect;
 
-  final StreamController<Event> _eventStream = new StreamController.broadcast();
+  final StreamController<Event> _eventController =
+      new StreamController<Event>.broadcast();
   final StreamController<Request> _requestStream =
-      new StreamController.broadcast();
+      new StreamController<Request>.broadcast();
   final StreamController<Packet> _noticeStream =
-      new StreamController.broadcast();
+      new StreamController<Packet>.broadcast();
+
+  /// Default constructor.
+  Connection(this._socket, {void onDisconnect()})
+      : _onDisconnect = onDisconnect {
+    _socket
+        .transform(new PacketTransformer())
+        .listen(_dispatch, onDone: _onDone);
+  }
 
   /// Stream that spawns a [Event] object every time the ESL socket sends
   /// an event packet.
-  Stream<Event> get eventStream => _eventStream.stream;
+  Stream<Event> get eventStream => _eventController.stream;
 
   /// Stream that spawns a [Request] object every time the ESL socket sends
   /// a request packet.
@@ -51,38 +53,36 @@ class Connection {
   /// The Job queue is a simple FIFO of Futures that complete in-order.
   Queue<Completer<Reply>> _replyQueue = new Queue<Completer<Reply>>();
 
-  /// Callback function that triggeres when the socket is interrupted.
-  Function onDone = () => null;
-
-  /// Internal subscription. Kept, as it needs to be cancelled upon socket
-  /// disconnect.
-  StreamSubscription _socketListener;
-
   /// Performs Socket-post-mortem cleanup.
-  void _onDone() {
+  Future<Null> _onDone() async {
     _log.finest('Disconnected. Closing streams');
+    _apiJobQueue.forEach((Completer<Response> c) {
+      try {
+        c.completeError(
+            new StateError('Transport channel has been disconnected'));
+      } catch (e) {
+        _log.warning('Failed to complete ticket in api job queue', e);
+      }
+    });
+
     _apiJobQueue.clear();
+
+    _replyQueue.forEach((Completer<Reply> c) {
+      try {
+        c.completeError(new StateError('Socket has been disconnected'));
+      } catch (e) {
+        _log.warning('Failed to complete ticket in reply queue', e);
+      }
+    });
+
     _replyQueue.clear();
-    _noticeStream.close();
-    _eventStream.close();
-    _requestStream.close();
-    _socketListener.cancel();
+    await _noticeStream.close();
+    await _eventController.close();
+    await _requestStream.close();
+    await _socket.close();
 
-    onDone();
-  }
-
-  /// Connects the connection.
-  Future<Socket> connect(String hostname, int port) async {
-    _socket = await Socket.connect(hostname, port);
-
-    if (_socketListener != null) {
-      await _socketListener.cancel();
-    }
-    _socketListener = _socket
-        .transform(new PacketTransformer())
-        .listen(_dispatch, onDone: _onDone);
-
-    return _socket;
+    /// Notify of the disconnect
+    if (_onDisconnect != null) _onDisconnect();
   }
 
   /// Send an arbitrary API command (blocking mode).
@@ -131,11 +131,11 @@ class Connection {
   /// Subscribe the socket to [events], which will be pumped into
   /// the [eventStream].
   Future<Reply> event(List<String> events,
-      {String format: '', int timeoutSeconds: 10}) {
-    if (!EventFormat.supportedFormats.contains(format)) {
+      {String format: '', int timeoutSeconds: 10}) async {
+    if (!supportedEventFormats.contains(format)) {
       return new Future.error(new UnsupportedError(
           'Format "$format" unsupported. Supported formats are: '
-          '${EventFormat.supportedFormats.join(', ')}'));
+          '${supportedEventFormats.join(', ')}'));
     }
 
     return _subscribeAndSendCommand('event $format ${events.join(' ')}',
@@ -149,11 +149,11 @@ class Connection {
   /// when the socket disconnects and all applications have
   /// finished executing.
   Future<Reply> myevents(String uuid,
-      {String format: '', int timeoutSeconds: 10}) {
-    if (!EventFormat.supportedFormats.contains(format)) {
-      return new Future.error(new UnsupportedError(
+      {String format: '', int timeoutSeconds: 10}) async {
+    if (!supportedEventFormats.contains(format)) {
+      throw new UnsupportedError(
           'Format "$format" unsupported. Supported formats are: '
-          '${EventFormat.supportedFormats.join(', ')}'));
+          '${supportedEventFormats.join(', ')}');
     }
 
     return _subscribeAndSendCommand(
@@ -184,7 +184,6 @@ class Connection {
   /// rather a "filter in," that is, when a filter is applied only the
   /// filtered values are received. Multiple filters on a socket
   /// connection are allowed.
-
   Future<Reply> filter(String eventHeader, String valueToFilter,
           {int timeoutSeconds: 10}) =>
       _subscribeAndSendCommand('filter $eventHeader $valueToFilter',
@@ -253,15 +252,10 @@ class Connection {
     }
   }
 
-  /// Perform a hard socket disconnect.
-  Future disconnect() async {
-    await _socket.close();
-  }
-
   /// Dispatches a packet by injecting it into the appropriate stream.
   void _dispatch(Packet packet) {
     if (packet.isEvent) {
-      _eventStream.add(new Event.fromPacket(packet));
+      _eventController.add(new Event.fromPacket(packet));
     } else if (packet.isRequest) {
       _requestStream.add(new Request.fromPacket(packet));
     } else if (packet.isReply) {
@@ -274,7 +268,7 @@ class Connection {
     } else if (packet.isResponse) {
       Completer<Response> completer = _apiJobQueue.removeFirst();
       if (!completer.isCompleted) {
-        completer.complete(new Response.fromPacketBody(packet.content.trim()));
+        completer.complete(new Response.fromPacket(packet));
       } else {
         _log.info('Discarding packet for timed out api command.');
       }

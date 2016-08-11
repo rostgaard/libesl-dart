@@ -6,18 +6,19 @@ part of esl.util;
 
 /// Utility function for handling the authentication process. Returns a
 /// future that completes normally or throws an [AuthenticationFailure].
-Future authHandler(Connection connection, String password) {
+Future<Null> authHandler(Connection connection, String password) {
   final Logger _log = new Logger('esl.authHandler');
 
-  Completer _authenticationProcess = new Completer();
+  Completer<Null> _authenticationProcess = new Completer<Null>();
 
-  connection.requestStream.listen((Packet p) async {
-    if (p.contentType == ContentType.authRequest) {
+  connection.requestStream.listen((Request r) async {
+    if (r is AuthRequest) {
       _log.finest('Sending authentication');
       final Reply reply = await connection.authenticate(password);
 
-      if (reply.status != Reply.ok) {
-        final error = new AuthenticationFailure('Reply: ${reply.replyRaw}');
+      if (reply.status != CommandReply.ok) {
+        final AuthenticationFailure error =
+            new AuthenticationFailure('Reply: ${reply.replyRaw}');
         _authenticationProcess.completeError(error);
       } else {
         _log.finest('Authentication succeeded');

@@ -1,25 +1,11 @@
 // Copyright (c) 2015, Kim Rostgaard Christensen. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file.
+//
+// Parts of the documentation originates from https://wiki.freeswitch.org
+// and are under Creative Commons Attribution licence.
 
 part of esl;
-
-///'Enum' type representing channel states.
-abstract class _ChannelState {
-  // static const String _new = "CS_NEW";
-  // static const String _init = "CS_INIT";
-  // static const String _routing = "CS_ROUTING";
-  // static const String _softExecute = "CS_SOFT_EXECUTE";
-  // static const String _execute = "CS_EXECUTE";
-  // static const String _exchangeMedia = "CS_EXCHANGE_MEDIA";
-  // static const String _park = "CS_PARK";
-  // static const String _consume_media = "CS_CONSUME_MEDIA";
-  // static const String _hibernate = "CS_HIBERNATE";
-  // static const String _reset = "CS_RESET";
-  // static const String _hangup = "CS_HANGUP";
-  // static const String _reporting = "CS_REPORTING";
-  static const String _destroy = "CS_DESTROY";
-}
 
 /// Wrapper class for a channel. Provides easy access to various channel
 /// information stored in a packet.
@@ -28,7 +14,7 @@ class Channel {
   @deprecated
   static const String nullChannelID = null;
 
-  static const List<String> _excludedFields = const [
+  static const List<String> _excludedFields = const <String>[
     'Event-Name',
     'Core-UUID',
     'FreeSWITCH-Hostname',
@@ -50,8 +36,8 @@ class Channel {
 
   /// Extracts the relevant information from the packet and stores it in an
   /// internal map.
-  Channel.fromPacket(Packet packet) {
-    packet.contentAsMap.forEach((key, value) {
+  Channel.fromEvent(Event event) {
+    event.fields.forEach((String key, dynamic value) {
       if (key.startsWith("variable_")) {
         String keyNoPrefix = (key.split("variable_")[1]);
         _variables[keyNoPrefix] = value;
@@ -76,10 +62,12 @@ class Channel {
   /// Returns a map representation of the channel.
   /// Deprecated, use [toMap()] instead.
   @deprecated
-  Map get asMap => {}..addAll(_fields)..addAll({'variables': _variables});
+  Map<String, dynamic> get asMap => new Map<String, dynamic>.unmodifiable(
+      <String, dynamic>{'variables': _variables});
 
   /// Returns a map representation of the channel.
-  Map toMap() => new Map.from(_fields)..addAll({'variables': _variables});
+  Map<String, dynamic> toMap() => new Map<String, dynamic>.unmodifiable(
+      <String, dynamic>{'variables': _variables});
 
   /// Two channel are equivalent, if their UUID's are the same regardless
   /// of state or variables.

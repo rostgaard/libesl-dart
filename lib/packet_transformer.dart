@@ -1,9 +1,12 @@
 // Copyright (c) 2015, Kim Rostgaard Christensen. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file.
+
+/// Packet transformer library.
 library esl.packet_transformer;
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:esl/esl.dart';
 
@@ -17,15 +20,16 @@ import 'package:esl/esl.dart';
 /// Can also be used standalone for parsing, for instance, packet dumps.
 class PacketTransformer implements StreamTransformer<List<int>, Packet> {
   final StreamController<Packet> _controller = new StreamController<Packet>();
-  Packet _currentPacket = new Packet();
-  List<int> _headerBuffer = [];
-  List<int> _bodyBuffer = [];
+  final List<int> _headerBuffer = <int>[];
+  final List<int> _bodyBuffer = <int>[];
+  final Map<String, String> _headers = <String, String>{};
   bool _readingHeader = true;
-  int _contentLength = 0;
+  int _readBytes = 0;
+  int _expectedContentLength = 0;
   int _currentChar;
-  static final int _newLine = '\n'.codeUnits.first;
+  static const int _newLine = 10;
 
-  ///Transform the incoming `stream's` events into [Packet] object.
+  ///Transform the incoming [stream]'s events into [Packet] object.
   @override
   Stream<Packet> bind(Stream<List<int>> stream) {
     stream.listen(_onData, onDone: _controller.close);
@@ -40,61 +44,82 @@ class PacketTransformer implements StreamTransformer<List<int>, Packet> {
       int lastChar = _currentChar;
       _currentChar = bytes[offset];
 
-      if (_readingHeader) {
-        if (_currentChar == _newLine) {
-          if (lastChar == _newLine) {
-            if (_currentPacket.hasHeader('Content-Length')) {
-              _readingHeader = false;
-              _contentLength = 0;
-              _bodyBuffer = [];
-            } else {
-              if (!_currentPacket.hasHeader('Content-Type') &&
-                  _currentPacket.headers.isNotEmpty) {
-                _controller.sink.addError(new StateError(
-                    'Bad header received: ${_currentPacket.headers}'));
-              }
+      /// Process a completed set of headers.
+      void processHeaders() {
+        if (_headers.containsKey('Content-Length')) {
+          _readingHeader = false;
+          _readBytes = 0;
+          _expectedContentLength = int.parse(_headers['Content-Length']);
+          _bodyBuffer.clear();
+        } else {
+          if (!_headers.containsKey('Content-Type') && _headers.isNotEmpty) {
+            _controller.sink
+                .addError(new StateError('Bad header received: $_headers'));
+          }
 
-              // Skip empty lines.
-              else if (_currentPacket.headers.isNotEmpty) {
-                _controller.sink.add(_currentPacket);
-              }
-              _currentPacket = new Packet();
-            }
+          // Skip empty lines.
+          else if (_headers.isNotEmpty) {
+            _controller.sink.add(new Packet(
+                new Map<String, String>.unmodifiable(_headers), const <int>[]));
+          }
+          _headers.clear();
+        }
+      }
+
+      /// Read in bytes and process the bytes read as a packet header.
+      void readAndProcessAsHeader() {
+        if (_currentChar == _newLine) {
+          // If we see two newlines in a sequence
+          if (lastChar == _newLine) {
+            processHeaders();
           } else {
-            String headerLine = new String.fromCharCodes(_headerBuffer);
+            String headerLine = ASCII.decode(_headerBuffer, allowInvalid: true);
 
             // Ignore short lines.
             if (headerLine.length > 1) {
               int splitIndex = headerLine.indexOf(':');
               if (splitIndex > 0) {
-                String key = headerLine.substring(0, splitIndex);
-                String value = headerLine.substring(splitIndex + 1);
-                _currentPacket.addHeader(key.trim(), value.trim());
+                final String key = headerLine.substring(0, splitIndex);
+                final String value = headerLine.substring(splitIndex + 1);
+                _headers[key.trim()] = value.trim();
               } else {
                 _controller.addError(
                     new StateError('Skipping invalid buffer: "$headerLine"'));
               }
             }
           }
-          _headerBuffer = [];
+          _headerBuffer.clear();
         } else {
           _headerBuffer.add(_currentChar);
         }
-      } else {
-        assert(_currentPacket.contentLength > 0);
+      }
+
+      /// Reads and processes bytes as content.
+      void readAndProcessAsContent() {
         _bodyBuffer.add(_currentChar);
-        _contentLength++;
-        if (_contentLength == _currentPacket.contentLength) {
-          _currentPacket.content = new String.fromCharCodes(_bodyBuffer);
+        _readBytes++;
+
+        // The amount of bytes read equals the expected content length which
+        // means the we can now complete the packet we are reading.
+        if (_readBytes == _expectedContentLength) {
           _readingHeader = true;
 
           // Sink on the packet.
-          _controller.sink.add(_currentPacket);
+          _controller.sink.add(new Packet(
+              new Map<String, String>.unmodifiable(_headers),
+              new List<int>.unmodifiable(_bodyBuffer)));
 
-          // Clear the state.
-          _bodyBuffer = [];
-          _currentPacket = new Packet();
+          // Empty the buffers for next packet.
+          _bodyBuffer.clear();
+          _headers.clear();
         }
+      }
+
+      // Packet parsing logic.
+      if (_readingHeader) {
+        readAndProcessAsHeader();
+      } else {
+        readAndProcessAsContent();
       }
     }
   }

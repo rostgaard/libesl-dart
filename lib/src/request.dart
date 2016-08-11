@@ -7,14 +7,17 @@ part of esl;
 /// A request is a specialization of a [Packet] that is pushed from
 /// FreeSWITCH whenever it needs the connecting party to act upon a
 /// request. The first request a connection meets, is the 'auth' request.
-class Request extends Packet {
+abstract class Request {
   /// Construct a [Request] from a [Packet] object.
-  Request.fromPacket(Packet packet) {
-    headers = packet.headers;
-    content = packet.content;
+  factory Request.fromPacket(Packet packet) {
+    if (packet.contentType == _constant.ContentType.authRequest) {
+      return new AuthRequest();
+    } else {
+      throw new StateError('Invalid content type for '
+          'request: ${packet.contentType}');
+    }
   }
-
-  /// The content type of the Request.
-  @deprecated
-  String get type => contentType;
 }
+
+/// Authentication request class.
+class AuthRequest implements Request {}

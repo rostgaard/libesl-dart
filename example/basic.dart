@@ -5,6 +5,7 @@
 library esl.example;
 
 import 'dart:async';
+import 'dart:io';
 
 import 'package:esl/constants.dart' as esl;
 import 'package:esl/esl.dart' as esl;
@@ -12,41 +13,32 @@ import 'package:logging/logging.dart';
 
 esl.PeerList _peerList;
 
-Future main() async {
+Future<Null> main() async {
+  print('\n'.codeUnits.first);
   /* Changing the root log level propagates to libesl-dart.*/
   Logger.root.level = Level.ALL;
-  final List<String> events = ['BACKGROUND_JOB'];
+  final List<String> events = <String>[esl.EventType.all];
 
-  /* You can use chaining to attach log handlers, or merely set
-     it up later using the connection handle. */
-  Logger.root.level = Level.ALL;
-  Logger.root.onRecord.listen(print);
-
-  esl.Connection conn = new esl.Connection();
+  esl.Connection conn = new esl.Connection(
+      await Socket.connect('localhost', 8021),
+      onDisconnect: () => print('oooof'));
 
   /* FreeSWITCH will send requests to your connection - for instance
     authentication requests.
     In order to respond to them automatically, you can subscribe to
     them from the requestStream. */
-  conn.requestStream.listen((esl.Packet packet) {
-    switch (packet.contentType) {
-
-      /* An authentication request should be responded to be an
+  conn.requestStream.listen((esl.Request request) {
+    /* An authentication request should be responded to be an
          authentication. This is an example on how to do it. */
-      case (esl.ContentType.authRequest):
-
-        /* As the authentication call is a future, you can use .then
+    if (request is esl.AuthRequest) {
+      /* As the authentication call is a future, you can use .then
            blocks to schedule subsequent command or API calls when
            the authentication returns properly. */
-        conn
-            .authenticate('openreception-tests')
-            .then(_checkAuthentication)
-            .then((_) => conn.event(events, format: esl.EventFormat.json))
-            .catchError((e) => print(e));
-        break;
-
-      default:
-        break;
+      conn
+          .authenticate('ClueCon')
+          .then(_checkAuthentication)
+          .then((_) => conn.event(events, format: esl.EventFormat.json))
+          .catchError((dynamic e) => print(e));
     }
   });
 
@@ -56,33 +48,27 @@ Future main() async {
   esl.ChannelList channelList = new esl.ChannelList();
 
   conn.eventStream.listen((esl.Event event) {
-    print(event.content);
+    print(event.eventName);
     switch (event.eventName) {
-      case ("CUSTOM"):
-        esl.Channel channel = new esl.Channel.fromPacket(event);
+      case (esl.EventType.custom):
+        esl.Channel channel = new esl.Channel.fromEvent(event);
         channelList.update(channel);
         print(channel.variables);
         break;
-      case ("CHANNEL_CREATE"):
+      case (esl.EventType.channelCreate):
         break;
     }
   });
 
-  conn.noticeStream.listen((packet) => print(packet.contentType));
+  conn.noticeStream.listen((esl.Packet packet) => print(packet.contentType));
 
-  void signalDisconnect() => print('Disconnected!');
-
-  print('Connecting...');
-  conn.onDone = signalDisconnect;
-  await conn.connect('localhost', 8021).whenComplete(() => print('Connected!'));
-
-  await new Future.delayed(new Duration(seconds: 1));
+  await new Future<Null>.delayed(new Duration(seconds: 1));
   print(await conn.bgapi('status'));
 }
 
 /// Checks authentication reply
 void _checkAuthentication(esl.Reply reply) {
-  if (reply.status != esl.Reply.ok) {
+  if (reply.status != esl.CommandReply.ok) {
     throw new StateError('Invalid credentials!');
   }
 }

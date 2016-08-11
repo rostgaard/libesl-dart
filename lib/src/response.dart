@@ -6,56 +6,44 @@ part of esl;
 
 ///Class representing a reponse received from the FreeSWITCH event socket.
 class Response {
-  /// Command response `+OK` constant.
-  static const String ok = '+OK';
-
-  /// Command response `-ERR` constant.
-  static const String error = '-ERR';
-
-  /// Command response `-USAGE` constant.
-  static const String usage = '-USAGE';
-
-  /// Command reply for all other values.
-  static const String unknown = '';
-
   /// Raw response body as string.
-  final String rawBody;
+  final String content;
 
   /// Construct a new [Response] object from a packet body String.
-  Response.fromPacketBody(this.rawBody);
+  Response.fromPacket(Packet packet)
+      : content = ASCII.decode(packet.payload, allowInvalid: true);
 
-  /// The status of the response. Can be either [ok], [error], [usage]
-  /// or [unknown].
+  /// The status of the response. Can be either
+  /// [_constant.CommandReply.ok], [_constant.CommandReply.error] or
+  /// [_constant.CommandReply.unknown].
   String get status {
-    String lastLine = rawBody.split('\n').last;
+    String lastLine = content.split('\n').last;
 
-    if (lastLine.startsWith(ok)) {
-      return ok;
-    } else if (lastLine.startsWith(error)) {
-      return error;
-    } else if (lastLine.startsWith(usage)) {
-      return usage;
+    if (lastLine.startsWith(_constant.CommandReply.ok)) {
+      return _constant.CommandReply.ok;
+    } else if (lastLine.startsWith(_constant.CommandReply.error)) {
+      return _constant.CommandReply.error;
+    } else if (lastLine.startsWith(_constant.CommandReply.usage)) {
+      return _constant.CommandReply.usage;
     } else {
-      return unknown;
+      return _constant.CommandReply.unknown;
     }
   }
 
   /// Reponses may carry the UUID of a channel.
   String get channelUUID {
-    String lastLine = rawBody.split('\n').last;
+    String lastLine = content.split('\n').last;
 
-    if (lastLine.startsWith(ok)) {
-      return lastLine.substring(ok.length, lastLine.length).trim();
+    if (lastLine.startsWith(_constant.CommandReply.ok)) {
+      return lastLine.replaceFirst(_constant.CommandReply.ok, '').trim();
     } else {
       throw new StateError('Response does not carry channel information. '
-          'Raw body: $rawBody');
+          'Raw body: $content');
     }
   }
 
   /// String representation of a Response for debug purposes or
-  ///  manual processing.
+  /// manual processing.
   @override
-  String toString() {
-    return rawBody;
-  }
+  String toString() => content;
 }
