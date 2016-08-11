@@ -13,6 +13,12 @@ class Response {
   Response.fromPacket(Packet packet)
       : content = ASCII.decode(packet.payload, allowInvalid: true);
 
+  /// Determines if the reply indicated a success.
+  bool get isOk => status == _constant.CommandReply.ok;
+
+  /// Determines if the reply indicated an error.
+  bool get isError => status == _constant.CommandReply.ok;
+
   /// The status of the response. Can be either
   /// [_constant.CommandReply.ok], [_constant.CommandReply.error] or
   /// [_constant.CommandReply.unknown].

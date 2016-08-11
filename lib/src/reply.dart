@@ -12,6 +12,12 @@ class Reply {
   /// Returns the reply body, without parsing it.
   final String replyRaw;
 
+  /// Determines if the reply indicated a success.
+  bool get isOk => status == _constant.CommandReply.ok;
+
+  /// Determines if the reply indicated an error.
+  bool get isError => status == _constant.CommandReply.ok;
+
   /// Parses and retrieves the response status as either
   /// [_constant.CommandReply.ok], [_constant.CommandReply.error] or
   /// [_constant.CommandReply.unknown].
