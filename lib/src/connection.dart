@@ -12,7 +12,6 @@ const List<String> supportedEventFormats = const <String>[
 ];
 
 /// FreeSWITCH event socket connection.
-/// TODO: Create notice packet.
 class Connection {
   final Logger _log = new Logger('esl');
 
@@ -23,8 +22,8 @@ class Connection {
       new StreamController<Event>.broadcast();
   final StreamController<Request> _requestStream =
       new StreamController<Request>.broadcast();
-  final StreamController<Packet> _noticeStream =
-      new StreamController<Packet>.broadcast();
+  final StreamController<Notice> _noticeStream =
+      new StreamController<Notice>.broadcast();
 
   /// Default constructor.
   Connection(this._socket, {void onDisconnect()})
@@ -42,9 +41,9 @@ class Connection {
   /// a request packet.
   Stream<Request> get requestStream => _requestStream.stream;
 
-  /// Stream that spawns a [Packet] object every time the ESL socket sends
+  /// Stream that spawns a [Notice] object every time the ESL socket sends
   /// a notice packet.
-  Stream<Packet> get noticeStream => _noticeStream.stream;
+  Stream<Notice> get noticeStream => _noticeStream.stream;
 
   /// The Job queue is a simple FIFO of Futures that complete in-order.
   Queue<Completer<Response>> _apiJobQueue = new Queue<Completer<Response>>();
@@ -240,7 +239,7 @@ class Connection {
         _log.info('Discarding packet for timed out api command.');
       }
     } else if (packet.isNotice) {
-      _noticeStream.add(packet);
+      _noticeStream.add(new Notice.fromPacket(packet));
     } else {
       _log.severe('Discarding unknown packet type ${packet.contentType}');
     }

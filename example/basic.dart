@@ -60,7 +60,7 @@ Future<Null> main() async {
     }
   });
 
-  conn.noticeStream.listen((esl.Packet packet) => print(packet.contentType));
+  conn.noticeStream.listen((esl.Notice notice) => print(notice.runtimeType));
 
   await new Future<Null>.delayed(new Duration(seconds: 1));
   print(await conn.bgapi('status'));

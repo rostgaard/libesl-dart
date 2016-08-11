@@ -22,6 +22,7 @@ part 'src/channel.dart';
 part 'src/channel_list.dart';
 part 'src/connection.dart';
 part 'src/event.dart';
+part 'src/notice.dart';
 part 'src/packet.dart';
 part 'src/peer.dart';
 part 'src/peer_list.dart';
