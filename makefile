@@ -7,7 +7,7 @@ tests:
 	pub run test 
 
 tests-to-json-file:
-	pub run test --reporter json > test-report.json
+	-pub run test --reporter json > test-report.json
 
 analyze:
 	@dartanalyzer --no-hints --fatal-warnings --package-warnings lib/esl.dart

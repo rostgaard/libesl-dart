@@ -9,15 +9,28 @@ class Response {
   /// Raw response body as string.
   final String content;
 
+  /// Construct a new [Response] object from a [Packet].
+  factory Response.fromPacket(Packet packet) => new Response.fromPacketBody(
+      ASCII.decode(packet.payload, allowInvalid: true));
+
   /// Construct a new [Response] object from a packet body String.
-  Response.fromPacket(Packet packet)
-      : content = ASCII.decode(packet.payload, allowInvalid: true);
+  Response.fromPacketBody(String body) : content = body;
+
+  /// Determines if the reply indicated a success.
+  bool get isOk => status == _constant.CommandReply.ok;
+
+  /// Determines if the reply indicated an error.
+  bool get isError => status == _constant.CommandReply.error;
 
   /// The status of the response. Can be either
   /// [_constant.CommandReply.ok], [_constant.CommandReply.error] or
   /// [_constant.CommandReply.unknown].
   String get status {
-    String lastLine = content.split('\n').last;
+    final String lastLine = content
+        .split('\n')
+        .where((String line) => line.isNotEmpty)
+        .last
+        .trimLeft();
 
     if (lastLine.startsWith(_constant.CommandReply.ok)) {
       return _constant.CommandReply.ok;

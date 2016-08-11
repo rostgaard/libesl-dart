@@ -4,7 +4,8 @@
 
 build/
 packages/
-packages
+.packages
+*/packages
 
 # Include when developing application packages.
 pubspec.lock
@@ -19,3 +20,9 @@ pubspec.lock
 # Don't track .settings and .buildlog from eclipse
 .settings
 .buildlog
+
+# Local concepts folder, used for locel playground code
+concepts
+
+# Don't track generated documentation
+doc/

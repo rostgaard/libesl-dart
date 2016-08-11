@@ -11,6 +11,9 @@ abstract class Response {
     esl.Response response = new esl.Response.fromPacket(packet);
 
     expect(response.status, equals(esl.CommandReply.usage));
+
+    expect(response.isOk, isFalse);
+    expect(response.isError, isFalse);
   }
 
   /// Tests if a [esl.Response] parses correct status upon -ERR response.
@@ -22,16 +25,21 @@ abstract class Response {
     esl.Response response = new esl.Response.fromPacket(packet);
 
     expect(response.status, equals(esl.CommandReply.error));
+
+    expect(response.isOk, isFalse);
+    expect(response.isError, isTrue);
   }
 
   /// Tests if a [esl.Response] parses correct status upon +OK response.
   static void detectsOK() {
-    const String buffer = '+OK';
+    const String buffer = '+OK [Success]';
     esl.Packet packet =
         new esl.Packet(<String, String>{}, ASCII.encode(buffer));
 
     esl.Response response = new esl.Response.fromPacket(packet);
 
     expect(response.status, equals(esl.CommandReply.ok));
+    expect(response.isOk, isTrue);
+    expect(response.isError, isFalse);
   }
 }
