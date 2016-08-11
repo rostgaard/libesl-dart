@@ -9,9 +9,12 @@ class Response {
   /// Raw response body as string.
   final String content;
 
+  /// Construct a new [Response] object from a [Packet].
+  factory Response.fromPacket(Packet packet) => new Response.fromPacketBody(
+      ASCII.decode(packet.payload, allowInvalid: true));
+
   /// Construct a new [Response] object from a packet body String.
-  Response.fromPacket(Packet packet)
-      : content = ASCII.decode(packet.payload, allowInvalid: true);
+  Response.fromPacketBody(String body) : content = body;
 
   /// Determines if the reply indicated a success.
   bool get isOk => status == _constant.CommandReply.ok;
