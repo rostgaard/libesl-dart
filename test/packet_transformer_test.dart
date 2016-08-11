@@ -163,7 +163,7 @@ class _PacketProcessResult {
   Duration runtime;
   int packetCount = 0;
   int byteCount = -1;
-  List errors = [];
+  List<dynamic> errors = <dynamic>[];
 
   _PacketProcessResult(
       this.file, this.runtime, this.packetCount, this.byteCount, this.errors);
@@ -180,9 +180,9 @@ class _PacketProcessResult {
 Future<_PacketProcessResult> _parseFile(String testfilePath) async {
   Stopwatch timer = new Stopwatch()..start();
   final io.File packetDump = new io.File(testfilePath);
-  final Completer done = new Completer();
+  final Completer<Null> done = new Completer<Null>();
 
-  List errors = [];
+  List<dynamic> errors = <dynamic>[];
   int packetCount = 0;
 
   final Stream<esl.Packet> packetStream =
@@ -220,7 +220,7 @@ Future<_PacketProcessResult> _processAllDumpFiles(String testDataPath,
     }
   }
 
-  new List.generate(repeat, (_) => null).forEach((_) =>
+  new List<Null>.generate(repeat, (_) => null).forEach((_) =>
       new io.Directory(testDataPath)
           .list(recursive: false, followLinks: true)
           .listen((io.FileSystemEntity fse) {
@@ -269,7 +269,7 @@ Future<bool> packetTransformer() async {
     }
   }
 
-  new List.generate(3, (_) => null).forEach((_) =>
+  new List<Null>.generate(3, (_) => null).forEach((_) =>
       new io.Directory(testDataPath)
           .list(recursive: false, followLinks: true)
           .listen((io.FileSystemEntity fse) {
@@ -307,7 +307,7 @@ String _summary(_PacketProcessResult res) {
       'bytes processed:${res.byteCount}\n'
       'number of errors:${res.errors.length}\n'
       'errors:\n'
-      '${res.errors.fold('', (buf, error) => buf + error.toString() + '\n')}';
+      '${res.errors.fold('', (String buf, dynamic error) => buf + error.toString() + '\n')}';
 }
 
 Future<_PacketProcessResult> _testFile(
@@ -331,13 +331,13 @@ Future<_PacketProcessResult> _testFile(
       if (res.errors.isEmpty) {
         res.errors.add(new StateError('Expected failure! $testFile'));
       } else {
-        res.errors = [];
+        res.errors = <dynamic>[];
       }
     } else if (res.errors.isNotEmpty) {
       print(testFile);
       print(res.errors);
     }
-  })..onError((error) => res.errors.add(error));
+  })..onError((dynamic error) => res.errors.add(error));
 
   await testFile.length();
 

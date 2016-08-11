@@ -18,7 +18,7 @@ class DummyEsl {
   final Logger _log = new Logger('DummyEsl');
   final ServerSocket _socket;
   final String _password;
-  final Set<_ClientConnection> _clients = new Set();
+  final Set<_ClientConnection> _clients = new Set<_ClientConnection>();
 
   /// Default constructor.
   DummyEsl(this._socket, this._password) {
@@ -48,9 +48,9 @@ class DummyEsl {
   }
 
   ///
-  Future _authenticationChallenge(_ClientConnection client) async {
+  Future<Null> _authenticationChallenge(_ClientConnection client) async {
     _log.finest('Sending authentication challenge');
-    _send(client, ['Content-Type: auth/request']);
+    _send(client, <String>['Content-Type: auth/request']);
 
     client.socket
         .transform(ASCII.decoder)
@@ -59,7 +59,7 @@ class DummyEsl {
         .listen(
             (String buffer) {
               final List<String> parts = buffer.split(' ');
-              final command = parts.first;
+              final String command = parts.first;
 
               switch (command) {
                 case 'auth':
@@ -68,11 +68,13 @@ class DummyEsl {
 
                   if (password != _password) {
                     _log.finest('password not ok');
-                    _send(client,
-                        ['Content-Type: command/reply', 'Reply-Text: +ERROR']);
+                    _send(client, <String>[
+                      'Content-Type: command/reply',
+                      'Reply-Text: +ERROR'
+                    ]);
                   } else {
                     _log.finest('password ok');
-                    _send(client, [
+                    _send(client, <String>[
                       'Content-Type: command/reply',
                       'Reply-Text: +OK accepted'
                     ]);
@@ -80,14 +82,14 @@ class DummyEsl {
                   }
               }
             },
-            onError: (e) => _log.warning('Client listener error', e),
+            onError: (dynamic e) => _log.warning('Client listener error', e),
             onDone: () {
               _log.info('Client ${client.socket.address.address} disconnected');
             });
   }
 
   /// Closes all client connections and server socket.
-  Future close() async {
+  Future<Null> close() async {
     for (_ClientConnection client in _clients) {
       try {
         await client.socket.close();

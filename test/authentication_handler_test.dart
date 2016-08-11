@@ -29,7 +29,7 @@ void main() {
   });
 }
 
-Future _correctPassword() async {
+Future<Null> _correctPassword() async {
   final String password = 'dummy';
   final DummyEsl dummyEsl =
       new DummyEsl(await ServerSocket.bind('127.0.0.1', 18021), password);
@@ -37,14 +37,14 @@ Future _correctPassword() async {
   final Socket clientSocket = await Socket.connect('127.0.0.1', 18021);
   final esl.Connection connection = new esl.Connection(clientSocket);
 
-  Future authentication = esl.authHandler(connection, password);
+  Future<Null> authentication = esl.authHandler(connection, password);
 
   await authentication;
   await clientSocket.close();
   await dummyEsl.close();
 }
 
-Future _wrongPassword() async {
+Future<Null> _wrongPassword() async {
   final String password = 'dummy';
   final DummyEsl dummyEsl =
       new DummyEsl(await ServerSocket.bind('127.0.0.1', 18021), password);
@@ -52,7 +52,7 @@ Future _wrongPassword() async {
   final Socket clientSocket = await Socket.connect('127.0.0.1', 18021);
   final esl.Connection connection = new esl.Connection(clientSocket);
 
-  Future authentication = esl.authHandler(connection, password + 'wrong');
+  Future<Null> authentication = esl.authHandler(connection, password + 'wrong');
 
   try {
     await authentication;

@@ -10,7 +10,7 @@ part of esl;
 class PeerList extends IterableBase<Peer> {
   /// Map used for [Peer] storage. Enables fast lookups, while still
   /// preserving the apperance of an [Iterable] from the outside.
-  Map<String, Peer> _map = {};
+  Map<String, Peer> _map = <String, Peer>{};
 
   /// Creates a new empty [PeerList].
   PeerList.empty();
@@ -28,9 +28,9 @@ class PeerList extends IterableBase<Peer> {
   ///    ...
   PeerList.fromMultilineBuffer(String buffer, {String splitOn: '|'}) {
     List<String> keys = new List<String>();
-    buffer.split('\n').forEach((var line) {
+    buffer.split('\n').forEach((String line) {
       if (keys.isEmpty) {
-        line.split(splitOn).forEach((f) {
+        line.split(splitOn).forEach((String f) {
           keys.add(f);
         });
       } else {
@@ -53,7 +53,7 @@ class PeerList extends IterableBase<Peer> {
 
   /// JSON representation is an immutable list representation of the
   /// [PeerList] object.
-  List toJson() => toList(growable: false);
+  List<Peer> toJson() => toList(growable: false);
 
   /// Add a [Peer] to the list.
   ///

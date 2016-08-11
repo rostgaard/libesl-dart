@@ -10,7 +10,7 @@ class Event {
   static final String _variablePrefix = 'variable_';
 
   /// fields of the event packet.
-  final UnmodifiableMapBase fields;
+  final UnmodifiableMapView<String, dynamic> fields;
 
   /// Create a new [Event] from a [Packet] object.
   factory Event.fromPacket(Packet packet) {
@@ -23,8 +23,11 @@ class Event {
           'Only values ${supportedEventFormats.join(', ')} are supported. '
           'Got: ${packet.contentType}');
     } else {
-      return new Event._internal(new Map.unmodifiable(
-          JSON.decode(ASCII.decode(packet.payload, allowInvalid: true))));
+      final String decoded = ASCII.decode(packet.payload, allowInvalid: true);
+      final Map<String, dynamic> map =
+          JSON.decode(decoded) as Map<String, dynamic>;
+
+      return new Event._internal(new UnmodifiableMapView<String, dynamic>(map));
     }
   }
 

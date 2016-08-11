@@ -6,8 +6,8 @@ part of esl;
 
 /// Peer model class as represented by ESL `list_users` API command.
 class Peer {
-  Map _map = {};
-  List<String> _groups = [];
+  Map<String, dynamic> _map = <String, dynamic>{};
+  List<String> _groups = <String>[];
   DateTime _lastSeen;
 
   /// Default constructor. Creates and un-initialized [Peer] object.
@@ -17,13 +17,13 @@ class Peer {
   /// using [seperator] as delimiter and [keys] as header fields.
   Peer.fromLine(List<String> keys, String line, [String seperator = '|']) {
     int index = 0;
-    line.split(seperator).forEach((field) {
+    line.split(seperator).forEach((String field) {
       _map[keys[index]] = field;
       index++;
     });
 
     groups.add(_map['group']);
-    _map.remove(['group']);
+    _map.remove(<String>['group']);
 
     if (contact.contains('error')) {
       _map['contact'] = null;
@@ -33,6 +33,9 @@ class Peer {
       throw new StateError(
           'Line length does not match number of keys. Line buffer: "$line"');
     }
+
+    _map['groups'] = groups;
+    _map['registered'] = registered;
   }
 
   /// User ID of the [Peer].
@@ -108,11 +111,8 @@ class Peer {
 
   /// Returns a Map representation of the [Peer] suitable and safe for
   /// serialization.
-  Map toJson() {
-    _map['groups'] = groups;
-    _map['registered'] = registered;
-    return _map;
-  }
+  UnmodifiableMapView<String, dynamic> toJson() =>
+      new UnmodifiableMapView<String, dynamic>(_map);
 
   /// Determine if two Peer objects are identical.
   ///

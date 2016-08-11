@@ -13,7 +13,6 @@ const List<String> supportedEventFormats = const <String>[
 
 /// FreeSWITCH event socket connection.
 /// TODO: Create notice packet.
-/// TODO: Remove timout seconds
 class Connection {
   final Logger _log = new Logger('esl');
 
@@ -204,7 +203,7 @@ class Connection {
   }
 
   /// Send pre-serialized command.
-  Future _sendSerializedCommand(
+  Future<Null> _sendSerializedCommand(
       String command, Completer<dynamic> completer) async {
     try {
       _log.finest('Sending "$command"');
@@ -212,7 +211,8 @@ class Connection {
       /// Write the command to socket.
       _socket.writeln('$command\n');
     } catch (error, stackTrace) {
-      final msg = 'Failed to send command "$command" - socket write failed.'
+      final String msg =
+          'Failed to send command "$command" - socket write failed.'
           ' Error: $error';
       _log.shout(msg, error, stackTrace);
       completer.completeError(new StateError(msg), stackTrace);
