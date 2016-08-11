@@ -20,13 +20,17 @@ class Response {
   bool get isOk => status == _constant.CommandReply.ok;
 
   /// Determines if the reply indicated an error.
-  bool get isError => status == _constant.CommandReply.ok;
+  bool get isError => status == _constant.CommandReply.error;
 
   /// The status of the response. Can be either
   /// [_constant.CommandReply.ok], [_constant.CommandReply.error] or
   /// [_constant.CommandReply.unknown].
   String get status {
-    String lastLine = content.split('\n').last;
+    final String lastLine = content
+        .split('\n')
+        .where((String line) => line.isNotEmpty)
+        .last
+        .trimLeft();
 
     if (lastLine.startsWith(_constant.CommandReply.ok)) {
       return _constant.CommandReply.ok;
