@@ -89,12 +89,11 @@ class Connection {
   ///
   /// Command reference can be found at;
   /// https://freeswitch.org/confluence/display/FREESWITCH/mod_commands
-  Future<Response> api(String command, {int timeoutSeconds: 10}) async {
-    Completer<Response> completer = new Completer<Response>();
+  Future<Response> api(String command) async {
+    final Completer<Response> completer = new Completer<Response>();
     _apiJobQueue.addLast(completer);
 
-    await _sendSerializedCommand(
-        'api $command', completer, new Duration(seconds: timeoutSeconds));
+    await _sendSerializedCommand('api $command', completer);
 
     return completer.future;
   }
@@ -103,43 +102,33 @@ class Connection {
   ///
   /// Command reference can be found at;
   /// https://freeswitch.org/confluence/display/FREESWITCH/mod_commands
-  Future<Reply> bgapi(String command,
-      {String jobUuid: '', int timeoutSeconds: 10}) {
+  Future<Reply> bgapi(String command, {String jobUuid: ''}) async {
     final String commandString =
         '$command' + (jobUuid.isNotEmpty ? '\nJob-UUID: $jobUuid' : '');
 
-    return _subscribeAndSendCommand(
-        'bgapi $commandString', new Duration(seconds: timeoutSeconds));
+    return _subscribeAndSendCommand('bgapi $commandString');
   }
 
   /// Authenticate on the FreeSWITCH server.
-  Future<Reply> authenticate(String password, {int timeoutSeconds: 10}) =>
-      _subscribeAndSendCommand(
-          'auth $password', new Duration(seconds: timeoutSeconds));
+  Future<Reply> authenticate(String password) =>
+      _subscribeAndSendCommand('auth $password');
 
   /// Tells FreeSWITCH not to close the socket connect when a channel
   /// hangs up. Instead, it keeps the socket connection open until the
   /// last event related to the channel has been received by
   /// the socket client.
-  Future<Reply> linger({int timeoutSeconds: 10}) =>
-      _subscribeAndSendCommand('linger', new Duration(seconds: timeoutSeconds));
+  Future<Reply> linger() => _subscribeAndSendCommand('linger');
 
   /// Disable socket lingering. See linger above.
-  Future<Reply> nolinger({int timeoutSeconds: 10}) => _subscribeAndSendCommand(
-      'nolinger', new Duration(seconds: timeoutSeconds));
+  Future<Reply> nolinger() => _subscribeAndSendCommand('nolinger');
 
   /// Subscribe the socket to [events], which will be pumped into
   /// the [eventStream].
-  Future<Reply> event(List<String> events,
-      {String format: '', int timeoutSeconds: 10}) async {
-    if (!supportedEventFormats.contains(format)) {
-      return new Future.error(new UnsupportedError(
-          'Format "$format" unsupported. Supported formats are: '
-          '${supportedEventFormats.join(', ')}'));
-    }
-
-    return _subscribeAndSendCommand('event $format ${events.join(' ')}',
-        new Duration(seconds: timeoutSeconds));
+  ///
+  /// The optional event [format] parameter will default to
+  /// [_constant.EventFormat.json], as this is
+  Future<Reply> event(List<String> events, {String format: ''}) async {
+    return _subscribeAndSendCommand('event $format ${events.join(' ')}');
   }
 
   /// The 'myevents' subscription allows your inbound socket connection to
@@ -148,46 +137,37 @@ class Connection {
   /// closing the socket when the channel goes away or closing the channel
   /// when the socket disconnects and all applications have
   /// finished executing.
-  Future<Reply> myevents(String uuid,
-      {String format: '', int timeoutSeconds: 10}) async {
+  Future<Reply> myevents(String uuid, {String format: ''}) async {
     if (!supportedEventFormats.contains(format)) {
       throw new UnsupportedError(
           'Format "$format" unsupported. Supported formats are: '
           '${supportedEventFormats.join(', ')}');
     }
 
-    return _subscribeAndSendCommand(
-        'myevents $uuid', new Duration(seconds: timeoutSeconds));
+    return _subscribeAndSendCommand('myevents $uuid');
   }
 
   /// The divert_events switch is available to allow events that an embedded
   /// script would expect to get in the inputcallback to be diverted to the
   /// event socket.
-  Future<Reply> divertEvents(bool on, {int timeoutSeconds: 10}) =>
-      _subscribeAndSendCommand('divert_events ${on ? 'on': 'off'}',
-          new Duration(seconds: timeoutSeconds));
+  Future<Reply> divertEvents(bool on) =>
+      _subscribeAndSendCommand('divert_events ${on ? 'on': 'off'}');
 
   /// Close the socket connection.
-  Future<Reply> exit({int timeoutSeconds: 10}) =>
-      _subscribeAndSendCommand('exit', new Duration(seconds: timeoutSeconds));
+  Future<Reply> exit() => _subscribeAndSendCommand('exit');
 
   /// Enable log output. Levels same as the console.conf values
-  Future<Reply> logLevel(int level, {int timeoutSeconds: 10}) =>
-      _subscribeAndSendCommand(
-          'log $level', new Duration(seconds: timeoutSeconds));
+  Future<Reply> logLevel(int level) => _subscribeAndSendCommand('log $level');
 
   /// Disable log output previously enabled by the log command.
-  Future<Reply> nolog({int timeoutSeconds: 10}) =>
-      _subscribeAndSendCommand('nolog', new Duration(seconds: timeoutSeconds));
+  Future<Reply> nolog() => _subscribeAndSendCommand('nolog');
 
   /// Specify event types to listen for. Note, this is not a filter out but
   /// rather a "filter in," that is, when a filter is applied only the
   /// filtered values are received. Multiple filters on a socket
   /// connection are allowed.
-  Future<Reply> filter(String eventHeader, String valueToFilter,
-          {int timeoutSeconds: 10}) =>
-      _subscribeAndSendCommand('filter $eventHeader $valueToFilter',
-          new Duration(seconds: timeoutSeconds));
+  Future<Reply> filter(String eventHeader, String valueToFilter) =>
+      _subscribeAndSendCommand('filter $eventHeader $valueToFilter');
 
   /// Specify the events which you want to revoke the filter. filter delete
   /// can be used when some filters are applied wrongly or when there is
@@ -196,59 +176,46 @@ class Connection {
   /// Example:
   ///    filterDelete('Event-Name', 'HEARTBEAT')
   ///
-  Future<Reply> filterDelete(String eventHeader, String valueToFilter,
-          {int timeoutSeconds: 10}) =>
-      _subscribeAndSendCommand('filter delete $eventHeader $valueToFilter',
-          new Duration(seconds: timeoutSeconds));
+  Future<Reply> filterDelete(String eventHeader, String valueToFilter) =>
+      _subscribeAndSendCommand('filter delete $eventHeader $valueToFilter');
 
   /// Send an event into the event system (multi line input for headers)
-  Future<Reply> sendevent(String eventName, {int timeoutSeconds: 10}) =>
-      _subscribeAndSendCommand(
-          'sendevent $eventName', new Duration(seconds: timeoutSeconds));
+  Future<Reply> sendevent(String eventName) =>
+      _subscribeAndSendCommand('sendevent $eventName');
 
   /// Suppress the specified type of event. Useful when you want to allow
   /// 'event all' followed by 'nixevent <some_event>' to see all but 1 type
   /// of event.
-  Future<Reply> nixevent(String eventTypes, {int timeoutSeconds: 10}) =>
-      _subscribeAndSendCommand(
-          'nixevent $eventTypes', new Duration(seconds: timeoutSeconds));
+  Future<Reply> nixevent(String eventTypes) =>
+      _subscribeAndSendCommand('nixevent $eventTypes');
 
   /// Disable all events that were previously enabled with event.
-  Future<Reply> noEvents({int timeoutSeconds: 10}) => _subscribeAndSendCommand(
-      'noevents', new Duration(seconds: timeoutSeconds));
+  Future<Reply> noEvents() => _subscribeAndSendCommand('noevents');
 
   /// Convenience function to avoid having to handle this on every
   /// command interface.
-  Future<Reply> _subscribeAndSendCommand(
-      String command, Duration timeout) async {
+  Future<Reply> _subscribeAndSendCommand(String command) async {
     Completer<Reply> completer = new Completer<Reply>();
     _replyQueue.addLast(completer);
 
-    await _sendSerializedCommand(command, completer, timeout);
+    await _sendSerializedCommand(command, completer);
 
     return completer.future;
   }
 
   /// Send pre-serialized command.
   Future _sendSerializedCommand(
-      String command, Completer completer, Duration timeout) async {
-    /// Write the command to socket.
-    _log.finest('Sending "$command"');
-
+      String command, Completer<dynamic> completer) async {
     try {
+      _log.finest('Sending "$command"');
+
+      /// Write the command to socket.
       _socket.writeln('$command\n');
     } catch (error, stackTrace) {
       final msg = 'Failed to send command "$command" - socket write failed.'
           ' Error: $error';
       _log.shout(msg, error, stackTrace);
       completer.completeError(new StateError(msg), stackTrace);
-    }
-
-    try {
-      await completer.future.timeout(timeout);
-    } on TimeoutException {
-      completer.completeError(new TimeoutException('Failed to get response to '
-          'command $command'));
     }
   }
 
