@@ -16,6 +16,9 @@
       Packet class. This means that you _must_ update your listener
       type, if you use the general Packet type.
     - Notice stream of Connection object now spawns typed Notice objects, rather than Packet objects.
+    - Response.rawLength renamed to content
+    - Event.contentAsMap renamed to fields
+    . Event.field function removed. Use Event.fields Map instead.
 
   - Non-breaking
   - Added utility authentication handler function
