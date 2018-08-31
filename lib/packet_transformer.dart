@@ -36,6 +36,10 @@ class PacketTransformer implements StreamTransformer<List<int>, Packet> {
     return _controller.stream;
   }
 
+  /// Generic [noSuchMethod] implementation.
+  @override
+  void noSuchMethod(Invocation i) => super.noSuchMethod(i);
+  
   /// Callback for receiving and processing bytes.
   ///
   /// Supports segmented transfers, such as TCP buffers.
@@ -73,7 +77,7 @@ class PacketTransformer implements StreamTransformer<List<int>, Packet> {
           if (lastChar == _newLine) {
             processHeaders();
           } else {
-            String headerLine = ASCII.decode(_headerBuffer, allowInvalid: true);
+            String headerLine = ascii.decode(_headerBuffer, allowInvalid: true);
 
             // Ignore short lines.
             if (headerLine.length > 1) {

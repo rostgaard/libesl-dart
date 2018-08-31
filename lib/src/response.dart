@@ -11,7 +11,7 @@ class Response {
 
   /// Construct a new [Response] object from a [Packet].
   factory Response.fromPacket(Packet packet) => new Response.fromPacketBody(
-      ASCII.decode(packet.payload, allowInvalid: true));
+      ascii.decode(packet.payload, allowInvalid: true));
 
   /// Construct a new [Response] object from a packet body String.
   Response.fromPacketBody(String body) : content = body;

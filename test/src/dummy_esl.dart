@@ -53,7 +53,7 @@ class DummyEsl {
     _send(client, <String>['Content-Type: auth/request']);
 
     client.socket
-        .transform(ASCII.decoder)
+        .transform(ascii.decoder)
         .transform(const LineSplitter())
         .where((String buffer) => buffer.isNotEmpty)
         .listen(

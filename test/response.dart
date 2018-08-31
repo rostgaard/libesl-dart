@@ -6,7 +6,7 @@ abstract class Response {
   static void detectsUsage() {
     const String buffer = '-USAGE: <uuid> [cause]';
     esl.Packet packet =
-        new esl.Packet(<String, String>{}, ASCII.encode(buffer));
+        new esl.Packet(<String, String>{}, ascii.encode(buffer));
 
     esl.Response response = new esl.Response.fromPacket(packet);
 
@@ -20,7 +20,7 @@ abstract class Response {
   static void detectsError() {
     const String buffer = '-ERR USER_NOT_REGISTERED';
     esl.Packet packet =
-        new esl.Packet(<String, String>{}, ASCII.encode(buffer));
+        new esl.Packet(<String, String>{}, ascii.encode(buffer));
 
     esl.Response response = new esl.Response.fromPacket(packet);
 
@@ -34,7 +34,7 @@ abstract class Response {
   static void detectsOK() {
     const String buffer = '+OK [Success]';
     esl.Packet packet =
-        new esl.Packet(<String, String>{}, ASCII.encode(buffer));
+        new esl.Packet(<String, String>{}, ascii.encode(buffer));
 
     esl.Response response = new esl.Response.fromPacket(packet);
 
