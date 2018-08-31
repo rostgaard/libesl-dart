@@ -96,7 +96,7 @@ class Peer {
   @deprecated
   static String makeKey(String id) => id;
 
-  /// Merges groups from [other] [Peer] with [this] [Peer].
+  /// Merges groups from [other] [Peer] with this objects [Peer]'s'.
   void mergeGroups(Peer other) {
     other.groups.forEach((String group) {
       if (!groups.contains(group)) {

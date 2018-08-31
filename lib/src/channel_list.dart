@@ -49,7 +49,7 @@ class ChannelList extends IterableBase<Channel> {
     _channelStorage[channel.uuid] = channel;
   }
 
-  /// Retrieve a single channel identified by [channelID]. Returns [null]
+  /// Retrieve a single channel identified by [channelID]. Returns `null`
   /// if no channel is found in the list.
   Channel get(String channelID) => _channelStorage[channelID];
 

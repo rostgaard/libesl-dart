@@ -3,7 +3,6 @@ analyzer:
     - .pub-cache
     - concepts
     - doc
-  strong-mode: true
 
 linter:
   rules:
@@ -120,9 +119,6 @@ linter:
 
     # Await for future expression statements inside async function bodies.
     - unawaited_futures
-
-    # Avoid using braces in interpolation when not needed.
-    - unnecessary_brace_in_string_interp
 
     # Avoid wrapping fields in getters and setters just to be "safe".
     - unnecessary_getters_setters

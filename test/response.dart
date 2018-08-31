@@ -1,12 +1,14 @@
 part of esl.test;
 
+const AsciiCodec _ascii = const AsciiCodec();
+
 /// Tests for the [esl.Response] class.
 abstract class Response {
   /// Tests if a [esl.Response] parses correct status upon -USAGE response.
   static void detectsUsage() {
     const String buffer = '-USAGE: <uuid> [cause]';
     esl.Packet packet =
-        new esl.Packet(<String, String>{}, ASCII.encode(buffer));
+        new esl.Packet(<String, String>{}, _ascii.encode(buffer));
 
     esl.Response response = new esl.Response.fromPacket(packet);
 
@@ -20,7 +22,7 @@ abstract class Response {
   static void detectsError() {
     const String buffer = '-ERR USER_NOT_REGISTERED';
     esl.Packet packet =
-        new esl.Packet(<String, String>{}, ASCII.encode(buffer));
+        new esl.Packet(<String, String>{}, _ascii.encode(buffer));
 
     esl.Response response = new esl.Response.fromPacket(packet);
 
@@ -34,7 +36,7 @@ abstract class Response {
   static void detectsOK() {
     const String buffer = '+OK [Success]';
     esl.Packet packet =
-        new esl.Packet(<String, String>{}, ASCII.encode(buffer));
+        new esl.Packet(<String, String>{}, _ascii.encode(buffer));
 
     esl.Response response = new esl.Response.fromPacket(packet);
 

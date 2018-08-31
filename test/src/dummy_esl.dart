@@ -6,6 +6,8 @@ import 'dart:io';
 
 import 'package:logging/logging.dart';
 
+const AsciiCodec _ascii = const AsciiCodec();
+
 class _ClientConnection {
   final Socket socket;
   bool isAuthenticated = false;
@@ -53,7 +55,7 @@ class DummyEsl {
     _send(client, <String>['Content-Type: auth/request']);
 
     client.socket
-        .transform(ASCII.decoder)
+        .transform(_ascii.decoder)
         .transform(const LineSplitter())
         .where((String buffer) => buffer.isNotEmpty)
         .listen(

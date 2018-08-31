@@ -23,9 +23,9 @@ class Event {
           'Only values ${supportedEventFormats.join(', ')} are supported. '
           'Got: ${packet.contentType}');
     } else {
-      final String decoded = ASCII.decode(packet.payload, allowInvalid: true);
+      final String decoded = _ascii.decode(packet.payload, allowInvalid: true);
       final Map<String, dynamic> map =
-          JSON.decode(decoded) as Map<String, dynamic>;
+          json.decode(decoded) as Map<String, dynamic>;
 
       return new Event._internal(new UnmodifiableMapView<String, dynamic>(map));
     }

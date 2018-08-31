@@ -11,10 +11,7 @@ import 'package:esl/constants.dart' as esl;
 import 'package:esl/esl.dart' as esl;
 import 'package:logging/logging.dart';
 
-esl.PeerList _peerList;
-
 Future<Null> main() async {
-  print('\n'.codeUnits.first);
   /* Changing the root log level propagates to libesl-dart.*/
   Logger.root.level = Level.ALL;
   final List<String> events = <String>[esl.EventType.all];

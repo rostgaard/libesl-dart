@@ -10,6 +10,8 @@ import 'dart:convert';
 
 import 'package:esl/esl.dart';
 
+const AsciiCodec _ascii = const AsciiCodec(allowInvalid: true);
+
 /// Transformer for converting raw bytes into [Packet] objects.
 ///
 /// Handles the low-level parsing of network traffic, or any other byte
@@ -36,6 +38,10 @@ class PacketTransformer implements StreamTransformer<List<int>, Packet> {
     return _controller.stream;
   }
 
+  /// Generic [noSuchMethod] implementation.
+  @override
+  void noSuchMethod(Invocation i) => super.noSuchMethod(i);
+  
   /// Callback for receiving and processing bytes.
   ///
   /// Supports segmented transfers, such as TCP buffers.
@@ -73,7 +79,7 @@ class PacketTransformer implements StreamTransformer<List<int>, Packet> {
           if (lastChar == _newLine) {
             processHeaders();
           } else {
-            String headerLine = ASCII.decode(_headerBuffer, allowInvalid: true);
+            String headerLine = _ascii.decode(_headerBuffer, allowInvalid: true);
 
             // Ignore short lines.
             if (headerLine.length > 1) {

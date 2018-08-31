@@ -3,6 +3,7 @@
 // in the LICENSE file.
 
 part of esl;
+const AsciiCodec _ascii = const AsciiCodec();
 
 ///Class representing a reponse received from the FreeSWITCH event socket.
 class Response {
@@ -11,7 +12,7 @@ class Response {
 
   /// Construct a new [Response] object from a [Packet].
   factory Response.fromPacket(Packet packet) => new Response.fromPacketBody(
-      ASCII.decode(packet.payload, allowInvalid: true));
+      _ascii.decode(packet.payload, allowInvalid: true));
 
   /// Construct a new [Response] object from a packet body String.
   Response.fromPacketBody(String body) : content = body;
