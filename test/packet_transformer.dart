@@ -82,6 +82,7 @@ void testFile(IO.File testFile, StreamController<Result> resultStream,
   Result res = new Result();
   testFile
       .openRead()
+      .cast<List<int>>()
       .transform(new ESL.PacketTransformer())
       .listen((ESL.Packet packet) => res.packetCount++, onDone: () {
     res.runtime = new DateTime.now().difference(start);
