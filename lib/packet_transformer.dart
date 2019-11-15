@@ -7,6 +7,7 @@ library esl.packet_transformer;
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:esl/esl.dart';
 
@@ -20,7 +21,7 @@ const AsciiCodec _ascii = const AsciiCodec(allowInvalid: true);
 /// and forward them to the appropriate steam - for instance event stream.
 ///
 /// Can also be used standalone for parsing, for instance, packet dumps.
-class PacketTransformer implements StreamTransformer<List<int>, Packet> {
+class PacketTransformer implements StreamTransformer<Uint8List, Packet> {
   final StreamController<Packet> _controller = new StreamController<Packet>();
   final List<int> _headerBuffer = <int>[];
   final List<int> _bodyBuffer = <int>[];

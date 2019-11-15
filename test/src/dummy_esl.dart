@@ -3,6 +3,7 @@ library esl.test_support.dummy_esl;
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:logging/logging.dart';
 
@@ -13,6 +14,27 @@ class _ClientConnection {
   bool isAuthenticated = false;
 
   _ClientConnection(this.socket);
+}
+
+class IntCaster implements StreamTransformer<Uint8List, List<int>> {
+  final StreamController<List<int>> _controller = new StreamController<List<int>>();
+
+  @override
+  Stream<List<int>> bind(Stream<Uint8List> stream) {
+    stream.listen(_onData, onDone: _controller.close);
+    return _controller.stream;
+  }
+
+  @override
+  StreamTransformer<RS, RT> cast<RS, RT>() {
+    // TODO: implement cast
+    return null;
+  }
+
+  void _onData(Uint8List bytes) {
+    _controller.add(List<int>()..addAll(bytes));
+  }
+
 }
 
 /// ESL dummy server that emulates the behaviour of a real FreeSWITCH ESL.
@@ -55,6 +77,7 @@ class DummyEsl {
     _send(client, <String>['Content-Type: auth/request']);
 
     client.socket
+        .transform(IntCaster())
         .transform(_ascii.decoder)
         .transform(const LineSplitter())
         .where((String buffer) => buffer.isNotEmpty)
