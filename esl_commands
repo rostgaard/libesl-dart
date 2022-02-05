@@ -1,0 +1,127 @@
+coalesce -- Return first nonempty parameter -- [^^<delim>]<value1>,<value2>,...
+bgapi -- Execute an api command in a thread -- <command>[ <arg>]
+break -- uuid_break -- <uuid> [all]
+complete -- Complete -- add <word>|del [<word>|*]
+cond -- Evaluate a conditional -- <expr> ? <true val> : <false val>
+console_complete --  -- <line>
+console_complete_xml --  -- <line>
+create_uuid -- Create a uuid -- <uuid> <other_uuid>
+db_cache -- Manage db cache -- status
+domain_exists -- Check if a domain exists -- <domain>
+echo -- Echo -- <data>
+escape -- Escape a string -- <data>
+eval -- eval (noop) -- [uuid:<uuid> ]<expression>
+expand -- Execute an api with variable expansion -- [uuid:<uuid> ]<cmd> <args>
+find_user_xml -- Find a user -- <key> <user> <domain>
+fsctl -- FS control messages -- [recover|send_sighup|hupall|pause [inbound|outbound]|resume [inbound|outbound]|shutdown [cancel|elegant|asap|now|restart]|sps|sps_peak_reset|sync_clock|sync_clock_when_idle|reclaim_mem|max_sessions|min_dtmf_duration [num]|max_dtmf_duration [num]|default_dtmf_duration [num]|min_idle_cpu|loglevel [level]|debug_level [level]]
+... -- Shutdown -- 
+shutdown -- Shutdown -- 
+version -- Version -- [short]
+global_getvar -- Get global var -- <var>
+global_setvar -- Set global var -- <var>=<value> [=<value2>]
+group_call -- Generate a dial string to call a group -- <group>[@<domain>]
+help -- Show help for all the api commands -- 
+host_lookup -- Lookup host -- <hostname>
+hostname -- Return the system hostname -- 
+interface_ip -- Return the primary IP of an interface -- [auto|ipv4|ipv6] <ifname>
+switchname -- Return the switch name -- 
+gethost -- gethostbyname -- 
+hupall -- hupall -- <cause> [<var> <value>]
+in_group -- Determine if a user is in a group -- <user>[@<domain>] <group_name>
+is_lan_addr -- See if an ip is a lan addr -- <ip>
+limit_usage -- Get the usage count of a limited resource -- <backend> <realm> <id>
+limit_hash_usage -- Deprecated: gets the usage count of a limited resource -- <realm> <id>
+limit_status -- Get the status of a limit backend -- <backend>
+limit_reset -- Reset the counters of a limit backend -- <backend>
+limit_interval_reset -- Reset the interval counter for a limited resource -- <backend> <realm> <resource>
+list_users -- List Users configured in Directory -- [group <group>] [domain <domain>] [user <user>] [context <context>]
+load -- Load Module -- <mod_name>
+log -- Log -- <level> <message>
+md5 -- Return md5 hash -- <data>
+module_exists -- Check if module exists -- <module>
+msleep -- Sleep N milliseconds -- <milliseconds>
+nat_map -- Manage NAT -- [status|republish|reinit] | [add|del] <port> [tcp|udp] [static]
+originate -- Originate a call -- <call url> <exten>|&<application_name>(<app_args>) [<dialplan>] [<context>] [<cid_name>] [<cid_num>] [<timeout_sec>]
+pause -- Pause media on a channel -- <uuid> <on|off>
+quote_shell_arg -- Quote/escape a string for use on shell command line -- <data>
+regex -- Evaluate a regex -- <data>|<pattern>[|<subst string>][n|b]
+reloadacl -- Reload XML -- 
+reload -- Reload module -- [-f] <mod_name>
+reloadxml -- Reload XML -- 
+replace -- Replace a string -- <data>|<string1>|<string2>
+say_string --  -- <module_name>[.<ext>] <lang>[.<ext>] <say_type> <say_method> [<say_gender>] <text>
+sched_api -- Schedule an api command -- [+@]<time> <group_name> <command_string>[&]
+sched_broadcast -- Schedule a broadcast event to a running call -- [[+]<time>|@time] <uuid> <path> [aleg|bleg|both]
+sched_del -- Delete a scheduled task -- <task_id>|<group_id>
+sched_hangup -- Schedule a running call to hangup -- [+]<time> <uuid> [<cause>]
+sched_transfer -- Schedule a transfer for a running call -- [+]<time> <uuid> <extension> [<dialplan>] [<context>]
+show -- Show various reports -- codec|endpoint|application|api|dialplan|file|timer|calls [count]|channels [count|like <match string>]|calls|detailed_calls|bridged_calls|detailed_bridged_calls|aliases|complete|chat|management|modules|nat_map|say|interfaces|interface_types|tasks|limits|status
+sql_escape -- Escape a string to prevent sql injection -- <string>
+status -- Show current status -- 
+strftime_tz -- Display formatted time of timezone -- <timezone_name> [<epoch>|][format string]
+stun -- Execute STUN lookup -- <stun_server>[:port] [<source_ip>[:<source_port]]
+time_test -- Show time jitter -- <mss> [count]
+timer_test -- Exercise FS timer -- <10|20|40|60|120> [<1..200>] [<timer_name>]
+tone_detect -- Start tone detection on a channel -- <uuid> <key> <tone_spec> [<flags> <timeout> <app> <args> <hits>]
+unload -- Unload module -- [-f] <mod_name>
+unsched_api -- Unschedule an api command -- <task_id>
+uptime -- Show uptime -- [us|ms|s|m|h|d|microseconds|milliseconds|seconds|minutes|hours|days]
+reg_url --  -- <user>@<realm>
+url_decode -- Url decode a string -- <string>
+url_encode -- Url encode a string -- <string>
+user_data -- Find user data -- <user>@<domain> [var|param|attr] <name>
+uuid_early_ok -- stop ignoring early media -- <uuid>
+user_exists -- Find a user -- <key> <user> <domain>
+uuid_answer -- answer -- <uuid>
+uuid_audio -- uuid_audio -- <uuid> [start [read|write] [mute|level <level>]|stop]
+uuid_break -- Break out of media sent to channel -- <uuid> [all]
+uuid_bridge -- Bridge call legs -- 
+uuid_broadcast -- Execute dialplan application -- <uuid> <path> [aleg|bleg|holdb|both]
+uuid_buglist -- List media bugs on a session -- <uuid>
+uuid_chat -- Send a chat message -- <uuid> <text>
+uuid_debug_media -- Debug media -- <uuid> <read|write|both|vread|vwrite|vboth|all> <on|off>
+uuid_deflect -- Send a deflect -- <uuid> <uri>
+uuid_displace -- Displace audio -- <uuid> [start|stop] <path> [<limit>] [mux]
+uuid_display -- Update phone display -- <uuid> <display>
+uuid_drop_dtmf -- Drop all DTMF or replace it with a mask -- <uuid> [on | off ] [ mask_digits <digits> | mask_file <file>]
+uuid_dump -- Dump session vars -- <uuid> [format]
+uuid_exists -- Check if a uuid exists -- <uuid>
+uuid_fileman -- Manage session audio -- <uuid> <cmd>:<val>
+uuid_flush_dtmf -- Flush dtmf on a given uuid -- <uuid>
+uuid_getvar -- Get a variable from a channel -- <uuid> <var>
+uuid_hold -- Place call on hold -- [off|toggle] <uuid> [<display>]
+uuid_kill -- Kill channel -- <uuid> [cause]
+uuid_send_message -- Send MESSAGE to the endpoint -- <uuid> <message>
+uuid_send_info -- Send info to the endpoint -- <uuid> [<mime_type> <mime_subtype>] <message>
+uuid_set_media_stats -- Set media stats -- <uuid>
+uuid_video_refresh -- Send video refresh. -- <uuid>
+uuid_outgoing_answer -- Answer outgoing channel -- <uuid>
+uuid_limit -- Increase limit resource -- <uuid> <backend> <realm> <resource> [<max>[/interval]] [number [dialplan [context]]]
+uuid_limit_release -- Release limit resource -- <uuid> <backend> [realm] [resource]
+uuid_limit_release -- Release limit resource -- <uuid> <backend> [realm] [resource]
+uuid_loglevel -- Set loglevel on session -- <uuid> <level>
+uuid_media -- Reinvite FS in or out of media path -- [off] <uuid>
+uuid_media_reneg -- Media negotiation -- <uuid>[ <codec_string>]
+uuid_park -- Park channel -- <uuid>
+uuid_pause -- Pause media on a channel -- <uuid> <on|off>
+uuid_phone_event -- Send an event to the phone -- <uuid>
+uuid_ring_ready -- Sending ringing to a channel -- <uuid> [queued]
+uuid_pre_answer -- pre_answer -- <uuid>
+uuid_preprocess -- Pre-process Channel -- <>
+uuid_record -- Record session audio -- <uuid> [start|stop|mask|unmask] <path> [<limit>]
+uuid_recovery_refresh -- Send a recovery_refresh -- <uuid> <uri>
+uuid_recv_dtmf -- Receive dtmf digits -- <uuid> <dtmf_data>
+uuid_send_dtmf -- Send dtmf digits -- <uuid> <dtmf_data>
+uuid_session_heartbeat -- uuid_session_heartbeat -- <uuid> [sched] [0|<seconds>]
+uuid_setvar_multi -- Set multiple variables -- <uuid> <var>=<value>;<var>=<value>...
+uuid_setvar -- Set a variable -- <uuid> <var> [value]
+uuid_transfer -- Transfer a session -- <uuid> [-bleg|-both] <dest-exten> [<dialplan>] [<context>]
+uuid_dual_transfer -- Transfer a session and its partner -- <uuid> <A-dest-exten>[/<A-dialplan>][/<A-context>] <B-dest-exten>[/<B-dialplan>][/<B-context>]
+uuid_simplify -- Try to cut out of a call path / attended xfer -- <uuid>
+uuid_jitterbuffer -- uuid_jitterbuffer -- <uuid> [0|<min_msec>[:<max_msec>]]
+uuid_zombie_exec -- Set zombie_exec flag on the specified uuid -- <uuid>
+xml_flush_cache -- Clear xml cache -- <id> <key> <val>
+xml_locate -- Find some xml -- [root | <section> <tag> <tag_attr_name> <tag_attr_val>]
+xml_wrap -- Wrap another api command in xml -- <command> <args>
+file_exists -- Check if a file exists on server -- <file>
+json -- JSON API -- JSON

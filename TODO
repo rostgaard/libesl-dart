@@ -1,0 +1,4 @@
+- Rename basic connection to connection and rename connection to client.
+- Example for auth handler function
+- Re-implement the Event and Response classes so that they no longer inherit from Packet class
+- Move the re-implemented Event and Response classes to util library
